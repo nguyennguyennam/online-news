@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+    <meta name="description" content="<%= description %>" />
+
+    <meta name="og:title" content="<%= title %>" />
+    <meta name="og:description" content="<%= description %>" />
+
+    <% if (tailwind) { %>
+    <link rel="stylesheet" href="/css/tailwind.css" />
+    <% } %>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="font-nunito">
+    <header
+      class="font-playfair flex h-12 items-center justify-center bg-white shadow-lg"
+    >
+      <h1 class="text-2xl">Online News</h1>
+    </header>
+
+    <main class="h-fit min-h-screen"><%- include(content) %></main>
+
+    <footer
+      class="flex h-16 flex-col items-center justify-between p-6 lg:flex-row xl:px-20"
+    >
+      <p class="text-sm font-semibold text-slate-500">PTUDW Project</p>
+
+      <div class="flex flex-col gap-4 text-slate-700 underline lg:flex-row">
+        <a href="/">Home</a>
+        <a href="/categories">Categories</a>
+        <a href="/tos">Terms of Service</a>
+      </div>
+    </footer>
+  </body>
+</html>
