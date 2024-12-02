@@ -13,9 +13,16 @@ app.set("views", path.join(__dirname, "src", "views"));
 app.get("/login", (req, res) => {
   res.render("layouts/main-layout.ejs", {
     title: "Login",
-    description: "Login page to Online News",
+    description: "Login to your personal feed on Online News",
     content: "../pages/login",
-    tailwind: true,
+  });
+});
+
+app.get("/register", (req, res) => {
+  res.render("layouts/main-layout.ejs", {
+    title: "Register",
+    description: "Register page to Online News",
+    content: "../pages/register",
   });
 });
 
