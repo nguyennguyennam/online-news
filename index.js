@@ -1,51 +1,32 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const dbConnection = require("./config/mongoose");
-const Article = require("./model/article");
-const path = require("path");
-require("dotenv").config();
+
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+app.set("view engine", "ejs");
+app.use(express.static("public"));
+app.set("views", path.join(__dirname, "src", "views"));
 
-// Middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// Cấu hình Handlebars view engine
-app.set("view engine", "hbs");
-app.set("views", path.join(__dirname, "src", "view", "pages"));
-
-// Kết nối MongoDB
-dbConnection();
-
-// Khởi tạo đối tượng Article
-const articleController = new Article();
-
-// Route render trang chính
-app.get("/", (req, res) => {
-    res.render("index", { articles: [] }); // Mặc định articles là mảng rỗng
-});
-// Route render trang search-author
-app.get("/search-author/articles",  (req, res) => {
-    articleController.findArticle(req, res);
-});
-app.get("/search-author", (req, res) => {
-    res.render("search-author");
+app.get("/login", (req, res) => {
+  res.render("layouts/main-layout.ejs", {
+    title: "Login",
+    description: "Login to your personal feed on Online News",
+    content: "../pages/login",
+  });
 });
 
-// Endpoint thêm bài viết
-app.post("/article",  (req, res) => {
-    articleController.insertArticle(req, res);
+app.get("/register", (req, res) => {
+  res.render("layouts/main-layout.ejs", {
+    title: "Register",
+    description: "Register page to Online News",
+    content: "../pages/register",
+  });
 });
 
-
-// Endpoint cập nhật bài viết
-app.put("/article/:id", (req, res) => {
-    articleController.editArticle(req, res);
-});
-
-// Bắt đầu server
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+app.listen(3000, () => {
+  console.log("server started");
 });

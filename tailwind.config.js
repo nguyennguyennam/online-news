@@ -1,0 +1,13 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ["./src/**/*.ejs"],
+  theme: {
+    extend: {
+      fontFamily: {
+        nunito: ["Nunito Sans", "sans-serif"],
+        playfair: ["Playfair Display", "serif"],
+      },
+    },
+  },
+  plugins: [],
+};
