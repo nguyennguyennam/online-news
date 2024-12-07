@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-
 const editorSchema = new mongoose.Schema({
     name: { type: String, required: true },
     dateOfBirth: { type: Date, required: true }, // Fixed `dateofBirth` to `dateOfBirth` for camelCase consistency
@@ -11,3 +10,4 @@ const editorSchema = new mongoose.Schema({
 const Editor = mongoose.model("Editor", editorSchema, "editor");
 
 export default Editor;
+

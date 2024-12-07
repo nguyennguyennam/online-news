@@ -9,5 +9,4 @@ const writerSchema = new mongoose.Schema({
 });
 
 const Writer = mongoose.model("Writer", writerSchema, "writer");
-
 export default Writer;

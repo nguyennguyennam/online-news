@@ -115,3 +115,4 @@ export const assignCategories = async (req, res) => {
         res.render("editors", { message: "fail" });
     }
 };
+
