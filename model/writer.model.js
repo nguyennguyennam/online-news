@@ -37,5 +37,5 @@ const writerProfileSchema = new mongoose.Schema({
 export default WriterProfile = mongoose.model(
   "WriterProfile",
   writerProfileSchema,
-  "writerprofiles",
+  "writers",
 );
