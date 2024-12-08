@@ -55,6 +55,16 @@ const postSchema = new mongoose.Schema({
     type: String, // Whatever from the text editor
     required: true,
   },
+  views: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+  premium: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
 });
 
 export default Post = mongoose.model("Post", postSchema, "posts");

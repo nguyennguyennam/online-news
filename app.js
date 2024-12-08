@@ -26,4 +26,12 @@ app.get("/register", (req, res) => {
   });
 });
 
+// Final middleware. This is for a catch all for server errors.
+app.use((err, req, res, next) => {
+  res.render("500", {
+    error: err,
+    message: err.message,
+  });
+});
+
 export default app;

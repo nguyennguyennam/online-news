@@ -21,9 +21,10 @@ const userSchema = new mongoose.Schema({
     required: true,
     default: 1,
     min: 1,
-    max: 5,
+    max: 4,
   },
   subscription: Date,
+  penName: String, // This does nothing if they have clearance = 1.
 });
 
-export const User = mongoose.model("User", userSchema, "users");
+export default mongoose.model("User", userSchema, "users");
