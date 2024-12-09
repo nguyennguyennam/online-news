@@ -208,6 +208,36 @@
         </div>
       </div>
     </footer>
+
+    <!-- Scroll-to-top Button -->
+    <button id="scrollToTopBtn"
+      class="hidden fixed bottom-6 right-6 z-50 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+      </svg>
+    </button>
 </body>
 
 </html>
+
+<script>
+  // Get the button
+  const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+
+  // Show or hide the button depending on the scroll position
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 200) {
+      scrollToTopBtn.classList.remove("hidden");
+    } else {
+      scrollToTopBtn.classList.add("hidden");
+    }
+  });
+
+  // Scroll to the top of the page when the button is clicked
+  scrollToTopBtn.addEventListener("click", () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  });
+</script>
