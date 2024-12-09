@@ -21,145 +21,167 @@
 </head>
 
 <body class="font-nunito">
-  <header class="font-playfair bg-white shadow-lg">
+  <header class="flex flex-col">
     <!-- Title Section -->
-    <div class="flex justify-center items-center h-36">
+    <div class="container mx-auto px-4 font-playfair flex justify-between items-center h-36">
+      <!-- Search Bar -->
+      <div class="w-1/4 relative">
+        <div class="relative">
+          <input type="text" placeholder="Tìm kiếm"
+            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute left-3 top-2.5" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Title -->
       <a href="/" class="flex flex-col justify-center items-center hover:opacity-80 transition-opacity">
         <h1 class="text-7xl font-black">The Cipher</h1>
         <p class="text-xl text-gray-600 mt-2 italic">Cả thế giới trong lòng bàn tay</p>
       </a>
+
+      <!-- Auth Buttons -->
+      <div class="w-1/4 flex justify-end gap-4">
+        <a href="/login" class="px-4 py-2 text-black font-semibold hover:text-blue-500">Đăng nhập</a>
+        <a href="/register" class="px-4 py-2 bg-black text-white font-semibold rounded-lg hover:bg-blue-500">Đăng
+          ký</a>
+      </div>
     </div>
+
     <!-- Separator Line -->
     <div class="border-t-2 border-gray-300"></div>
 
+    <!-- Navbar Section -->
+    <style>
+      .dropdown {
+        position: relative;
+      }
+
+      .dropdown:hover .dropdown-menu {
+        display: block;
+      }
+
+      .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 88%;
+        width: max-content;
+        max-width: 250px;
+      }
+
+      .dropdown-menu li a {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    </style>
+    <nav class="bg-gray-200 shadow-md w-full h-14 flex justify-center items-center sticky top-0 z-10">
+      <div class="container mx-auto px-4 py-2 flex justify-center">
+        <ul class="flex space-x-14">
+          <li class="relative dropdown h-14 flex items-center">
+            <a class="hover:text-blue-500 font-bold" href="#">Thời sự</a>
+            <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Trong nước</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Quốc tế</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Pháp luật</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Phóng sự điều tra</a></li>
+            </ul>
+          </li>
+          <li class="relative dropdown h-14 flex items-center">
+            <a class="hover:text-blue-500 font-bold" href="#">Thể thao</a>
+            <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Euro 2024</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Bóng đá</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Bóng rổ</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Bóng đá quốc tế</a></li>
+            </ul>
+          </li>
+          <li class="relative dropdown h-14 flex items-center">
+            <a class="hover:text-blue-500 font-bold" href="#">Kinh tế</a>
+            <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Nông nghiệp</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Nông sản</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Bitcoin</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Ngân hàng</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Doanh nghiệp</a></li>
+            </ul>
+          </li>
+          <li class="relative dropdown h-14 flex items-center">
+            <a class="hover:text-blue-500 font-bold" href="#">Đời sống</a>
+            <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Tết</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Gia đình</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Ẩm thực</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Du lịch năm châu</a></li>
+            </ul>
+          </li>
+          <li class="relative dropdown h-14 flex items-center">
+            <a class="hover:text-blue-500 font-bold" href="#">Giáo dục</a>
+            <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Tuyển sinh</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Thi đại học 2025</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Du học</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Cẩm nang tuyển sinh</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Chọn nghề - Chọn trường</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Ôn thi tốt nghiệp</a></li>
+            </ul>
+          </li>
+          <li class="relative dropdown h-14 flex items-center">
+            <a class="hover:text-blue-500 font-bold" href="#">Giải trí</a>
+            <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Kết nối</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Truyền hình</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Phim</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Đời nghệ sĩ</a></li>
+            </ul>
+          </li>
+          <li class="relative dropdown h-14 flex items-center">
+            <a class="hover:text-blue-500 font-bold" href="#">Văn hóa</a>
+            <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Âm nhạc</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Nghệ thuật</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Câu chuyện văn hóa</a></li>
+            </ul>
+          </li>
+          <li class="relative dropdown h-14 flex items-center">
+            <a class="hover:text-blue-500 font-bold" href="#">Xe</a>
+            <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Thị trường</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Đánh giá xe</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Xe điện</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Giao thông hôm nay</a></li>
+            </ul>
+          </li>
+          <li class="relative dropdown h-14 flex items-center">
+            <a class="hover:text-blue-500 font-bold" href="#">Công nghệ</a>
+            <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Tin tức công nghệ</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Trí tuệ nhân tạo</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">An ninh mạng</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Blockchain</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Xu hướng - Chuyển đổi số</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Bitcoin</a></li>
+            </ul>
+          </li>
+          <li class="relative dropdown h-14 flex items-center">
+            <a class="hover:text-blue-500 font-bold" href="#">Thời trang trẻ</a>
+            <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Giữ dáng</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Thời trang nghề & nghiệp</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Thời trang 24/7</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Tận hưởng</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Separator Line -->
+    <div class="border-t-2 border-gray-300"></div>
   </header>
-
-  <!-- Navbar Section -->
-  <style>
-    .dropdown {
-      position: relative;
-    }
-
-    .dropdown:hover .dropdown-menu {
-      display: block;
-    }
-
-    .dropdown-menu {
-      display: none;
-      position: absolute;
-      top: 88%;
-      width: max-content;
-      max-width: 250px;
-    }
-
-    .dropdown-menu li a {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  </style>
-  <nav class="bg-white shadow-md w-full h-14 flex justify-center items-center sticky top-0 z-10">
-    <div class="container mx-auto px-4 py-2 flex justify-center">
-      <ul class="flex space-x-14">
-        <li class="relative dropdown h-14 flex items-center">
-          <a class="hover:text-blue-500 font-bold" href="#">Thời sự</a>
-          <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Trong nước</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Quốc tế</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Pháp luật</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Phóng sự điều tra</a></li>
-          </ul>
-        </li>
-        <li class="relative dropdown h-14 flex items-center">
-          <a class="hover:text-blue-500 font-bold" href="#">Thể thao</a>
-          <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Euro 2024</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Bóng đá</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Bóng rổ</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Bóng đá quốc tế</a></li>
-          </ul>
-        </li>
-        <li class="relative dropdown h-14 flex items-center">
-          <a class="hover:text-blue-500 font-bold" href="#">Kinh tế</a>
-          <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Nông nghiệp</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Nông sản</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Bitcoin</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Ngân hàng</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Doanh nghiệp</a></li>
-          </ul>
-        </li>
-        <li class="relative dropdown h-14 flex items-center">
-          <a class="hover:text-blue-500 font-bold" href="#">Đời sống</a>
-          <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Tết</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Gia đình</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Ẩm thực</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Du lịch năm châu</a></li>
-          </ul>
-        </li>
-        <li class="relative dropdown h-14 flex items-center">
-          <a class="hover:text-blue-500 font-bold" href="#">Giáo dục</a>
-          <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Tuyển sinh</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Thi đại học 2025</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Du học</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Cẩm nang tuyển sinh</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Chọn nghề - Chọn trường</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Ôn thi tốt nghiệp</a></li>
-          </ul>
-        </li>
-        <li class="relative dropdown h-14 flex items-center">
-          <a class="hover:text-blue-500 font-bold" href="#">Giải trí</a>
-          <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Kết nối</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Truyền hình</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Phim</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Đời nghệ sĩ</a></li>
-          </ul>
-        </li>
-        <li class="relative dropdown h-14 flex items-center">
-          <a class="hover:text-blue-500 font-bold" href="#">Văn hóa</a>
-          <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Âm nhạc</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Nghệ thuật</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Câu chuyện văn hóa</a></li>
-          </ul>
-        </li>
-        <li class="relative dropdown h-14 flex items-center">
-          <a class="hover:text-blue-500 font-bold" href="#">Xe</a>
-          <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Thị trường</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Đánh giá xe</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Xe điện</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Giao thông hôm nay</a></li>
-          </ul>
-        </li>
-        <li class="relative dropdown h-14 flex items-center">
-          <a class="hover:text-blue-500 font-bold" href="#">Công nghệ</a>
-          <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Tin tức công nghệ</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Trí tuệ nhân tạo</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">An ninh mạng</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Blockchain</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Xu hướng - Chuyển đổi số</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Bitcoin</a></li>
-          </ul>
-        </li>
-        <li class="relative dropdown h-14 flex items-center">
-          <a class="hover:text-blue-500 font-bold" href="#">Thời trang trẻ</a>
-          <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Giữ dáng</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Thời trang nghề & nghiệp</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Thời trang 24/7</a></li>
-            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Tận hưởng</a></li>
-          </ul>
-        </li>
-      </ul>
-    </div>
-  </nav>
-  <!-- Separator Line -->
-  <div class="border-t-2 border-gray-300"></div>
 
   <%- include(content) %>
 

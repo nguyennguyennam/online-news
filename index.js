@@ -1,4 +1,3 @@
-
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -24,6 +23,14 @@ app.get("/register", (req, res) => {
     title: "Register",
     description: "Register page to Online News",
     content: "../pages/register",
+  });
+});
+
+app.get("/", (req, res) => {
+  res.render("layouts/main-layout.ejs", {
+    title: "Home",
+    description: "Home page of Online News",
+    content: "../pages/home",
   });
 });
 
