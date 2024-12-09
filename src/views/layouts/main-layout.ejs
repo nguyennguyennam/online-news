@@ -1,44 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%= title %></title>
-    <meta name="description" content="<%= description %>" />
 
-    <meta name="og:title" content="<%= title %>" />
-    <meta name="og:description" content="<%= description %>" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>
+    <%= title %>
+  </title>
+  <meta name="description" content="<%= description %>" />
 
-    <link rel="stylesheet" href="/css/tailwind.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
-      rel="stylesheet"
-    />
-  </head>
+  <meta name="og:title" content="<%= title %>" />
+  <meta name="og:description" content="<%= description %>" />
 
-  <body class="font-nunito">
-    <header
-      class="font-playfair flex h-12 items-center justify-center bg-white shadow-lg"
-    >
-      <h1 class="text-2xl font-black">Online News</h1>
-    </header>
+  <link rel="stylesheet" href="/css/tailwind.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+    rel="stylesheet" />
+</head>
 
-    <%- include(content) %>
+<body class="font-nunito">
+  <header class="font-playfair bg-white shadow-lg">
+    <!-- Title Section -->
+    <div class="flex flex-col justify-center items-center h-36">
+      <h1 class="text-7xl font-black">The Cipher</h1>
+      <p class="text-xl text-gray-600 mt-2 italic">Where all the world is in your hand</p>
+    </div>
+    <!-- Separator Line -->
+    <div class="border-t-2 border-gray-300"></div>
+
+  </header>
+
+  <!-- Navbar Section -->
+  <style>
+    .dropdown {
+      position: relative;
+    }
+
+    .dropdown:hover .dropdown-menu {
+      display: block;
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 88%;
+    }
+  </style>
+  <nav class="bg-white shadow-md w-full h-14 flex justify-center items-center sticky top-0 z-10">
+    <div class="container mx-auto px-4 py-2 flex justify-center">
+      <ul class="flex space-x-10">
+        <li class="relative dropdown h-14 flex items-center">
+          <a class="hover:text-blue-500 font-bold" href="#">News</a>
+          <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
+            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Local</a></li>
+            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">International</a></li>
+          </ul>
+        </li>
+        <li class="relative dropdown h-14 flex items-center">
+          <a class="hover:text-blue-500 font-bold" href="#">Sport</a>
+          <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
+            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Football</a></li>
+            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Basketball</a></li>
+          </ul>
+        </li>
+        <li class="relative dropdown h-14 flex items-center">
+          <a class="hover:text-blue-500 font-bold" href="#">Business</a>
+          <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
+            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Agricultural</a></li>
+            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Bitcoin</a></li>
+            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Seafood</a></li>
+          </ul>
+        </li>
+        <li class="relative dropdown h-14 flex items-center">
+          <a class="hover:text-blue-500 font-bold" href="#">Innovation</a>
+          <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
+            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Tech</a></li>
+            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Startups</a></li>
+          </ul>
+        </li>
+        <li class="relative dropdown h-14 flex items-center">
+          <a class="hover:text-blue-500 font-bold" href="#">Culture</a>
+          <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
+            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Music</a></li>
+            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Art</a></li>
+          </ul>
+        </li>
+        <li class="relative dropdown h-14 flex items-center">
+          <a class="hover:text-blue-500 font-bold" href="#">Arts</a>
+          <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
+            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Painting</a></li>
+            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Sculpture</a></li>
+          </ul>
+        </li>
+        <li class="relative dropdown h-14 flex items-center">
+          <a class="hover:text-blue-500 font-bold" href="#">Technology</a>
+          <ul class="absolute left-0 mt-2 w-48 bg-white shadow-lg dropdown-menu">
+            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Artificial Intelligence</a></li>
+            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Cybersecurity</a></li>
+            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Space</a></li>
+            <li><a class="block px-4 py-2 hover:bg-gray-200 font-bold" href="#">Bitcoin</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <!-- Separator Line -->
+  <div class="border-t-2 border-gray-300"></div>
+
+  <%- include(content) %>
 
     <footer
-      class="flex h-16 flex-col items-center justify-between gap-8 border-t-2 border-t-zinc-300 p-6 text-center lg:flex-row xl:px-20"
-    >
+      class="flex h-16 flex-col items-center justify-between gap-8 border-t-2 border-t-zinc-300 p-6 text-center lg:flex-row xl:px-20">
       <p class="text-sm font-semibold text-slate-500">PTUDW Project</p>
 
-      <div
-        class="flex flex-col gap-1 text-sm text-slate-700 underline lg:flex-row lg:gap-4"
-      >
+      <div class="flex flex-col gap-1 text-sm text-slate-700 underline lg:flex-row lg:gap-4">
         <a href="/tos" class="hover:text-sky-500">Terms of Service</a>
         <a href="/privacy" class="hover:text-sky-500">Privacy Policy</a>
         <a href="/contact" class="hover:text-sky-500">Contact Us</a>
       </div>
     </footer>
-  </body>
+</body>
+
 </html>
