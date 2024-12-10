@@ -34,6 +34,16 @@ app.get("/", (req, res) => {
   });
 });
 
+app.get("/search", (req, res) => {
+  const searchQuery = req.query.query;
+  res.render("layouts/main-layout.ejs", {
+    title: `Search Results for "${searchQuery}"`,
+    description: "Search results page",
+    content: "../pages/search",
+    searchQuery: searchQuery
+  });
+});
+
 app.listen(3000, () => {
   console.log("server started");
 });
