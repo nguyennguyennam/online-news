@@ -67,4 +67,25 @@ const postSchema = new mongoose.Schema({
   },
 });
 
-export default Post = mongoose.model("Post", postSchema, "posts");
+const Post = mongoose.model("Post", postSchema, "posts");
+
+// Create full-text search support on provided fields: name, abstract, content.
+// However, this only supports full-words, for example, searching "example" will work,
+// but "examp" won't.
+// Do we need that?
+Post.createIndexes(
+  {
+    name: "text",
+    abstract: "text",
+    content: "text",
+  },
+  {
+    weights: {
+      name: 5, // Matches on the title are worth more.
+      abstract: 2, // Then the abstract.
+      content: 1, // If no matches, then search the content.
+    },
+  },
+);
+
+export default Post;

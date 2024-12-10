@@ -1,5 +1,6 @@
 import Comment from "../model/comment.model";
 import Post from "../model/post.model";
+import { hasSubscription } from "./users.query";
 
 /**
  * Retrieves a list of 4 posts that are "featured". Featured posts
@@ -73,4 +74,49 @@ export async function getNewestPostsFromEachCategory() {
       post: 1,
     })
     .limit(10);
+}
+
+/**
+ * Retrieves all posts, given available params.
+ *
+ * @param {{ userId: string?, page: number, cat: string?, tag: string?, query: string? }} param0
+ */
+export async function getAllPosts({ userId, page, cat, tag, query }) {
+  const userPipeline = (await hasSubscription(userId)) ? { premium: -1 } : {};
+  const aggregate = Post.aggregate()
+    .sort(userPipeline)
+    .lookup({
+      from: "categories",
+      localField: "category",
+      foreignField: "_id",
+      as: "category",
+    })
+    .unwind("$category")
+    .lookup({
+      from: "tags",
+      localField: "tags",
+      foreignField: "_id",
+      as: "tags",
+    })
+    .match(cat ? { "$category.name": cat } : {})
+    .match(tag ? { tags: { $in: [tag] } } : {});
+
+  if (query) {
+    aggregate
+      .match({
+        $text: {
+          $search: query,
+          $caseSensitive: false,
+          $diacriticSensitive: false,
+        },
+      })
+      .project({
+        id: "$_id",
+        name: "$name",
+        category: "$category",
+        tags: "$tags",
+        score: { $meta: "textScore" },
+      });
+  }
+  return await aggregate.skip((page - 1) * 5).limit(5);
 }
