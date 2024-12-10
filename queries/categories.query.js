@@ -41,3 +41,26 @@ export async function getAllCategories() {
       children: 1,
     });
 }
+
+/**
+ * Creates a category with the name.
+ *
+ * @param {string} name
+ * @param {string?} parent
+ */
+export async function createCategory(name, parent) {
+  const parentId = parent ? await Category.findOne({ name: parent }) : null;
+  return await Category.create({ name, parent: parentId });
+}
+
+/**
+ * Inserts multiple sub-categories into the parent.
+ * @param {string?} parent
+ * @param  {...string} names
+ */
+export async function insertCategories(parent, ...names) {
+  const parentId = parent ? await Category.findOne({ name: parent }) : null;
+  return await Category.insertMany(
+    names.map((name) => ({ name, parent: parentId })),
+  );
+}

@@ -2,6 +2,8 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 
+import { homeRouter } from "./routes/home.route";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -9,6 +11,8 @@ const app = express();
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.set("views", path.join(__dirname, "src", "views"));
+
+app.use("/", homeRouter);
 
 app.get("/login", (req, res) => {
   res.render("layouts/main-layout.ejs", {
