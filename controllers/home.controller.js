@@ -15,12 +15,12 @@ import {
  * - Mutates: nothing
  */
 export const homeGetHandler = expressAsyncHandler(async (req, res) => {
-  const [featured, mostViewed, newest, newestEach] = await Promise.all(
+  const [featured, mostViewed, newest, newestEach] = await Promise.all([
     getFeaturedPosts(),
     getMostViewedPosts(),
     getNewestPosts(),
     getNewestPostsFromEachCategory(),
-  );
+  ]);
 
   res.render("layouts/main-layout", {
     featured,

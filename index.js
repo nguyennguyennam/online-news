@@ -96,17 +96,33 @@ const tag = ["economics", "global", "market", "technology", "news"];
 app.use((req, res, next) => {
   // Add categories to res.locals so it's available in all views
   res.locals.categories = categories;
+  res.locals.req = req;
   next();
 });
 
 app.get("/search", (req, res) => {
   const searchQuery = req.query.query;
+
+  // TODO: Replace with actual DB query using articleController
+  const articles = [
+    {
+      _id: "1",
+      title: "Sample Article",
+      slug: "sample-article",
+      imageUrl: "https://placehold.co/600x400/EEE/31343C",
+      category: "Tech",
+      tags: ["technology", "news"],
+      datePublished: new Date().toLocaleDateString(),
+      abstract: "This is a sample article with this tag.",
+    },
+  ];
+
   res.render("layouts/main-layout.ejs", {
     title: `Search Results for "${searchQuery}"`,
     description: "Search results page",
     content: "../pages/search",
     searchQuery: searchQuery,
-    activeCategory: "home",
+    articles: articles,
   });
 });
 
@@ -119,7 +135,6 @@ app.get("/tag/:tagName", (req, res) => {
       title: "404 - Not Found",
       description: "The requested tag does not exist",
       content: "../pages/404",
-      activeCategory: "home",
     });
   }
 
@@ -143,7 +158,6 @@ app.get("/tag/:tagName", (req, res) => {
     content: "../pages/tag-grid",
     tagName: requestedTag,
     articles: articles,
-    activeCategory: "home",
   });
 });
 
@@ -157,7 +171,6 @@ app.get("/:category", (req, res) => {
       title: "404 - Not Found",
       description: "The requested category does not exist",
       content: "../pages/404",
-      activeCategory: "home",
     });
   }
 
@@ -180,7 +193,6 @@ app.get("/:category", (req, res) => {
     title: `${category.displayName} News`,
     description: `Latest ${category.displayName} news and updates`,
     content: "../pages/category-grid",
-    activeCategory: category.name,
     categoryName: category.displayName,
     articles: articles,
   });
@@ -200,7 +212,6 @@ app.get("/:category/:subcategory", (req, res) => {
       title: "404 - Not Found",
       description: "The requested subcategory does not exist",
       content: "../pages/404",
-      activeCategory: categoryParam,
       categories: categories,
     });
   }
@@ -223,14 +234,12 @@ app.get("/:category/:subcategory", (req, res) => {
     title: `${subcategory.displayName} - ${category.displayName}`,
     description: `${subcategory.displayName} news in ${category.displayName}`,
     content: "../pages/category-grid",
-    activeCategory: category.name,
-    activeSubcategory: subcategory.name,
     categoryName: category.displayName,
     articles: articles,
     categories: categories,
   });
 });
 
-app.listen(3000, () => {
+app.listen(3000, async () => {
   console.log("server started");
 });

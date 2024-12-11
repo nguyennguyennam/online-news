@@ -11,7 +11,7 @@ export async function getFeaturedPosts() {
   return await Comment.aggregate()
     .group({
       _id: "$post",
-      count: { $count: 1 },
+      count: { $count: {} },
     })
     .sort({ count: -1 })
     .match({ postedDate: { $gte: lastWeek } })
