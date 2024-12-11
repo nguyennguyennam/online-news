@@ -1,7 +1,6 @@
-import "dotenv/config";
 import mongoose from "mongoose";
 
-const mongo_url = process.env.MONGODB_URL;
+const mongo_url = "mongodb://localhost:27017/online-news"
 
 const dbConnection = async () => {
   try {
@@ -9,7 +8,9 @@ const dbConnection = async () => {
       throw new Error("Invalid MongoDB URL");
     }
 
-    const connection = await mongoose.connect(mongo_url);
+    const connection = await mongoose.connect(mongo_url, {
+      serverSelectionTimeoutMS: 15000,
+    });
     console.log(`MongoDB connected: ${connection.connection.host}`);
   } catch (err) {
     console.error("Error connecting to MongoDB:", err);

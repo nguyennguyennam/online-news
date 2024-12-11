@@ -1,7 +1,8 @@
 import express from "express";
-import * as sign_in from "./sign_in";
-const app = express ();
+import userRoutes from "./user.routes.js"; // Import các route cụ thể từ file user.routes.js
 
-function route (app) {
-    route.use("/online_news", );
-}
+const router = express.Router();
+
+// Tích hợp các route của user
+router.use(userRoutes);
+export default router;
