@@ -1,7 +1,10 @@
 import express from "express";
-import * as sign_in from "./sign_in";
-const app = express ();
+import { homeRouter } from "./home.route.js";
+import { userRouter } from "./user.route.js";
 
-function route (app) {
-    route.use("/online_news", );
-}
+const mainRouter = express.Router();
+
+mainRouter.use("/", userRouter);
+mainRouter.use("/", homeRouter);
+
+export { mainRouter };

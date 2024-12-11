@@ -1,40 +1,30 @@
+import "dotenv/config";
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
-
-import { homeRouter } from "./routes/home.route";
+import { connect } from "./queries/db.js";
+import { mainRouter } from "./routes/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+await connect();
 
 const app = express();
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.set("views", path.join(__dirname, "src", "views"));
+app.use(mainRouter);
 
-app.use("/", homeRouter);
-
-app.get("/login", (req, res) => {
-  res.render("layouts/main-layout.ejs", {
-    title: "Login",
-    description: "Login to your personal feed on Online News",
-    content: "../pages/login",
-  });
-});
-
-app.get("/register", (req, res) => {
-  res.render("layouts/main-layout.ejs", {
-    title: "Register",
-    description: "Register page to Online News",
-    content: "../pages/register",
-  });
-});
+app.get("/fake", async (req, res) => {});
 
 // Final middleware. This is for a catch all for server errors.
-app.use((err, req, res, next) => {
-  res.render("500", {
-    error: err,
-    message: err.message,
+app.use((req, res) => {
+  res.status(404).render("layouts/main-layout.ejs", {
+    title: "404 - Not Found",
+    description: "The requested page does not exist",
+    content: "../pages/404",
+    activeCategory: "home",
   });
 });
 

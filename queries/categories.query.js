@@ -1,4 +1,4 @@
-import Category from "../model/category.model";
+import Category from "../model/category.model.js";
 
 /**
  * Aggregates all categories and returns it into an array for easier accessing.

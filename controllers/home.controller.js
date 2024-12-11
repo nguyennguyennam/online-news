@@ -4,7 +4,7 @@ import {
   getMostViewedPosts,
   getNewestPosts,
   getNewestPostsFromEachCategory,
-} from "../queries/posts.query";
+} from "../queries/posts.query.js";
 
 /**
  * GET /: Renders the main page, with the main layout.
@@ -30,5 +30,11 @@ export const homeGetHandler = expressAsyncHandler(async (req, res) => {
     title: "The Cipher",
     description: "The homepage of the online news website, The Cipher.",
     content: "../pages/home",
+    homeData: {
+      featuredArticles: featured,
+      mostViewedArticles: mostViewed,
+      latestArticles: newest,
+      topCategories: newestEach,
+    },
   });
 });
