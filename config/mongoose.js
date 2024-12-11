@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const mongo_url = "mongodb://localhost:27017/online-news"
+const mongo_url = process.env.MONGO_URL;
 
 const dbConnection = async () => {
   try {

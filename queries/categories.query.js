@@ -43,7 +43,6 @@ export async function getAllCategories() {
     });
 }
 
-
 //
 export async function updateCat(old_cat, new_cat) {
   if (!Array.isArray(old_cat) || old_cat.length === 0) {
@@ -68,10 +67,28 @@ export async function updateCat(old_cat, new_cat) {
   return result;
 }
 
-export async function create_Cat (new_cat) {
-  return await categoryModel.create(new_cat);
-}
-
 export async function delete_Cat (del_cat) {
   return await categoryModel.deleteOne(del_cat);
+}
+/**
+ * Creates a category with the name.
+ *
+ * @param {string} name
+ * @param {string?} parent
+ */
+export async function createCategory(name, parent) {
+  const parentId = parent ? await Category.findOne({ name: parent }) : null;
+  return await Category.create({ name, parent: parentId });
+}
+
+/**
+ * Inserts multiple sub-categories into the parent.
+ * @param {string?} parent
+ * @param  {...string} names
+ */
+export async function insertCategories(parent, ...names) {
+  const parentId = parent ? await Category.findOne({ name: parent }) : null;
+  return await Category.insertMany(
+    names.map((name) => ({ name, parent: parentId })),
+  );
 }
