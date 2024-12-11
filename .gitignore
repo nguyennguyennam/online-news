@@ -3,3 +3,4 @@ pnpm-lock.yaml
 CHANGELOG.md
 .env
 .git/
+package-lock.json
