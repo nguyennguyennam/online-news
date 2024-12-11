@@ -184,11 +184,27 @@ app.get("/", (req, res) => {
 
 app.get("/search", (req, res) => {
   const searchQuery = req.query.query;
+
+  // TODO: Replace with actual DB query using articleController
+  const articles = [
+    {
+      _id: "1",
+      title: "Sample Article",
+      slug: "sample-article",
+      imageUrl: "https://placehold.co/600x400/EEE/31343C",
+      category: "Tech",
+      tags: ["technology", "news"],
+      datePublished: new Date().toLocaleDateString(),
+      abstract: "This is a sample article with this tag.",
+    },
+  ];
+
   res.render("layouts/main-layout.ejs", {
     title: `Search Results for "${searchQuery}"`,
     description: "Search results page",
     content: "../pages/search",
     searchQuery: searchQuery,
+    articles: articles,
   });
 });
 
