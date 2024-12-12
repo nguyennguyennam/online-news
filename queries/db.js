@@ -8,7 +8,8 @@ export async function disconnect() {
   await mongoose.disconnect();
 }
 
-process.on("SIGTERM", async () => {
+process.on("SIGINT", async () => {
   await disconnect();
+  console.log("Disconnected");
   process.exit(0);
 });

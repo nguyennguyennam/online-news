@@ -840,6 +840,10 @@ video {
   align-items: center;
 }
 
+.items-stretch {
+  align-items: stretch;
+}
+
 .justify-end {
   justify-content: flex-end;
 }
@@ -886,6 +890,10 @@ video {
 
 .self-end {
   align-self: flex-end;
+}
+
+.self-stretch {
+  align-self: stretch;
 }
 
 .rounded-full {
