@@ -1,10 +1,10 @@
 
-import { homeRouter } from "./home.route.js";
-import { userRouter } from "./user.route.js";
-
+import  homeRouter  from "./home.route.js";
+import  userRouter  from "./user.routes.js";
+import express from "express";
 const mainRouter = express.Router();
 
 mainRouter.use("/", userRouter);
-mainRouter.use("/", homeRouter);
+//mainRouter.use("/", homeRouter);
 
-export { mainRouter };
+export default mainRouter ;

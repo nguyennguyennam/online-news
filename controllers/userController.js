@@ -9,21 +9,30 @@ dotenv.config();
 
 // Render trang đăng ký
 export function renderRegister(req, res) {
-    const message = req.session.message || null; // Lấy thông báo từ session
-    req.session.message = null; // Xóa thông báo sau khi hiển thị
+    //const message = req.session.message || null; // Lấy thông báo từ session
+    //req.session.message = null; // Xóa thông báo sau khi hiển thị
 
-    res.render("register", {
-        successMessage: message, // Truyền thông báo thành công vào view
-        errorMessage: null, // Đặt mặc định lỗi là null
+    res.render("../layouts/main-layout", {
+        title: "Register",
+        description: "This is a register page",
+        content: "../pages/register",
     });
 }
 
 // Render trang đăng nhập
 export function renderLogin(req, res) {
-    res.render("login");
+    res.render("../layouts/main-layout", {
+        title: "Log In",
+        description: "This is a login page",
+        content: "../pages/login",
+    });
 }
 export function renderReset_pass (req, res) {
-    res.render("reset-password");
+    res.render("../layouts/main-layout", {
+        title: "Reset Password",
+        description: "This is a reset password page",
+        content: "../pages/reset-password",
+        });
 }
 // Đăng ký người dùng
 export async function registerUserController(req, res) {
