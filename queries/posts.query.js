@@ -1,6 +1,6 @@
-import Comment from "../model/comment.model";
-import Post from "../model/post.model";
-import { hasSubscription } from "./users.query";
+import Comment from "../model/comment.model.js";
+import Post from "../model/post.model.js";
+import { hasSubscription } from "./users.query.js";
 
 /**
  * Retrieves a list of 4 posts that are "featured". Featured posts

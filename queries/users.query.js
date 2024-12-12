@@ -1,4 +1,4 @@
-import User from "../model/user.model";
+import User from "../model/user.model.js";
 
 /**
  * Checks if a user with the provided ID has a valid subscription.

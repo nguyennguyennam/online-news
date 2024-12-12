@@ -1,8 +1,10 @@
-import express from "express";
-import userRoutes from "./user.routes.js"; // Import các route cụ thể từ file user.routes.js
 
-const router = express.Router();
+import { homeRouter } from "./home.route.js";
+import { userRouter } from "./user.route.js";
 
-// Tích hợp các route của user
-router.use(userRoutes);
-export default router;
+const mainRouter = express.Router();
+
+mainRouter.use("/", userRouter);
+mainRouter.use("/", homeRouter);
+
+export { mainRouter };
