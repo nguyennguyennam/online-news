@@ -137,6 +137,7 @@ app.get("/", (req, res) => {
         category: "Economics",
         imageUrl: "https://placehold.co/600x400/EEE/31343C",
         datePublished: new Date().toLocaleDateString(),
+        isPremium: false,
       },
     ],
     mostViewedArticles: [
@@ -147,6 +148,7 @@ app.get("/", (req, res) => {
         category: "Politics",
         imageUrl: "https://placehold.co/600x400/EEE/31343C",
         datePublished: new Date().toLocaleDateString(),
+        isPremium: false,
       },
     ],
     latestArticles: [
@@ -157,6 +159,7 @@ app.get("/", (req, res) => {
         category: "Tech",
         imageUrl: "https://placehold.co/600x400/EEE/31343C",
         datePublished: new Date().toLocaleDateString(),
+        isPremium: true,
       },
     ],
     topCategories: [
@@ -169,6 +172,7 @@ app.get("/", (req, res) => {
         datePublished: new Date().toLocaleDateString(),
         tags: ["economics", "global", "market"],
         viewCount: 1500, // For sorting top categories
+        isPremium: false,
       },
       // Add more category articles...
     ],
@@ -196,6 +200,18 @@ app.get("/search", (req, res) => {
       tags: ["technology", "news"],
       datePublished: new Date().toLocaleDateString(),
       abstract: "This is a sample article with this tag.",
+      isPremium: true,
+    },
+    {
+      _id: "1",
+      title: "Sample Article",
+      slug: "sample-article",
+      imageUrl: "https://placehold.co/600x400/EEE/31343C",
+      category: "Tech",
+      tags: ["technology", "news"],
+      datePublished: new Date().toLocaleDateString(),
+      abstract: "This is a sample article with this tag.",
+      isPremium: false,
     },
   ];
 
@@ -231,6 +247,7 @@ app.get("/tag/:tagName", (req, res) => {
       tags: [requestedTag, "news"],
       datePublished: new Date().toLocaleDateString(),
       abstract: "This is a sample article with this tag.",
+      isPremium: false,
     },
   ];
 
@@ -268,6 +285,18 @@ app.get("/:category", (req, res) => {
       tags: ["technology", "news"],
       datePublished: new Date().toLocaleDateString(),
       abstract: "This is a sample article in this category.",
+      isPremium: false,
+    },
+    {
+      _id: "1",
+      title: "Sample Article",
+      slug: "sample-article",
+      imageUrl: "https://placehold.co/600x400/EEE/31343C",
+      category: category.name,
+      tags: ["technology", "news"],
+      datePublished: new Date().toLocaleDateString(),
+      abstract: "This is a sample article in this category.",
+      isPremium: true,
     },
   ];
 
@@ -309,6 +338,7 @@ app.get("/:category/:subcategory", (req, res) => {
       datePublished: new Date().toLocaleDateString(),
       tags: ["sample", "test"],
       abstract: "This is a sample article in this subcategory",
+      isPremium: true,
     },
   ];
 

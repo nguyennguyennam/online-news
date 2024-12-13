@@ -1,21 +1,47 @@
 <!-- Separator Line -->
 <div class="border border-blue-500 mx-4"></div>
-<div class="container mx-auto px-4 py-4">
+<div class="container mx-auto px-4 py-4 bg-gray-100">
     <!-- Featured Articles -->
     <section class="mb-8">
         <h2 class="text-3xl font-bold mb-4">Featured Posts of the Past Week</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <% homeData.featuredArticles.forEach(article => { %>
+            <% homeData.featuredArticles.forEach(article=> { %>
                 <a href="/<%= article.slug %>" class="block">
-                    <article class="bg-white p-4 shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-300">
-                        <img alt="<%= article.title %>" class="w-full h-48 object-cover mb-4"
-                            src="<%= article.imageUrl %>" />
-                        <h3 class="text-xl font-semibold mb-2"><%= article.title %></h3>
-                        <p class="text-gray-600 mb-2">Category: <%= article.category %></p>
-                        <p class="text-gray-600 mb-2">Posted Date: <%= article.datePublished %></p>
+                    <article
+                        class="bg-white p-4 shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-300">
+                        <!-- Article Image -->
+                        <div class="relative mb-4">
+                            <img src="<%= article.imageUrl %>" alt="Article Image" class="w-full h-auto">
+
+                            <!-- Article Type Tag -->
+                            <div class="absolute top-2 right-2">
+                                <% if (article.isPremium) { %>
+                                    <span
+                                        class="px-3 py-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-semibold rounded-full shadow-md">
+                                        Premium
+                                    </span>
+                                    <% } else { %>
+                                        <span
+                                            class="px-3 py-1 bg-black text-white text-sm font-semibold rounded-full border border-black">
+                                            Standard
+                                        </span>
+                                        <% } %>
+                            </div>
+                        </div>
+
+                        <!-- Article Content -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">
+                                <%= article.title %>
+                            </h3>
+                            <p class="text-gray-600 mb-2">Category: <%= article.category %>
+                            </p>
+                            <p class="text-gray-600 mb-2">Posted Date: <%= article.datePublished %>
+                            </p>
+                        </div>
                     </article>
                 </a>
-            <% }) %>
+                <% }) %>
         </div>
     </section>
 
@@ -23,17 +49,43 @@
     <section class="mb-8">
         <h2 class="text-3xl font-bold mb-4">Most Viewed Articles</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <% homeData.mostViewedArticles.forEach(article => { %>
+            <% homeData.mostViewedArticles.forEach(article=> { %>
                 <a href="/<%= article.slug %>" class="block">
-                    <article class="bg-white p-4 shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-300">
-                        <img alt="<%= article.title %>" class="w-full h-48 object-cover mb-4"
-                            src="<%= article.imageUrl %>" />
-                        <h3 class="text-xl font-semibold mb-2"><%= article.title %></h3>
-                        <p class="text-gray-600 mb-2">Category: <%= article.category %></p>
-                        <p class="text-gray-600 mb-2">Posted Date: <%= article.datePublished %></p>
+                    <article
+                        class="bg-white p-4 shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-300">
+                        <!-- Article Image -->
+                        <div class="relative mb-4">
+                            <img src="<%= article.imageUrl %>" alt="Article Image" class="w-full h-auto">
+
+                            <!-- Article Type Tag -->
+                            <div class="absolute top-2 right-2">
+                                <% if (article.isPremium) { %>
+                                    <span
+                                        class="px-3 py-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-semibold rounded-full shadow-md">
+                                        Premium
+                                    </span>
+                                    <% } else { %>
+                                        <span
+                                            class="px-3 py-1 bg-black text-white text-sm font-semibold rounded-full border border-black">
+                                            Standard
+                                        </span>
+                                        <% } %>
+                            </div>
+                        </div>
+
+                        <!-- Article Content -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">
+                                <%= article.title %>
+                            </h3>
+                            <p class="text-gray-600 mb-2">Category: <%= article.category %>
+                            </p>
+                            <p class="text-gray-600 mb-2">Posted Date: <%= article.datePublished %>
+                            </p>
+                        </div>
                     </article>
                 </a>
-            <% }) %>
+                <% }) %>
         </div>
     </section>
 
@@ -41,17 +93,43 @@
     <section class="mb-8">
         <h2 class="text-3xl font-bold mb-4">Latest Posts</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <% homeData.latestArticles.forEach(article => { %>
+            <% homeData.latestArticles.forEach(article=> { %>
                 <a href="/<%= article.slug %>" class="block">
-                    <article class="bg-white p-4 shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-300">
-                        <img alt="<%= article.title %>" class="w-full h-48 object-cover mb-4"
-                            src="<%= article.imageUrl %>" />
-                        <h3 class="text-xl font-semibold mb-2"><%= article.title %></h3>
-                        <p class="text-gray-600 mb-2">Category: <%= article.category %></p>
-                        <p class="text-gray-600 mb-2">Posted Date: <%= article.datePublished %></p>
+                    <article
+                        class="bg-white p-4 shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-300">
+                        <!-- Article Image -->
+                        <div class="relative mb-4">
+                            <img src="<%= article.imageUrl %>" alt="Article Image" class="w-full h-auto">
+
+                            <!-- Article Type Tag -->
+                            <div class="absolute top-2 right-2">
+                                <% if (article.isPremium) { %>
+                                    <span
+                                        class="px-3 py-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-semibold rounded-full shadow-md">
+                                        Premium
+                                    </span>
+                                    <% } else { %>
+                                        <span
+                                            class="px-3 py-1 bg-black text-white text-sm font-semibold rounded-full border border-black">
+                                            Standard
+                                        </span>
+                                        <% } %>
+                            </div>
+                        </div>
+
+                        <!-- Article Content -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">
+                                <%= article.title %>
+                            </h3>
+                            <p class="text-gray-600 mb-2">Category: <%= article.category %>
+                            </p>
+                            <p class="text-gray-600 mb-2">Posted Date: <%= article.datePublished %>
+                            </p>
+                        </div>
                     </article>
                 </a>
-            <% }) %>
+                <% }) %>
         </div>
     </section>
 
@@ -59,22 +137,42 @@
     <section class="mb-8">
         <h2 class="text-3xl font-bold mb-4">Top 10 Categories</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            <% homeData.topCategories.forEach(category => { %>
+            <% homeData.topCategories.forEach(category=> { %>
                 <a href="/<%= category.slug %>" class="block">
                     <article
-                    class="bg-white p-4 shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-300">
-                    <h3 class="text-xl font-semibold mb-4"><%= category.category %></h3>
-                    <div class="flex items-center gap-4">
-                        <img alt="Category thumbnail" class="w-24 h-24 object-cover rounded-lg"
-                            src="https://placehold.co/150x150/EEE/31343C" />
-                        <div>
-                            <h4 class="text-lg font-medium"><%= category.title %></h4>
-                            <p class="text-gray-600">Posted Date: 2023-12-01</p>
+                        class="bg-white p-4 shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-300">
+                        <div class="relative">
+                            <div class="absolute top-2 right-2">
+                                <% if (category.isPremium) { %>
+                                    <span
+                                        class="px-3 py-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-semibold rounded-full shadow-md">
+                                        Premium
+                                    </span>
+                                    <% } else { %>
+                                        <span
+                                            class="px-3 py-1 bg-black text-white text-sm font-semibold rounded-full border border-black">
+                                            Standard
+                                        </span>
+                                        <% } %>
+                            </div>
                         </div>
-                    </div>
-                </article>
+
+                        <h3 class="text-xl font-semibold mb-4">
+                            <%= category.category %>
+                        </h3>
+                        <div class="flex items-center gap-4">
+                            <img alt="Category thumbnail" class="w-24 h-24 object-cover rounded-lg"
+                                src="https://placehold.co/150x150/EEE/31343C" />
+                            <div>
+                                <h4 class="text-lg font-medium">
+                                    <%= category.title %>
+                                </h4>
+                                <p class="text-gray-600">Posted Date: 2023-12-01</p>
+                            </div>
+                        </div>
+                    </article>
                 </a>
-            <% }) %>
+                <% }) %>
         </div>
     </section>
 </div>
