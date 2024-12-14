@@ -13,14 +13,34 @@
       <article
         class="bg-white p-4 shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg"
       >
-        <!-- Featured Image -->
-        <a href="/<%= article.slug %>">
-          <img
-            alt="<%= article.title %>"
-            class="mb-4 h-48 w-full object-cover"
-            src="<%= article.imageUrl || 'https://placehold.co/600x400/EEE/31343C' %>"
-          />
-        </a>
+        <!-- Featured Image with Article Type Tag -->
+        <div class="relative mb-4">
+          <a href="/<%= article.slug %>">
+            <img
+              alt="<%= article.title %>"
+              class="h-48 w-full object-cover"
+              src="<%= article.imageUrl || 'https://placehold.co/600x400/EEE/31343C' %>"
+            />
+          </a>
+
+          <!-- Article Type Tag -->
+          <div class="absolute right-2 top-2">
+            <% if (article.isPremium) { %>
+            <span
+              class="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-3 py-1 text-sm font-semibold text-white shadow-md"
+            >
+              Premium
+            </span>
+            <% } else { %>
+            <span
+              class="rounded-full border border-black bg-black px-3 py-1 text-sm font-semibold text-white"
+            >
+              Standard
+            </span>
+            <% } %>
+          </div>
+        </div>
+
         <!-- Article Info -->
         <div class="space-y-2">
           <h2 class="text-xl font-semibold">
