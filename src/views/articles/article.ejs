@@ -1,0 +1,130 @@
+<main class="container px-4 py-8 mx-auto w-2/3 sm:w-2/3 md:w-2/3 lg:w-2/3 xl:w-2/3">
+    <!-- Category -->
+    <nav aria-label="Breadcrumb" class="flex text-gray-600">
+        <ol class="flex space-x-2">
+            <li>
+                <a href="/" class="text-blue-600 hover:text-blue-800">Category</a>
+            </li>
+            <li>
+                <span class="mx-2">&nbsp;&gt; </span>
+                <a href="/" class="text-blue-600 hover:text-blue-800">Sub Category</a>
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Article Content -->
+    <article class="bg-white p-6 rounded-lg shadow-md">
+        <!-- Article Title -->
+        <h1 class="text-3xl font-bold mb-4">Article Title</h1>
+
+        <!-- Author Information and Publish Date -->
+        <div class="flex items-center text-gray-600 mb-6">
+            <img src="https://placehold.co/40x40/EEE/31343C" alt="Author's Avatar" class="w-10 h-10 rounded-full mr-3">
+            <div>
+                <p class="text-sm font-medium">Author Name</p>
+                <p class="text-xs">Published Date: 2024-04-27</p>
+            </div>
+        </div>
+
+        <!-- Main Image -->
+        <img src="https://placehold.co/800x400/EEE/31343C" alt="Article Image" class="w-3/4 sm:w-3/4 md:w-3/4 lg:w-3/4 xl:w-3/4 object-cover rounded mb-6 mx-auto">
+
+        <!-- Article Body -->
+        <div class="prose prose-lg text-gray-800">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor.</p>
+            <p>Curabitur ligula sapien, tincidunt non, euismod vitae, posuere imperdiet, leo. Maecenas malesuada. Praesent congue erat at massa.</p>
+            <h2>Subheading</h2>
+            <p>Fusce fermentum. Nulla posuere. Nulla facilisi. Sed lectus. Donec mollis hendrerit risus. Phasellus nec sem in justo pellentesque facilisis.</p>
+            <ul>
+                <li>First point</li>
+                <li>Second point</li>
+                <li>Third point</li>
+            </ul>
+            <p>Phasellus consectetuer vestibulum elit. Aenean tellus metus, bibendum sed, posuere ac, mattis non, nunc.</p>
+        </div>
+
+        <!-- Tags Section -->
+        <div class="mt-6">
+            <h3 class="text-xl font-semibold mb-4">Tags</h3>
+            <div class="flex flex-wrap gap-3">
+                <a href="#" class="bg-blue-200 text-blue-800 py-1 px-3 rounded-full text-sm hover:bg-blue-300 hover:text-blue-900 transition-colors duration-300">Technology</a>
+                <a href="#" class="bg-yellow-200 text-yellow-800 py-1 px-3 rounded-full text-sm hover:bg-yellow-300 hover:text-yellow-900 transition-colors duration-300">AI</a>
+                <a href="#" class="bg-green-200 text-green-800 py-1 px-3 rounded-full text-sm hover:bg-green-300 hover:text-green-900 transition-colors duration-300">Blockchain</a>
+                <a href="#" class="bg-red-200 text-red-800 py-1 px-3 rounded-full text-sm hover:bg-red-300 hover:text-red-900 transition-colors duration-300">Health</a>
+            </div>
+        </div>
+    </article>
+
+    <!-- Comments -->
+    <section class="mt-12">
+        <h2 class="text-2xl font-bold mb-6">Comments</h2>
+        <div class="mt-2">
+            <div class="flex justify-between mb-0.5"> 
+                <span class="username">John Doe</span>
+                <span class="time">1 hour ago</span>
+            </div>
+            <div class="comment-body">
+                This is a comment.
+            </div>
+
+            <!-- Comment Actions -->
+            <div class="comment-actions flex space-x-4 mt-2">
+                <button class="flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <i class="fas fa-reply mr-2"></i> Reply
+                </button>
+                <button class="flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400">
+                    <i class="fas fa-thumbs-up mr-2"></i> Like
+                </button>
+                <button class="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400">
+                    <i class="fas fa-thumbs-down mr-2"></i> Dislike
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Write a Comment Form -->
+        <h3 class="text-xl font-semibold mb-4">Write a comment</h3>
+        <form class="comment-form">
+            <textarea 
+                class="w-full border border-gray-300 rounded p-2" 
+                placeholder="Enter your comment..." 
+                rows="4"></textarea>
+            <button 
+                type="submit" 
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">
+                Post Comment
+            </button>
+        </form>
+    </section>
+
+    <!-- Related Articles -->
+    <section class="mt-12">
+        <h2 class="text-2xl font-bold mb-6">Related Articles</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Related Article 1 -->
+            <a href="/articles/article2.html" class="block">
+                <article class="bg-white p-4 shadow-md hover:shadow-lg transition-shadow duration-300 rounded">
+                    <img src="https://placehold.co/400x200/EEE/31343C" alt="Related article 1" class="w-full h-32 object-cover rounded mb-4">
+                    <h3 class="text-xl font-semibold mb-2">Related Article Title 1</h3>
+                    <p class="text-gray-600 text-sm">Published Date: 2024-04-20</p>
+                </article>
+            </a>
+            <!-- Related Article 2 -->
+            <a href="/articles/article3.html" class="block">
+                <article class="bg-white p-4 shadow-md hover:shadow-lg transition-shadow duration-300 rounded">
+                    <img src="https://placehold.co/400x200/EEE/31343C" alt="Related article 2" class="w-full h-32 object-cover rounded mb-4">
+                    <h3 class="text-xl font-semibold mb-2">Related Article Title 2</h3>
+                    <p class="text-gray-600 text-sm">Published Date: 2024-04-18</p>
+                </article>
+            </a>
+            <!-- Related Article 3 -->
+            <a href="/articles/article4.html" class="block">
+                <article class="bg-white p-4 shadow-md hover:shadow-lg transition-shadow duration-300 rounded">
+                    <img src="https://placehold.co/400x200/EEE/31343C" alt="Related article 3" class="w-full h-32 object-cover rounded mb-4">
+                    <h3 class="text-xl font-semibold mb-2">Related Article Title 3</h3>
+                    <p class="text-gray-600 text-sm">Published Date: 2024-04-15</p>
+                </article>
+            </a>
+        </div>
+    </section>
+</main>

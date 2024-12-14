@@ -133,7 +133,7 @@ app.get("/", (req, res) => {
       {
         _id: "1",
         title: "Featured Article 1",
-        slug: "featured-article-1",
+        slug: "article",
         category: "Economics",
         imageUrl: "https://placehold.co/600x400/EEE/31343C",
         datePublished: new Date().toLocaleDateString(),
@@ -185,6 +185,22 @@ app.get("/", (req, res) => {
     homeData: homeData,
   });
 });
+
+app.get('/:slug', (req, res) => {
+  const slug = req.params.slug; 
+
+  
+  res.render("layouts/main-layout.ejs", {
+    title: "Article",
+    slug: slug,
+    // category: category,
+    // imageUrl: imageUrl,
+    // datePublished: datePublished,
+    content: `../articles/${slug}`,
+    description: "Article",
+  });
+});
+
 
 app.get("/search", (req, res) => {
   const searchQuery = req.query.query;
