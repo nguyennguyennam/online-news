@@ -1,6 +1,8 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+import session from "express-session";
+import mainRouter from "./routes/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -302,3 +304,4 @@ app.get("/:category/:subcategory", (req, res) => {
 
 // Đăng ký các route
 app.use("/", mainRouter);
+export default app;

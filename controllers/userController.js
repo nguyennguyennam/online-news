@@ -53,11 +53,9 @@ export async function registerUserController(req, res) {
     res.redirect("/register");
   } catch (error) {
     console.error("Registration error:", error.message);
-    res
-      .status(500)
-      .render("register", {
-        errorMessage: "Failed to register user. Please try again.",
-      });
+    res.status(500).render("register", {
+      errorMessage: "Failed to register user. Please try again.",
+    });
   }
 }
 
