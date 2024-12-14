@@ -19,8 +19,4 @@ const editorProfileSchema = new mongoose.Schema({
   ],
 });
 
-export default EditorProfile = mongoose.model(
-  "EditorProfile",
-  editorProfileSchema,
-  "editors",
-);
+export default mongoose.model("EditorProfile", editorProfileSchema, "editors");

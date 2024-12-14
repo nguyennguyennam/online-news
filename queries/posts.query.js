@@ -11,10 +11,10 @@ export async function getFeaturedPosts() {
   return await Comment.aggregate()
     .group({
       _id: "$post",
-      count: { $count: 1 },
+      count: { $count: {} },
     })
     .sort({ count: -1 })
-    .match({ postedDate: { $gte: lastWeek } })
+    // .match({ postedDate: { $gte: lastWeek } })
     .lookup({
       from: "posts",
       localField: "post",
@@ -42,14 +42,44 @@ export async function getFeaturedPosts() {
  * Retrieves a list of 10 posts that have the most views of all time.
  */
 export async function getMostViewedPosts() {
-  return await Post.aggregate().sort({ views: -1 }).limit(10);
+  return await Post.aggregate()
+    .sort({ views: -1 })
+    .lookup({
+      from: "categories",
+      localField: "category",
+      foreignField: "_id",
+      as: "category",
+    })
+    .unwind("$category")
+    .lookup({
+      from: "tags",
+      localField: "tags",
+      foreignField: "_id",
+      as: "tags",
+    })
+    .limit(10);
 }
 
 /**
  * Retrieves a list of 10 newest posts.
  */
 export async function getNewestPosts() {
-  return await Post.aggregate().sort({ publishedDate: -1 }).limit(10);
+  return await Post.aggregate()
+    .sort({ publishedDate: -1 })
+    .lookup({
+      from: "categories",
+      localField: "category",
+      foreignField: "_id",
+      as: "category",
+    })
+    .unwind("$category")
+    .lookup({
+      from: "tags",
+      localField: "tags",
+      foreignField: "_id",
+      as: "tags",
+    })
+    .limit(10);
 }
 
 /**
@@ -70,7 +100,7 @@ export async function getNewestPostsFromEachCategory() {
       post: { $first: "$$ROOT" },
     })
     .project({
-      category: "$_id.name",
+      category: "$_id",
       post: 1,
     })
     .limit(10);

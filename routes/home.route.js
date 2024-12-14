@@ -1,7 +1,7 @@
 import express from "express";
 import { homeGetHandler } from "../controllers/home.controller.js";
 
-const router = express.Router();
-router.route("/").get(homeGetHandler);
+const app = express.Router();
+app.get ("/home", homeGetHandler);
 
-export default  router ;
+export default app;

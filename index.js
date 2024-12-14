@@ -30,10 +30,10 @@ app.use (
 // Đăng ký các route
 app.use("/", mainRouter);
 
-
-const PORT = process.env.PORT || 3000; // Cổng chạy ứng dụng, mặc định là 3000
+const PORT = process.env.PORT; // Cổng chạy ứng dụng, mặc định là 3000
 dbConnection();
 
 // Lệnh listen để khởi động server
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`)});
+app.listen(PORT, async () => {
+  console.log("server started");
+});

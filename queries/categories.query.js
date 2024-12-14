@@ -1,3 +1,4 @@
+import slugify from "slugify";
 import Category from "../model/category.model.js";
 
 /**
@@ -11,7 +12,7 @@ import Category from "../model/category.model.js";
  * @returns All categories array
  */
 export async function getAllCategories() {
-  return await Category.aggregate()
+  const result = await Category.aggregate()
     .lookup({
       from: "categories",
       localField: "parent",
@@ -40,6 +41,14 @@ export async function getAllCategories() {
       name: 1,
       children: 1,
     });
+  return result.map((node) => ({
+    ...node,
+    slug: slugify(node.name, {
+      lower: true,
+      strict: true,
+      trim: true,
+    }),
+  }));
 }
 
 //

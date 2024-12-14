@@ -1,0 +1,8 @@
+<main
+  class="flex h-fit min-h-screen flex-col items-center justify-center gap-12 p-6">
+<h2>Please enter the One-Time Password to verify your account</h2>
+<p>A One-Time Password has been sent to <%= email %>.</p>
+<form action="/verify-otp" method="POST">
+    <input type="text" name="password" placeholder="Enter OTP" required />
+    <button type="submit">Validate</button>
+</form>

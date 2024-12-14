@@ -1,4 +1,5 @@
 import expressAsyncHandler from "express-async-handler";
+import { getAllCategories } from "../queries/categories.query.js";
 import {
   getFeaturedPosts,
   getMostViewedPosts,
@@ -15,26 +16,25 @@ import {
  * - Mutates: nothing
  */
 export const homeGetHandler = expressAsyncHandler(async (req, res) => {
-  const [featured, mostViewed, newest, newestEach] = await Promise.all(
-    getFeaturedPosts(),
-    getMostViewedPosts(),
-    getNewestPosts(),
-    getNewestPostsFromEachCategory(),
-  );
+  const [featured, mostViewed, latest, latestEach, categories] =
+    await Promise.all([
+      getFeaturedPosts(),
+      getMostViewedPosts(),
+      getNewestPosts(),
+      getNewestPostsFromEachCategory(),
+      getAllCategories(),
+    ]);
 
   res.render("layouts/main-layout", {
-    featured,
-    mostViewed,
-    newest,
-    newestEach,
     title: "The Cipher",
     description: "The homepage of the online news website, The Cipher.",
     content: "../pages/home",
     homeData: {
-      featuredArticles: featured,
-      mostViewedArticles: mostViewed,
-      latestArticles: newest,
-      topCategories: newestEach,
+      featured,
+      mostViewed,
+      latest,
+      latestEach,
+      categories,
     },
   });
 });

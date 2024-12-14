@@ -28,9 +28,9 @@ export async function saved_user (fullName, dob, password, email, role) {
         default:
             throw new Error("Invalid role. Allowed roles: subscriber, writer, editor, admin.");
     }
-
+    const otpExpiration = null;
     return await userModel.create({
-        fullName, dob, email, password, clearance, subscription, expiry_date
+        fullName, dob, email, password, clearance, subscription, expiry_date, otpExpiration
     })
 }
 

@@ -12,23 +12,31 @@ export function renderRegister(req, res) {
     //const message = req.session.message || null; // Lấy thông báo từ session
     //req.session.message = null; // Xóa thông báo sau khi hiển thị
 
-    res.render("../layouts/main-layout", {
+    res.render("../layouts/common-layout", {
         title: "Register",
         description: "This is a register page",
         content: "../pages/register",
     });
 }
 
+export function renderOTP (req, res) {
+    res.render("../layouts/common-layout", {
+        title:"OTP pass",
+        description: "This is an OTP page",
+        content: "../pages/otp"
+    })
+}
+
 // Render trang đăng nhập
 export function renderLogin(req, res) {
-    res.render("../layouts/main-layout", {
+    res.render("../layouts/common-layout", {
         title: "Log In",
         description: "This is a login page",
         content: "../pages/login",
     });
 }
 export function renderReset_pass (req, res) {
-    res.render("../layouts/main-layout", {
+    res.render("../layouts/common-layout", {
         title: "Reset Password",
         description: "This is a reset password page",
         content: "../pages/reset-password",
@@ -74,26 +82,10 @@ export async function loginUserController(req, res, next) {
             role: user.clearance,
         };
         
-        // Chuyển hướng dựa trên `clearance`
-        let redirectUrl;
-        switch (user.clearance) {
-            case 1:
-                redirectUrl = "/subscriber"; // Subscriber page
-                break;
-            case 2:
-                redirectUrl = "/writer"; // Writer page
-                break;
-            case 3:
-                redirectUrl = "/editor"; // Editor page
-                break;
-            case 4:
-                redirectUrl = "/admin"; // Admin page
-                break;
-        }
-        return res.status(200).json({ message: "success", redirectUrl });
+        return res.render("home");
     } catch (err) {
         console.error("Login error:", err);
-        return res.status(500).json({ message: "Internal server error" });
+        return res.render("404");
     }
 }
 
@@ -126,10 +118,12 @@ export async function resetPasswordController(req, res) {
         if (!user) {
             return res.status(404).render("error", { message: "Email not found." });
         }
-        const newPassword = Math.random().toString(36).slice(-8);
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        user.password = hashedPassword;
+        let otp = Math.floor(100000 + Math.random() * 900000).toString(); // OTP 6 chữ số
+        let otpExpiration = Date.now() + 60000; // Hết hạn sau 60 giây
+        user.password = otp;
+        user.otpExpiration = otpExpiration;
         await user.save();
+
         console.log("SMTP_HOST:", process.env.SMTP_HOST);
         console.log("SMTP_USER:", process.env.SMTP_USER);
         console.log("SMTP_PASS:", process.env.SMTP_PASS);
@@ -152,13 +146,63 @@ export async function resetPasswordController(req, res) {
             from: process.env.SMTP_USER,
             to: email,
             subject: "Password Reset",
-            text: `Your new password is: ${newPassword}`,
+            text: `Your OTP is : ${otp}`,
         });
-
-        res.render("success", { message: "Password reset email sent successfully." });
+        req.session.email= email;
+        res.render("otp", {email});
     } catch (error) {
         console.log(error.message);
-        res.status(500).render("error", { message: "Failed to reset password." });
+        res.render("404", { message: "Failed to reset password." });
     }
 }
 
+
+export async function verifyOtpController(req, res) {
+    const { password } = req.body;
+    const email = req.session.email;
+    console.log(email);
+    console.log(password);
+    try {
+        const user = await userModel.findOne({ email });
+
+        if (!user || user.password !== password) {
+            return res.render("404");
+        }
+
+        if (Date.now() > user.otpExpiration) {
+            return res.render("404");
+        }
+
+        // Xóa OTP sau khi xác minh thành công
+        user.otpExpiration = null;
+        await user.save();
+
+        // Chuyển hướng đến trang đặt mật khẩu mới
+        res.render("new_password", { email });
+    } catch (error) {
+        console.log(error.message);
+        res.render("404", { message: "Failed to verify OTP." });
+    }
+}
+export async function saveNewPasswordController(req, res) {
+    const { password } = req.body;
+    const email = req.session.email;
+
+    try {
+        const user = await userModel.findOne({ email });
+
+        if (!user) {
+            return res.render("404", { message: "User not found." });
+        }
+
+        // Hash mật khẩu mới và lưu vào cơ sở dữ liệu
+        const hashedPassword = await bcrypt.hash(password, 10);
+        user.password = hashedPassword;
+        await user.save();
+
+        res.redirect("login");
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).render("404", { message: "Failed to reset password." });
+    }
+}
