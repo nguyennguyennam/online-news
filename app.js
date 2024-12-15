@@ -1,7 +1,7 @@
 import express from "express";
+import session from "express-session";
 import path from "path";
 import { fileURLToPath } from "url";
-import session from "express-session";
 import mainRouter from "./routes/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -31,96 +31,15 @@ function generateSlug(title) {
   });
 }
 
-const categories = [
-  {
-    name: "economics",
-    displayName: "Economics",
-    subcategories: [
-      { name: "us", displayName: "US", link: "/economics/us" },
-      { name: "europe", displayName: "Europe", link: "/economics/europe" },
-    ],
-  },
-  {
-    name: "education",
-    displayName: "Education",
-    subcategories: [
-      { name: "europe", displayName: "Europe", link: "/education/europe" },
-    ],
-  },
-  {
-    name: "film",
-    displayName: "Film",
-    subcategories: [
-      { name: "interview", displayName: "Interview", link: "/film/interview" },
-      { name: "review", displayName: "Review", link: "/film/review" },
-    ],
-  },
-  {
-    name: "game",
-    displayName: "Game",
-    subcategories: [
-      { name: "console", displayName: "Game console", link: "/game/console" },
-      { name: "pc", displayName: "Game PC", link: "/game/pc" },
-      { name: "mobile", displayName: "Game mobile", link: "/game/mobile" },
-    ],
-  },
-  {
-    name: "law",
-    displayName: "Law",
-    subcategories: [{ name: "us", displayName: "US", link: "/law/us" }],
-  },
-  {
-    name: "music",
-    displayName: "Music",
-    subcategories: [
-      { name: "us", displayName: "US", link: "/music/us" },
-      { name: "uk", displayName: "UK", link: "/music/uk" },
-    ],
-  },
-  {
-    name: "politics",
-    displayName: "Politics",
-    subcategories: [
-      { name: "europe", displayName: "Europe", link: "/politics/europe" },
-      { name: "asia", displayName: "Asia", link: "/politics/asia" },
-      { name: "us", displayName: "US", link: "/politics/us" },
-    ],
-  },
-  {
-    name: "sport",
-    displayName: "Sport",
-    subcategories: [
-      { name: "football", displayName: "Football", link: "/sport/football" },
-      { name: "tennis", displayName: "Tennis", link: "/sport/tennis" },
-    ],
-  },
-  {
-    name: "tech",
-    displayName: "Tech",
-    subcategories: [
-      { name: "phone", displayName: "Phone Review", link: "/tech/phone" },
-      { name: "gadget", displayName: "Garget Review", link: "/tech/gadget" },
-    ],
-  },
-  {
-    name: "travel",
-    displayName: "Travel",
-    subcategories: [
-      { name: "europe", displayName: "Europe", link: "/travel/europe" },
-      { name: "asia", displayName: "Asia", link: "/travel/asia" },
-      { name: "us", displayName: "US", link: "/travel/us" },
-    ],
-  },
-];
-
 const tag = ["economics", "global", "market", "technology", "news"];
 
 app.use((req, res, next) => {
-  // Add categories to res.locals so it's available in all views
-  res.locals.categories = categories;
   res.locals.req = req;
   next();
 });
+
+// Đăng ký các route
+app.use("/", mainRouter);
 
 app.get("/:slug", (req, res) => {
   const slug = req.params.slug;
@@ -302,6 +221,4 @@ app.get("/:category/:subcategory", (req, res) => {
   });
 });
 
-// Đăng ký các route
-app.use("/", mainRouter);
 export default app;

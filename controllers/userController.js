@@ -1,9 +1,9 @@
 import bcrypt from "bcryptjs";
+import dotenv from "dotenv";
 import nodemailer from "nodemailer";
 import passport from "passport";
-import { saved_user } from "../queries/common.query.js";
 import userModel from "../model/user.model.js";
-import dotenv from "dotenv";
+import { saved_user } from "../queries/common.query.js";
 dotenv.config();
 
 // Render trang đăng ký
@@ -11,15 +11,16 @@ export function renderRegister(req, res) {
   //const message = req.session.message || null; // Lấy thông báo từ session
   //req.session.message = null; // Xóa thông báo sau khi hiển thị
 
-  res.render("../layouts/common-layout", {
+  res.render("layouts/main-layout", {
     title: "Register",
     description: "This is a register page",
     content: "../pages/register",
+    categories: null,
   });
 }
 
 export function renderOTP(req, res) {
-  res.render("../layouts/common-layout", {
+  res.render("layouts/common-layout", {
     title: "OTP pass",
     description: "This is an OTP page",
     content: "../pages/otp",
@@ -28,14 +29,15 @@ export function renderOTP(req, res) {
 
 // Render trang đăng nhập
 export function renderLogin(req, res) {
-  res.render("../layouts/common-layout", {
+  res.render("layouts/main-layout", {
     title: "Log In",
     description: "This is a login page",
+    categories: null,
     content: "../pages/login",
   });
 }
 export function renderReset_pass(req, res) {
-  res.render("../layouts/common-layout", {
+  res.render("layouts/common-layout", {
     title: "Reset Password",
     description: "This is a reset password page",
     content: "../pages/reset-password",
@@ -48,7 +50,7 @@ export async function registerUserController(req, res) {
 
   try {
     const hashedPassword = await bcrypt.hash(password, 8);
-    await saved_user(fullName, dob, hashedPassword, email, role);
+    await saved_user(fullName, new Date(dob), hashedPassword, email, role);
     req.session.message = "successfully.";
     res.redirect("/register");
   } catch (error) {
