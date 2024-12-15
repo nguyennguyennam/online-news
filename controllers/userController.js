@@ -9,9 +9,6 @@ dotenv.config();
 
 // Render trang đăng ký
 export function renderRegister(req, res) {
-    //const message = req.session.message || null; // Lấy thông báo từ session
-    //req.session.message = null; // Xóa thông báo sau khi hiển thị
-
     res.render("../layouts/common-layout", {
         title: "Register",
         description: "This is a register page",
@@ -42,7 +39,6 @@ export function renderReset_pass (req, res) {
         content: "../pages/reset-password",
         });
 }
-// Đăng ký người dùng
 export async function registerUserController(req, res) {
     const { fullName, dob, password, email, role } = req.body;
     console.log("Received data:", req.body); // Log dữ liệu nhận được từ form
@@ -50,14 +46,23 @@ export async function registerUserController(req, res) {
     try {
         const hashedPassword = await bcrypt.hash(password, 8);
         await saved_user(fullName, dob, hashedPassword, email, role);
-        req.session.message = "successfully.";
-        res.redirect("/register");
+        res.redirect("/login");
     } catch (error) {
         console.error("Registration error:", error.message);
         res.status(500).render("register", { errorMessage: "Failed to register user. Please try again." });
     }
 }
 
+export async function fetchEmail (req, res, next) {
+    const {email} = req.body;
+    const exists = await userModel.findOne({email: email});
+    if (exists) {
+        return res.status(404).json({message: "fail", exists});
+    }
+    else {
+        return res.status(200).json({message: "success", exists});
+    }
+}
 
 // Đăng nhập (Local)
 export async function loginUserController(req, res, next) {
@@ -82,7 +87,7 @@ export async function loginUserController(req, res, next) {
             role: user.clearance,
         };
         
-        return res.render("home");
+        return res.render("/home");
     } catch (err) {
         console.error("Login error:", err);
         return res.render("404");
@@ -199,7 +204,6 @@ export async function saveNewPasswordController(req, res) {
         const hashedPassword = await bcrypt.hash(password, 10);
         user.password = hashedPassword;
         await user.save();
-
         res.redirect("login");
     } catch (error) {
         console.log(error.message);

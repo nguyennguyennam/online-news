@@ -10,12 +10,16 @@ import {
     renderReset_pass,
     verifyOtpController, // Thêm controller xác minh OTP
     saveNewPasswordController, // Controller đặt mật khẩu mới
-    renderOTP
+    renderOTP,
+    fetchEmail,
 } from "../controllers/userController.js";
+import {homeGetHandler} from "../controllers/home.controller.js";
 
 const router = express.Router();
 
 // Các route hiện có
+router.get ("/home", homeGetHandler);
+router.post("/check-email", fetchEmail );
 router.get("/register", renderRegister);
 router.post("/register", registerUserController);
 router.get("/login", renderLogin);

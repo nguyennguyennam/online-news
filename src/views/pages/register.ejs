@@ -60,25 +60,10 @@
         name="confirmPassword"
         required
         class="h-12 w-full rounded-sm border-2 border-zinc-500 px-4 py-2 outline-none duration-200 focus:border-black"
+        
       />
     </div>
-    <!-- Role -->
-    <div class="flex w-full flex-col">
-      <label for="role" class="text-sm font-semibold">Role</label>
-      <select
-        id="role"
-        name="role"
-        required
-        class="h-12 w-full rounded-sm border-2 border-zinc-500 px-4 py-2 outline-none duration-200 focus:border-black"
-      >
-        <option value="">Select Role</option>
-        <option value="admin">Admin</option>
-        <option value="user">Subscriber</option>
-        <option value="editor">Editor</option>
-        <option value="user">Writer</option>
-
-      </select>
-    </div>
+    
     <!-- Submit Button -->
     <button
       type="submit"
@@ -99,3 +84,60 @@
    
   </div>
 </main>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+  const form = document.querySelector("form");
+  const emailInput = document.querySelector("#email");
+  form.addEventListener("submit", function (event) {
+    const email_regex = /^\S+@\S+\.\S+$/;
+    const email_val = emailInput.value.trim();
+    const confirmPassword = document.querySelector("#confirmPassword").value.trim();
+    const pass = document.querySelector("#password").value.trim();
+    const fullName = document.querySelector("#fullName").value.trim();
+
+    if (fullName === "" || pass !== confirmPassword || !email_regex.test(email_val)) {
+      event.preventDefault();
+      alert("Invalid input data");
+      return;
+    }
+    alert("Form submitted successfully!");
+  });
+
+  // Kiểm tra email khi blur
+  emailInput.addEventListener("blur", async function () {
+    const email = emailInput.value.trim();
+    try {
+      const response = await fetch("/check-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const existingError = document.querySelector("#email-error"); // Tìm lỗi nếu đã tồn tại
+
+      if (data.exists) {
+        if (!existingError) {
+          // Nếu chưa có lỗi, tạo mới
+          const errorMessage = document.createElement("p");
+          errorMessage.id = "email-error";
+          errorMessage.textContent = "Email has been used.";
+          errorMessage.classList.add("text-red-500", "text-sm", "mt-1");
+          emailInput.parentElement.appendChild(errorMessage);
+        }
+        emailInput.classList.add("border-red-500");
+      } else {
+        // Nếu email hợp lệ
+        if (existingError) {
+          existingError.remove(); // Xóa lỗi nếu có
+        }
+        emailInput.classList.remove("border-red-500");
+      }
+    } catch (error) {
+      console.error("Error checking email:", error);
+    }
+  });
+});
+</script>
