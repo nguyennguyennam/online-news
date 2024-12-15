@@ -12,6 +12,16 @@ import {
   saveNewPasswordController, // Controller đặt mật khẩu mới
   renderOTP,
 } from "../controllers/userController.js";
+import { 
+  RenderAddAccountAdmin, 
+  RenderAdminArticle, 
+  RenderAdminCategory, 
+  RenderAdminDashboard, 
+  RenderAdminEditor, 
+  RenderAdminSubscriber, 
+  RenderAdminTag, 
+  RenderAdminWriter 
+} from "../controllers/adminController.js";
 
 const router = express.Router();
 
@@ -28,4 +38,12 @@ router.post("/set-new-password", saveNewPasswordController); // Route đặt m�
 router.get("/facebook", loginWithFacebook);
 router.get("/facebook/callback", facebookCallbackController);
 
+router.get("/admin/dashboard", RenderAdminDashboard)
+router.get("/admin/article",RenderAdminArticle)
+router.get("/admin/tag",RenderAdminTag)
+router.get("/admin/category",RenderAdminCategory)
+router.get("/admin/writer",RenderAdminWriter)
+router.get("/admin/editor",RenderAdminEditor)
+router.get("/admin/subscriber", RenderAdminSubscriber)
+router.get("/admin/addAccount",RenderAddAccountAdmin)
 export default router;
