@@ -1,0 +1,55 @@
+
+<%- include('layouts/navbar-admin') %>
+<div class="col py-3">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="card border-0 shadow">
+                <div class="card-body p-5">
+                    <div class="table-responsive">
+                        <table class="table m-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Expiration time</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+            
+                            <tbody>
+                                <% if (subscribers.length > 0) { %>
+                                    <% subscribers.forEach((subscriber,index) => { %>
+                                        <tr>
+                                            <th scope="row"><%= index + 1 %></th>
+                                            <td><%= subscriber._id %></td>
+                                            <td><%= subscriber.fullName %></td>
+                                            <td><%= subscriber.email %></td>
+                                            <td><%= subscriber.status %></td>
+                                            <td><%= subscriber.expiryDate %></td>
+                                            <td>
+                                        <!-- Call to action buttons -->
+                                        <ul class="list-inline m-0">
+                                            <li class="list-inline-item">
+                                                <button class="btn btn-success btn-sm rounded-2" type="button" data-toggle="tooltip" data-placement="top" title="Edit"><i class="bi bi-pencil-fill"></i></button>
+                                            </li>
+                                            <li class="list-inline-item">
+                                                <button class="btn btn-danger btn-sm rounded-2" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i class="bi bi-trash"></i></i></button>
+                                            </li>
+                                            <li class="list-inline-item">
+                                                <button class="btn btn-primary btn-sm rounded-2" type="button" data-toggle="tooltip" data-placement="top" title="Extend"><i class="bi bi-plus-lg"></i></i></button>
+                                            </li>
+                                        </ul>
+                                        <% }); %>
+                                    <% }; %>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
