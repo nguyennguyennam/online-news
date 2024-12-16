@@ -3,7 +3,6 @@ import session from "express-session";
 import path from "path";
 import { fileURLToPath } from "url";
 import mainRouter from "./routes/index.js";
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -223,3 +222,5 @@ app.get("/:category/:subcategory", (req, res) => {
     categories: categories,
   });
 });
+app.use('/postlist', mainRouter);
+app.use('/createpost', mainRouter);
