@@ -1,5 +1,6 @@
 import expressAsyncHandler from "express-async-handler";
 import { z } from "zod";
+import { getAllCategories } from "../queries/categories.query";
 import { getAllPosts } from "../queries/posts.query";
 
 /**
@@ -34,11 +35,14 @@ export const allGetHandler = expressAsyncHandler(async (req, res) => {
   // How to get the UserId?
 
   const result = await getAllPosts({ ...query.data });
+  const categories = await getAllCategories();
   res.render("layouts/main-layout", {
     title: "All posts",
     description:
       "A curated list of all posts written by talented journalists of The Cipher.",
-    content: "../pages/all",
+    content: "../pages/search",
+    searchQuery: query.data.query,
     posts: result,
+    categories,
   });
 });

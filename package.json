@@ -8,6 +8,7 @@
     "express": "^4.21.2",
     "express-async-handler": "^1.2.0",
     "express-session": "^1.18.1",
+    "extensionless": "^1.9.9",
     "handlebars": "^4.7.8",
     "hbs": "^4.2.0",
     "mongoose": "^8.9.0",
@@ -40,7 +41,7 @@
     "zod": "^3.24.1"
   },
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "node --experimental-loader=extensionless index.js",
     "build:css": "tailwindcss -o public/css/tailwind.css --watch",
     "format": "prettier --w src tests routes queries model controllers config app.js index.js"
   },

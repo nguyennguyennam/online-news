@@ -112,9 +112,25 @@ export async function getNewestPostsFromEachCategory() {
  * @param {{ userId: string?, page: number, cat: string?, tag: string?, query: string? }} param0
  */
 export async function getAllPosts({ userId, page, cat, tag, query }) {
-  const userPipeline = (await hasSubscription(userId)) ? { premium: -1 } : {};
-  const aggregate = Post.aggregate()
-    .sort(userPipeline)
+  const aggregate = Post.aggregate();
+
+  if (query) {
+    aggregate.search({
+      index: "default",
+      text: {
+        query: query,
+        path: ["name", "abstract", "content"],
+        fuzzy: {
+          maxEdits: 2,
+          prefixLength: 0,
+          maxExpansions: 50,
+        },
+      },
+    });
+  }
+  if (await hasSubscription(userId)) aggregate.sort({ premium: -1 });
+
+  aggregate
     .lookup({
       from: "categories",
       localField: "category",
@@ -130,23 +146,5 @@ export async function getAllPosts({ userId, page, cat, tag, query }) {
     })
     .match(cat ? { "$category.name": cat } : {})
     .match(tag ? { tags: { $in: [tag] } } : {});
-
-  if (query) {
-    aggregate
-      .match({
-        $text: {
-          $search: query,
-          $caseSensitive: false,
-          $diacriticSensitive: false,
-        },
-      })
-      .project({
-        id: "$_id",
-        name: "$name",
-        category: "$category",
-        tags: "$tags",
-        score: { $meta: "textScore" },
-      });
-  }
   return await aggregate.skip((page - 1) * 5).limit(5);
 }

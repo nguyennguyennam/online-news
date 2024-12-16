@@ -1,4 +1,5 @@
-import tagModel from "../model/tag.model";
+import tagModel from "../model/tag.model.js";
+
 export async function get_all_tags() {
   return await tagModel.find();
 }

@@ -9,6 +9,8 @@ import User from "../model/user.model.js";
 export async function hasSubscription(userId) {
   const user = await User.findById(userId);
   return (
-    user.subscription && user.subscription.getTime() > new Date().getTime()
+    user &&
+    user.subscription &&
+    user.subscription.getTime() > new Date().getTime()
   );
 }
