@@ -3,7 +3,7 @@
 >
   <h1 class="text-center text-3xl font-bold">Create an Account</h1>
   <form
-    action=""
+    action="/register"
     method="POST"
     class="flex w-full flex-col gap-8 rounded-md md:w-2/3 lg:w-1/2 xl:w-1/3"
   >
@@ -84,3 +84,79 @@
     class="-mt-4 flex w-full flex-col items-center gap-6 md:w-2/3 lg:w-1/2 xl:w-1/3"
   ></div>
 </main>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector("form");
+    const emailInput = document.querySelector("#email");
+    let canSubmit = true; // Biến kiểm soát submit
+    let isCheckingEmail = false; // Kiểm soát trạng thái kiểm tra email
+
+    // Kiểm tra email khi blur
+    emailInput.addEventListener("blur", async function () {
+      const email = emailInput.value.trim();
+      isCheckingEmail = true; // Đang kiểm tra email
+      try {
+        const response = await fetch("/check-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        });
+
+        // Nhận dữ liệu từ API
+        const data = await response.json();
+        const existingError = document.querySelector("#email-error");
+
+        if (data.exists) {
+          canSubmit = false; // Không cho phép submit
+          if (!existingError) {
+            const errorMessage = document.createElement("p");
+            errorMessage.id = "email-error";
+            errorMessage.textContent = "Email has been used.";
+            errorMessage.classList.add("text-red-500", "text-sm", "mt-1");
+            emailInput.parentElement.appendChild(errorMessage);
+          }
+          emailInput.classList.add("border-red-500");
+        } else {
+          canSubmit = true; // Cho phép submit
+          if (existingError) {
+            existingError.remove(); // Xóa thông báo lỗi nếu tồn tại
+          }
+          emailInput.classList.remove("border-red-500");
+        }
+      } catch (error) {
+        console.error("Error checking email:", error);
+        canSubmit = false; // Không cho phép submit nếu xảy ra lỗi
+      } finally {
+        isCheckingEmail = false; // Kiểm tra email đã hoàn thành
+      }
+    });
+
+    // Xử lý submit form
+    form.addEventListener("submit", function (event) {
+      const email_regex = /^\S+@\S+\.\S+$/;
+      const email_val = emailInput.value.trim();
+      const confirmPassword = document
+        .querySelector("#confirmPassword")
+        .value.trim();
+      const pass = document.querySelector("#password").value.trim();
+      const fullName = document.querySelector("#fullName").value.trim();
+
+      // Nếu đang kiểm tra email hoặc canSubmit là false, ngăn chặn submit
+      if (
+        isCheckingEmail ||
+        !canSubmit ||
+        fullName === "" ||
+        pass !== confirmPassword ||
+        !email_regex.test(email_val)
+      ) {
+        event.preventDefault();
+        alert("Invalid input data. Please check your form.");
+        return;
+      }
+      alert("Form submitted successfully!");
+    });
+  });
+</script>

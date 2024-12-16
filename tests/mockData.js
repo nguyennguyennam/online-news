@@ -5,3 +5,6 @@ export async function fakeCategories() {
   const catNames = faker.helpers.uniqueArray(faker.book.genre, 30);
   await insertCategories(null, ...catNames.slice(0, 10));
 }
+
+
+

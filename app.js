@@ -31,6 +31,9 @@ function generateSlug(title) {
   });
 }
 
+app.use("/", mainRouter);
+export default app;
+
 const tag = ["economics", "global", "market", "technology", "news"];
 
 app.use((req, res, next) => {
@@ -220,5 +223,3 @@ app.get("/:category/:subcategory", (req, res) => {
     categories: categories,
   });
 });
-
-export default app;

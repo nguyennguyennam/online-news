@@ -2,7 +2,6 @@ import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
 import passport from "passport";
-import userModel from "../model/user.model.js";
 import { saved_user } from "../queries/common.query.js";
 dotenv.config();
 
@@ -20,10 +19,12 @@ export function renderRegister(req, res) {
 }
 
 export function renderOTP(req, res) {
-  res.render("layouts/common-layout", {
+  res.render("layouts/main-layout", {
     title: "OTP pass",
     description: "This is an OTP page",
     content: "../pages/otp",
+    categories: null,
+    email: req.session.User,
   });
 }
 
@@ -37,27 +38,45 @@ export function renderLogin(req, res) {
   });
 }
 export function renderReset_pass(req, res) {
-  res.render("layouts/common-layout", {
+  res.render("layouts/main-layout", {
     title: "Reset Password",
     description: "This is a reset password page",
     content: "../pages/reset-password",
+    categories: null,
   });
 }
-// Đăng ký người dùng
+
+export function render_NewPass(req, res) {
+  res.render("layouts/main-layout", {
+    title: "Save new password for user",
+    description: "This page allows users to enter their new passwords",
+    content: "../pages/new_password",
+    categories: null,
+    email: req.session.User,
+  });
+}
+
 export async function registerUserController(req, res) {
   const { fullName, dob, password, email, role } = req.body;
   console.log("Received data:", req.body); // Log dữ liệu nhận được từ form
 
   try {
     const hashedPassword = await bcrypt.hash(password, 8);
-    await saved_user(fullName, new Date(dob), hashedPassword, email, role);
-    req.session.message = "successfully.";
-    res.redirect("/register");
+    await saved_user(fullName, dob, hashedPassword, email, role);
+    res.redirect("/login");
   } catch (error) {
     console.error("Registration error:", error.message);
-    res.status(500).render("register", {
-      errorMessage: "Failed to register user. Please try again.",
-    });
+    res.status(500).redirect("/register");
+  }
+}
+
+export async function fetchEmail(req, res, next) {
+  const { email } = req.body;
+  const exists = await userModel.findOne({ email: email });
+  if (exists) {
+    return res.status(404).json({ message: "fail", exists });
+  } else {
+    return res.status(200).json({ message: "success", exists });
   }
 }
 
@@ -76,7 +95,7 @@ export async function loginUserController(req, res, next) {
     if (!pass_check) {
       return res.status(404).json({ message: "fail" });
     }
-    req.session.user = {
+    req.session.user_info = {
       id: user._id,
       gmail: user.email,
       birth_date: user.dob,
@@ -84,7 +103,7 @@ export async function loginUserController(req, res, next) {
       role: user.clearance,
     };
 
-    return res.render("home");
+    return res.redirect("/home");
   } catch (err) {
     console.error("Login error:", err);
     return res.render("404");
@@ -124,14 +143,9 @@ export async function resetPasswordController(req, res) {
       return res.status(404).render("error", { message: "Email not found." });
     }
     let otp = Math.floor(100000 + Math.random() * 900000).toString(); // OTP 6 chữ số
-    let otpExpiration = Date.now() + 60000; // Hết hạn sau 60 giây
     user.password = otp;
-    user.otpExpiration = otpExpiration;
     await user.save();
 
-    console.log("SMTP_HOST:", process.env.SMTP_HOST);
-    console.log("SMTP_USER:", process.env.SMTP_USER);
-    console.log("SMTP_PASS:", process.env.SMTP_PASS);
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       secureConnection: false,
@@ -153,8 +167,8 @@ export async function resetPasswordController(req, res) {
       subject: "Password Reset",
       text: `Your OTP is : ${otp}`,
     });
-    req.session.email = email;
-    res.render("otp", { email });
+    req.session.User = email;
+    res.redirect("/verify-otp");
   } catch (error) {
     console.log(error.message);
     res.render("404", { message: "Failed to reset password." });
@@ -163,7 +177,7 @@ export async function resetPasswordController(req, res) {
 
 export async function verifyOtpController(req, res) {
   const { password } = req.body;
-  const email = req.session.email;
+  const email = req.session.User;
   console.log(email);
   console.log(password);
   try {
@@ -172,17 +186,8 @@ export async function verifyOtpController(req, res) {
     if (!user || user.password !== password) {
       return res.render("404");
     }
-
-    if (Date.now() > user.otpExpiration) {
-      return res.render("404");
-    }
-
-    // Xóa OTP sau khi xác minh thành công
-    user.otpExpiration = null;
-    await user.save();
-
     // Chuyển hướng đến trang đặt mật khẩu mới
-    res.render("new_password", { email });
+    res.redirect("/set-new-password");
   } catch (error) {
     console.log(error.message);
     res.render("404", { message: "Failed to verify OTP." });
@@ -190,7 +195,7 @@ export async function verifyOtpController(req, res) {
 }
 export async function saveNewPasswordController(req, res) {
   const { password } = req.body;
-  const email = req.session.email;
+  const email = req.session.User;
 
   try {
     const user = await userModel.findOne({ email });
@@ -203,8 +208,7 @@ export async function saveNewPasswordController(req, res) {
     const hashedPassword = await bcrypt.hash(password, 10);
     user.password = hashedPassword;
     await user.save();
-
-    res.redirect("login");
+    res.redirect("/login");
   } catch (error) {
     console.log(error.message);
     res.status(500).render("404", { message: "Failed to reset password." });

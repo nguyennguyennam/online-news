@@ -26,7 +26,6 @@ const userSchema = new mongoose.Schema({
   subscription: Date,
   expiry_date: Date,
   penName: String, // This does nothing if they have clearance = 1.
-  otpExpiration: Number,
 });
 
 export default mongoose.model("User", userSchema, "users");

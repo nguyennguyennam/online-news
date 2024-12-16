@@ -76,23 +76,24 @@
 </main>
 
 <script>
-  document.querySelector("form").addEventListener("submit", async function () {
-    const email = document.querySelector("#email").value;
-    const password = document.querySelector("#password").value;
-    const response = await fetch(`/login`, {
-      method: POST,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
-    const result = response.json();
-    if (!result) {
-      alert("no data found");
-    }
-    if (response.ok) {
-      // Chuyển hướng đến trang dựa trên clearance
-      window.location.href = result.redirectUrl;
-    }
-  });
+  document.querySelector('form').addEventListener('submit', async function () {
+      const email = document.querySelector("#email").value;
+      const password = document.querySelector("#password").value;
+      const response = await fetch(`/login`, {
+        method: "POST", 
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({email,password})
+      });
+      const result = response.json();
+      if (!result) {
+        alert("no data found");
+      }
+      if (response.ok) {
+        // Chuyển hướng đến trang dựa trên clearance
+        window.location.href = result.redirectUrl;
+      } 
+    })
 </script>
+
