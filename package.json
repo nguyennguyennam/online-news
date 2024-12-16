@@ -40,7 +40,8 @@
   },
   "scripts": {
     "start": "nodemon index.js",
-    "build:css": "tailwindcss -o public/css/tailwind.css --watch"
+    "build:css": "tailwindcss -o public/css/tailwind.css --watch",
+    "format": "prettier --w src tests routes queries model controllers config app.js index.js"
   },
   "keywords": [],
   "author": "",

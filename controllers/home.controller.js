@@ -25,7 +25,7 @@ export const homeGetHandler = expressAsyncHandler(async (req, res) => {
       getAllCategories(),
     ]);
 
-  res.render("../layouts/main-layout", {
+  res.render("layouts/main-layout", {
     title: "The Cipher",
     description: "The homepage of the online news website, The Cipher.",
     content: "../pages/home",
@@ -36,5 +36,6 @@ export const homeGetHandler = expressAsyncHandler(async (req, res) => {
       latestEach,
       categories,
     },
+    User_info : req.session.user_info || null
   });
 });

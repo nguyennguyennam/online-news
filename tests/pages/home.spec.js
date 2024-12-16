@@ -1,12 +1,10 @@
-import { cleanup } from "@testing-library/dom";
-import { afterEach, describe, it } from "vitest";
+import supertest from "supertest";
+import { describe, it } from "vitest";
+import app from "../../app";
 
 describe("home page", () => {
-  afterEach(() => {
-    cleanup();
-  });
-
-  it("generates home page", () => {
-
+  it("generates home page", async () => {
+    const doc = document.documentElement;
+    const res = await supertest(app).get("/").send();
   });
 });

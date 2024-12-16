@@ -8,8 +8,7 @@ const dbConnection = async () => {
       throw new Error("Invalid MongoDB URL");
     }
 
-    const connection = await mongoose.connect(mongo_url, {
-    });
+    const connection = await mongoose.connect(mongo_url, {});
     console.log(`MongoDB connected: ${connection.connection.host}`);
   } catch (err) {
     console.error("Error connecting to MongoDB:", err);

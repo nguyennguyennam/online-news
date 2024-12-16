@@ -1,27 +1,49 @@
-<!-- Separator Line -->
+
 <div class="mx-4 border border-blue-500"></div>
-<div class="container mx-auto px-4 py-4">
+<div class="container mx-auto bg-gray-100 px-4 py-4">
   <!-- Featured Articles -->
   <section class="mb-8">
     <h2 class="mb-4 text-3xl font-bold">Featured Posts of the Past Week</h2>
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <% homeData.featured.forEach(article => { %>
-      <a href="/post/<%= article._id %>" class="block">
+      <% homeData.featured.forEach(article=> { %>
+      <a href="/<%= article.slug %>" class="block">
         <article
           class="bg-white p-4 shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg"
         >
-          <img
-            alt="<%= article.title %>"
-            class="mb-4 h-48 w-full object-cover"
-            src="<%= article.thumbnail.small %>"
-          />
-          <h3 class="mb-2 text-xl font-semibold"><%= article.name %></h3>
-          <p class="mb-2 text-gray-600">
-            Category: <%= article.category.name %>
-          </p>
-          <p class="mb-2 text-gray-600">
-            Published on: <%= article.publishedDate %>
-          </p>
+          <!-- Article Image -->
+          <div class="relative mb-4">
+            <img
+              src="<%= article.imageUrl %>"
+              alt="Article Image"
+              class="h-auto w-full"
+            />
+
+            <!-- Article Type Tag -->
+            <div class="absolute right-2 top-2">
+              <% if (article.isPremium) { %>
+              <span
+                class="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-3 py-1 text-sm font-semibold text-white shadow-md"
+              >
+                Premium
+              </span>
+              <% } else { %>
+              <span
+                class="rounded-full border border-black bg-black px-3 py-1 text-sm font-semibold text-white"
+              >
+                Standard
+              </span>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Article Content -->
+          <div>
+            <h3 class="mb-2 text-xl font-semibold"><%= article.title %></h3>
+            <p class="mb-2 text-gray-600">Category: <%= article.category %></p>
+            <p class="mb-2 text-gray-600">
+              Posted Date: <%= article.datePublished %>
+            </p>
+          </div>
         </article>
       </a>
       <% }) %>
@@ -32,23 +54,45 @@
   <section class="mb-8">
     <h2 class="mb-4 text-3xl font-bold">Most Viewed Articles</h2>
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <% homeData.mostViewed.forEach(article => { %>
-      <a href="/post/<%= article._id %>" class="block">
+      <% homeData.mostViewed.forEach(article=> { %>
+      <a href="/<%= article.slug %>" class="block">
         <article
           class="bg-white p-4 shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg"
         >
-          <img
-            alt="<%= article.title %>"
-            class="mb-4 h-48 w-full object-cover"
-            src="<%= article.thumbnail.small %>"
-          />
-          <h3 class="mb-2 text-xl font-semibold"><%= article.name %></h3>
-          <p class="mb-2 text-gray-600">
-            Category: <%= article.category.name %>
-          </p>
-          <p class="mb-2 text-gray-600">
-            Published on: <%= article.publishedDate.toLocaleDateString("en-US") %>
-          </p>
+          <!-- Article Image -->
+          <div class="relative mb-4">
+            <img
+              src="<%= article.imageUrl %>"
+              alt="Article Image"
+              class="h-auto w-full"
+            />
+
+            <!-- Article Type Tag -->
+            <div class="absolute right-2 top-2">
+              <% if (article.isPremium) { %>
+              <span
+                class="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-3 py-1 text-sm font-semibold text-white shadow-md"
+              >
+                Premium
+              </span>
+              <% } else { %>
+              <span
+                class="rounded-full border border-black bg-black px-3 py-1 text-sm font-semibold text-white"
+              >
+                Standard
+              </span>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Article Content -->
+          <div>
+            <h3 class="mb-2 text-xl font-semibold"><%= article.title %></h3>
+            <p class="mb-2 text-gray-600">Category: <%= article.category %></p>
+            <p class="mb-2 text-gray-600">
+              Posted Date: <%= article.datePublished %>
+            </p>
+          </div>
         </article>
       </a>
       <% }) %>
@@ -59,23 +103,45 @@
   <section class="mb-8">
     <h2 class="mb-4 text-3xl font-bold">Latest Posts</h2>
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <% homeData.latest.forEach(article => { %>
-      <a href="/post/<%= article._id %>" class="block">
+      <% homeData.latestEach.forEach(article=> { %>
+      <a href="/<%= article.slug %>" class="block">
         <article
           class="bg-white p-4 shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg"
         >
-          <img
-            alt="<%= article.name %>"
-            class="mb-4 h-48 w-full object-cover"
-            src="<%= article.thumbnail.small %>"
-          />
-          <h3 class="mb-2 text-xl font-semibold"><%= article.name %></h3>
-          <p class="mb-2 text-gray-600">
-            Category: <%= article.category.name %>
-          </p>
-          <p class="mb-2 text-gray-600">
-            Published on: <%= article.publishedDate.toLocaleDateString("en-US") %>
-          </p>
+          <!-- Article Image -->
+          <div class="relative mb-4">
+            <img
+              src="<%= article.imageUrl %>"
+              alt="Article Image"
+              class="h-auto w-full"
+            />
+
+            <!-- Article Type Tag -->
+            <div class="absolute right-2 top-2">
+              <% if (article.isPremium) { %>
+              <span
+                class="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-3 py-1 text-sm font-semibold text-white shadow-md"
+              >
+                Premium
+              </span>
+              <% } else { %>
+              <span
+                class="rounded-full border border-black bg-black px-3 py-1 text-sm font-semibold text-white"
+              >
+                Standard
+              </span>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Article Content -->
+          <div>
+            <h3 class="mb-2 text-xl font-semibold"><%= article.title %></h3>
+            <p class="mb-2 text-gray-600">Category: <%= article.category %></p>
+            <p class="mb-2 text-gray-600">
+              Posted Date: <%= article.datePublished %>
+            </p>
+          </div>
         </article>
       </a>
       <% }) %>
@@ -88,23 +154,39 @@
     <div
       class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
     >
-      <% homeData.latestEach.forEach(category => { %>
+      <% homeData.categories.forEach(category=> { %>
       <a href="/<%= category.slug %>" class="block">
         <article
           class="bg-white p-4 shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg"
         >
+          <div class="relative">
+            <div class="absolute right-2 top-2">
+              <% if (category.isPremium) { %>
+              <span
+                class="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-3 py-1 text-sm font-semibold text-white shadow-md"
+              >
+                Premium
+              </span>
+              <% } else { %>
+              <span
+                class="rounded-full border border-black bg-black px-3 py-1 text-sm font-semibold text-white"
+              >
+                Standard
+              </span>
+              <% } %>
+            </div>
+          </div>
+
           <h3 class="mb-4 text-xl font-semibold"><%= category.category %></h3>
           <div class="flex items-center gap-4">
             <img
               alt="Category thumbnail"
               class="h-24 w-24 rounded-lg object-cover"
-              src="<%= category.post.thumbnail.small %>"
+              src="https://placehold.co/150x150/EEE/31343C"
             />
             <div>
-              <h4 class="text-lg font-medium"><%= category.post.name %></h4>
-              <p class="text-gray-600">
-                Published on: <%= category.post.publishedDate.toLocaleDateString("en-US") %>
-              </p>
+              <h4 class="text-lg font-medium"><%= category.title %></h4>
+              <p class="text-gray-600">Posted Date: 2023-12-01</p>
             </div>
           </div>
         </article>
