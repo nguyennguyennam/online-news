@@ -32,3 +32,14 @@ export async function canViewPremium(userId) {
       (user.subscription && user.subscription.getTime() > new Date().getTime()))
   );
 }
+
+/**
+ * Retrieves the clearance level of a user.
+ *
+ * @param {string} userId the user's id
+ * @returns {Promise<number>} the clearance level
+ */
+export async function getClearanceLevel(userId) {
+  const user = await User.findById(userId);
+  return user ? user.clearance : 0;
+}
