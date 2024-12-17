@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Comment from "../model/comment.model.js";
 import Post from "../model/post.model.js";
 import { hasSubscription } from "./users.query.js";
@@ -112,9 +113,25 @@ export async function getNewestPostsFromEachCategory() {
  * @param {{ userId: string?, page: number, cat: string?, tag: string?, query: string? }} param0
  */
 export async function getAllPosts({ userId, page, cat, tag, query }) {
-  const userPipeline = (await hasSubscription(userId)) ? { premium: -1 } : {};
-  const aggregate = Post.aggregate()
-    .sort(userPipeline)
+  const aggregate = Post.aggregate();
+
+  if (query) {
+    aggregate.search({
+      index: "default",
+      text: {
+        query: query,
+        path: ["name", "abstract", "content"],
+        fuzzy: {
+          maxEdits: 2,
+          prefixLength: 0,
+          maxExpansions: 50,
+        },
+      },
+    });
+  }
+  if (await hasSubscription(userId)) aggregate.sort({ premium: -1 });
+
+  aggregate
     .lookup({
       from: "categories",
       localField: "category",
@@ -128,25 +145,90 @@ export async function getAllPosts({ userId, page, cat, tag, query }) {
       foreignField: "_id",
       as: "tags",
     })
-    .match(cat ? { "$category.name": cat } : {})
-    .match(tag ? { tags: { $in: [tag] } } : {});
-
-  if (query) {
-    aggregate
-      .match({
-        $text: {
-          $search: query,
-          $caseSensitive: false,
-          $diacriticSensitive: false,
-        },
-      })
-      .project({
-        id: "$_id",
-        name: "$name",
-        category: "$category",
-        tags: "$tags",
-        score: { $meta: "textScore" },
-      });
-  }
+    .match(cat ? { "category.name": cat } : {})
+    .match(tag ? { "tags.tag": { $in: [tag] } } : {});
   return await aggregate.skip((page - 1) * 5).limit(5);
+}
+
+/**
+ * Retrieves the post with ID.
+ * @param {string} id
+ * @returns {Promise<Array<any>>} an array of posts, having length 0 or 1.
+ */
+export async function getPost(id) {
+  return Post.aggregate()
+    .match({ _id: new mongoose.Types.ObjectId(id) })
+    .lookup({
+      from: "categories",
+      localField: "category",
+      foreignField: "_id",
+      as: "category",
+    })
+    .unwind("$category")
+    .lookup({
+      from: "categories",
+      localField: "category.parent",
+      foreignField: "_id",
+      as: "category.parent",
+    })
+    .unwind("$category.parent")
+    .lookup({
+      from: "tags",
+      localField: "tags",
+      foreignField: "_id",
+      as: "tags",
+    })
+    .lookup({
+      from: "users",
+      localField: "writer",
+      foreignField: "_id",
+      as: "writer",
+    })
+    .unwind("$writer")
+    .lookup({
+      from: "users",
+      localField: "editor",
+      foreignField: "_id",
+      as: "editor",
+    })
+    .unwind("$editor")
+    .limit(1);
+}
+
+/**
+ * Retrieves related posts to a post.
+ *
+ * A post is considered related if they have the same category, match some of the tags,
+ * be written by the same writer, or approved by the same editor.
+ *
+ * @param {string?} id the post ID
+ * @returns {Promise<Array<any>>} an array of posts related, can be empty.
+ */
+export async function getRelatedPosts(id) {
+  const post = await Post.findById(id);
+  if (post == null) return [];
+
+  return Post.aggregate()
+    .match({
+      _id: { $nin: [new mongoose.Types.ObjectId(id)] },
+    })
+    .match({
+      $or: [
+        {
+          category: post.category,
+        },
+        {
+          tags: {
+            $in: post.tags,
+          },
+        },
+        {
+          writer: post.writer,
+        },
+        {
+          editor: post.editor,
+        },
+      ],
+    })
+    .sample(5);
 }

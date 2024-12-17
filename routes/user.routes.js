@@ -15,11 +15,11 @@ import {
     renderNewPass
 } from "../controllers/userController.js";
 
-import {homeGetHandler} from "../controllers/home.controller.js";
+import { homeGetHandler } from "../controllers/home.controller.js";
 const router = express.Router();
 
-router.get ("/home", homeGetHandler);
-router.post("/check-email", fetchEmail );
+router.get("/home", homeGetHandler);
+router.post("/check-email", fetchEmail);
 router.get("/register", renderRegister);
 router.post("/register", registerUserController);
 router.get("/login", renderLogin);
@@ -33,7 +33,7 @@ router.post("/set-new-password", saveNewPasswordController);
 router.get("/facebook", loginWithFacebook);
 router.get("/facebook/callback", facebookCallbackController);
 router.get("/logout", (req, res) => {
-    req.session.destroy();
-      res.redirect("/home"); // Chuyển về trang home sau khi đăng xuất
-    });
+  req.session.destroy();
+  res.redirect("/home"); // Chuyển về trang home sau khi đăng xuất
+});
 export default router;

@@ -31,6 +31,21 @@ function generateSlug(title) {
 }
 
 app.use("/", mainRouter);
+
+// Catch all handler for error routes.
+app.use((err, req, res, next) => {
+  if (!err) next();
+  console.log(err);
+  res.render("layouts/main-layout", {
+    title: "Internal Server Error",
+    description:
+      "Landing page for when a route produced an error, basically the server's fault and not the user's.",
+    categories: null,
+    content: "../pages/500",
+    message: err,
+  });
+});
+
 export default app;
 
 const tag = ["economics", "global", "market", "technology", "news"];
@@ -39,9 +54,6 @@ app.use((req, res, next) => {
   res.locals.req = req;
   next();
 });
-
-// Đăng ký các route
-app.use("/", mainRouter);
 
 app.get("/:slug", (req, res) => {
   const slug = req.params.slug;

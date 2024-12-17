@@ -9,16 +9,12 @@ const postSchema = new mongoose.Schema({
   editor: {
     type: mongoose.SchemaTypes.ObjectId,
     ref: "User",
-    required: true,
   },
   writtenDate: {
     type: Date,
     required: true,
   },
-  publishedDate: {
-    type: Date,
-    required: true,
-  },
+  publishedDate: Date,
   state: {
     type: String,
     enum: ["draft", "denied", "approved", "published"],
@@ -36,10 +32,12 @@ const postSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    index: true,
   },
   abstract: {
     type: String,
     required: true,
+    index: true,
   },
   category: {
     type: mongoose.SchemaTypes.ObjectId,
@@ -54,6 +52,7 @@ const postSchema = new mongoose.Schema({
   content: {
     type: String, // Whatever from the text editor
     required: true,
+    index: true,
   },
   views: {
     type: Number,

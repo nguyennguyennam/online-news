@@ -36,6 +36,6 @@ export const homeGetHandler = expressAsyncHandler(async (req, res) => {
       latest,
       latestEach,
     },
-    User_info : req.session.user_info || null
+    userInfo: req.session.userInfo || null,
   });
 });
