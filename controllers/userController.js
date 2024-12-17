@@ -1,32 +1,29 @@
 import bcrypt from "bcryptjs";
+import dotenv from "dotenv";
 import nodemailer from "nodemailer";
 import passport from "passport";
 import { saved_user } from "../queries/common.query.js";
-import userModel from "../model/user.model.js";
-import dotenv from "dotenv";
-import session  from "express-session";
 dotenv.config();
 
 // Render trang đăng ký
 export function renderRegister(req, res) {
-    res.render("layouts/main-layout", {
-        title: "Register",
-        description: "This is a register page",
-        content: "../pages/register",
-        homeData: {
-            categories: []
-        }
-    });
+  //const message = req.session.message || null; // Lấy thông báo từ session
+  //req.session.message = null; // Xóa thông báo sau khi hiển thị
+
+  res.render("layouts/main-layout", {
+    title: "Register",
+    description: "This is a register page",
+    content: "../pages/register",
+    categories: null,
+  });
 }
 
 export function renderOTP(req, res) {
   res.render("layouts/main-layout", {
     title: "OTP pass",
     description: "This is an OTP page",
-    content: "../pages/otp_page",
-    homeData: {
-        categories:[],
-    },
+    content: "../pages/otp",
+    categories: null,
     email: req.session.User,
   });
 }
@@ -36,10 +33,8 @@ export function renderLogin(req, res) {
   res.render("layouts/main-layout", {
     title: "Log In",
     description: "This is a login page",
+    categories: null,
     content: "../pages/login",
-    homeData: {
-        categories: []
-    }
   });
 }
 export function renderReset_pass(req, res) {
@@ -47,78 +42,74 @@ export function renderReset_pass(req, res) {
     title: "Reset Password",
     description: "This is a reset password page",
     content: "../pages/reset-password",
-    homeData: {
-        categories: []
-    },
+    categories: null,
   });
 }
 
-export function render_NewPass (req, res) {
-    res.render ("layouts/main-layout", {
-        title: "Save new password for user",
-        description: "This page allows users to enter their new passwords",
-        content: "../pages/new_password",
-        homeData: {
-            categories: []
-        },
-        email: req.session.User
-
-    })
+export function render_NewPass(req, res) {
+  res.render("layouts/main-layout", {
+    title: "Save new password for user",
+    description: "This page allows users to enter their new passwords",
+    content: "../pages/new_password",
+    categories: null,
+    email: req.session.User,
+  });
 }
+
 export async function registerUserController(req, res) {
   const { fullName, dob, password, email, role } = req.body;
   console.log("Received data:", req.body); // Log dữ liệu nhận được từ form
 
-    try {
-        const hashedPassword = await bcrypt.hash(password, 8);
-        await saved_user(fullName, dob, hashedPassword, email, role);
-        res.redirect("/login");
-    } catch (error) {
-        console.error("Registration error:", error.message);
-        res.status(500).redirect("/register");
-    }
+  try {
+    const hashedPassword = await bcrypt.hash(password, 8);
+    await saved_user(fullName, dob, hashedPassword, email, role);
+    res.redirect("/login");
+  } catch (error) {
+    console.error("Registration error:", error.message);
+    res.status(500).redirect("/register");
+  }
 }
 
-export async function fetchEmail (req, res, next) {
-    const {email} = req.body;
-    const exists = await userModel.findOne({email: email});
-    if (exists) {
-        return res.status(404).json({message: "fail", exists});
-    }
-    else {
-        return res.status(200).json({message: "success", exists});
-    }
+export async function fetchEmail(req, res, next) {
+  const { email } = req.body;
+  const exists = await userModel.findOne({ email: email });
+  if (exists) {
+    return res.status(404).json({ message: "fail", exists });
+  } else {
+    return res.status(200).json({ message: "success", exists });
+  }
 }
 
 // Đăng nhập (Local)
 export async function loginUserController(req, res, next) {
-    try {
-        const { email, password } = req.body;
-        const user = await userModel.findOne({
-            email: email,
-        });
-        if (!user) {
-            // Trả về lỗi nếu không tìm thấy người dùng
-            return res.status(404).json({message: "fail"});
-        }
-        const pass_check = await  bcrypt.compare(password, user.password);
-        if (!pass_check) {
-            return res.status(404).json({message: "fail"});
-        }
-        req.session.user_info = {
-            id: user._id,
-            gmail: user.email,
-            birth_date: user.dob,
-            fullName: user.fullName,
-            role: user.clearance,
-        };
-        
-        return res.redirect("/home");
-    } catch (err) {
-        console.error("Login error:", err);
-        return res.render("404");
+  try {
+    const { email, password } = req.body;
+    const user = await userModel.findOne({
+      email: email,
+    });
+    if (!user) {
+      // Trả về lỗi nếu không tìm thấy người dùng
+      return res.status(404).json({ message: "fail" });
     }
+    const pass_check = await bcrypt.compare(password, user.password);
+    if (!pass_check) {
+      return res.status(404).json({ message: "fail" });
+    }
+    req.session.user_info = {
+      id: user._id,
+      gmail: user.email,
+      birth_date: user.dob,
+      fullName: user.fullName,
+      role: user.clearance,
+    };
+
+    return res.redirect("/home");
+  } catch (err) {
+    console.error("Login error:", err);
+    return res.render("404");
+  }
 }
+
 // Đăng nhập qua Facebook
 export function loginWithFacebook(req, res, next) {
   passport.authenticate("facebook")(req, res, next);
@@ -209,16 +200,17 @@ export async function saveNewPasswordController(req, res) {
   try {
     const user = await userModel.findOne({ email });
 
-        if (!user) {
-            return res.render("404", { message: "User not found." });
-        }
+    if (!user) {
+      return res.render("404", { message: "User not found." });
+    }
 
-        // Hash mật khẩu mới và lưu vào cơ sở dữ liệu
-        const hashedPassword = await bcrypt.hash(password, 10);
-        user.password = hashedPassword;
-        await user.save();
-        res.redirect("/login");
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).render("404", { message: "Failed to reset password." });
-    }}
+    // Hash mật khẩu mới và lưu vào cơ sở dữ liệu
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+    await user.save();
+    res.redirect("/login");
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).render("404", { message: "Failed to reset password." });
+  }
+}

@@ -86,6 +86,7 @@
 
   <!-- Navbar Section -->
   <!-- make this separated from header to apply sticky effect -->
+    <%if (categories) { %>
   <nav class="sticky top-0 z-10 flex h-14 w-full items-center justify-center bg-white">
     <style>
       .dropdown:hover,
@@ -123,7 +124,7 @@
         </li>
 
         <!-- Dynamic Categories -->
-        <% homeData.categories.forEach(category=> { %>
+        <% categories.forEach(category=> { %>
           <li class="dropdown <%= category === category.name ? 'active' : '' %> relative flex h-14 items-center">
             <a class="<%= category === category.name ? 'text-blue-500' : '' %> font-bold hover:text-blue-500"
               href="/<%= category.name %>">
@@ -146,6 +147,7 @@
       </ul>
     </div>
   </nav>
+  <% } %> 
   <%- include(content) %>
 
     <footer
