@@ -7,12 +7,12 @@ import {
     resetPasswordController,
     loginWithFacebook,
     facebookCallbackController,
-    renderReset_pass,
     verifyOtpController, 
     saveNewPasswordController, 
     renderOTP,
     fetchEmail, 
-    render_NewPass
+    renderResetPass,
+    renderNewPass
 } from "../controllers/userController.js";
 
 import {homeGetHandler} from "../controllers/home.controller.js";
@@ -24,11 +24,11 @@ router.get("/register", renderRegister);
 router.post("/register", registerUserController);
 router.get("/login", renderLogin);
 router.post("/login", loginUserController);
-router.get("/reset-password", renderReset_pass);
+router.get("/reset-password", renderResetPass);
 router.post("/reset-password", resetPasswordController);
 router.get("/verify-otp", renderOTP);
 router.post("/verify-otp", verifyOtpController); 
-router.get("/set-new-password", render_NewPass);
+router.get("/set-new-password", renderNewPass);
 router.post("/set-new-password", saveNewPasswordController); 
 router.get("/facebook", loginWithFacebook);
 router.get("/facebook/callback", facebookCallbackController);
