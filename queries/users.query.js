@@ -14,3 +14,21 @@ export async function hasSubscription(userId) {
     user.subscription.getTime() > new Date().getTime()
   );
 }
+
+/**
+ * Checks if a user can view a premium post.
+ *
+ * A user can view the post if their clearance level is 2 (Writer) or higher,
+ * or has a valid susbcription.
+ *
+ * @param {string?} userId
+ * @returns {Promise<boolean>}
+ */
+export async function canViewPremium(userId) {
+  const user = await User.findById(userId);
+  return (
+    user &&
+    (user.clearance > 1 ||
+      (user.subscription && user.subscription.getTime() > new Date().getTime()))
+  );
+}

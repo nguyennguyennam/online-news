@@ -95,7 +95,7 @@ export async function loginUserController(req, res, next) {
     if (!pass_check) {
       return res.status(404).json({ message: "fail" });
     }
-    req.session.user_info = {
+    req.session.userInfo = {
       id: user._id,
       gmail: user.email,
       birth_date: user.dob,

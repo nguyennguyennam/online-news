@@ -9,7 +9,6 @@ const postSchema = new mongoose.Schema({
   editor: {
     type: mongoose.SchemaTypes.ObjectId,
     ref: "User",
-    required: true,
   },
   writtenDate: {
     type: Date,

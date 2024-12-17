@@ -1,7 +1,8 @@
 import { faker } from "@faker-js/faker";
 import bcrypt from "bcryptjs";
 import categoryModel from "../model/category.model.js";
-import postModel from "../model/post.model.js";
+import commentModel from "../model/comment.model.js";
+import { default as Post, default as postModel } from "../model/post.model.js";
 import tagModel from "../model/tag.model.js";
 import userModel from "../model/user.model.js";
 import { insertCategories } from "./categories.query.js";
@@ -97,4 +98,30 @@ export async function mockPosts() {
     };
   });
   Promise.all(posts).then(async (posts) => await postModel.insertMany(posts));
+}
+
+/**
+ * Adds at least 5 comments to all 50 posts.
+ */
+export async function mockComments() {
+  const posts = await Post.find();
+  const users = await userModel.find();
+
+  await Promise.all(
+    posts.map(async (post) => {
+      const commenters = faker.helpers.arrayElements(users, 5);
+      const contents = faker.helpers.multiple(() => faker.lorem.sentences(3), {
+        count: 5,
+      });
+      const dates = faker.helpers.multiple(faker.date.past, { count: 5 });
+      await commentModel.insertMany(
+        [...Array(5)].map((_, idx) => ({
+          post: post._id,
+          user: commenters[idx]._id,
+          content: contents[idx],
+          postedDate: dates[idx],
+        })),
+      );
+    }),
+  );
 }
