@@ -36,6 +36,7 @@ app.use("/", mainRouter);
 // Catch all handler for error routes.
 app.use((err, req, res, next) => {
   if (!err) next();
+  console.log(err);
   res.render("layouts/main-layout", {
     title: "Internal Server Error",
     description:

@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
 import passport from "passport";
+import userModel from "../model/user.model.js";
 import { saved_user } from "../queries/common.query.js";
 dotenv.config();
 
