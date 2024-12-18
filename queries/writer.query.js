@@ -1,4 +1,4 @@
-import postModel from "../model/post.model";
+import postModel from "../model/post.model.js";
 import tagModel from "../model/tag.model";
 import categoryModel from "../model/category.model";
 

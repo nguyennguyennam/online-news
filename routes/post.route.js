@@ -1,7 +1,12 @@
 import express from "express";
-import {renderWriter, save_writer_post} from "../controllers/writer.controller.js";
+import {
+  getPostHandler,
+  getPostIdHandler,
+} from "../controllers/post.controller.js";
+
 const router = express.Router();
 
+router.route("/").get(getPostHandler);
+router.route("/:id").get(getPostIdHandler);
 
-router.get("/post", renderWriter);
-router.post("/post", save_writer_post);
+export default router;

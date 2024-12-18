@@ -3,6 +3,7 @@ import session from "express-session";
 import path from "path";
 import { fileURLToPath } from "url";
 import mainRouter from "./routes/index.js";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -33,16 +34,14 @@ function generateSlug(title) {
 app.use("/", mainRouter);
 
 // Catch all handler for error routes.
-app.use((err, req, res, next) => {
-  if (!err) next();
-  console.log(err);
+app.use((req, res, next) => {
   res.render("layouts/main-layout", {
     title: "Internal Server Error",
     description:
       "Landing page for when a route produced an error, basically the server's fault and not the user's.",
     categories: null,
     content: "../pages/500",
-    message: err,
+    //message: err,
   });
 });
 
@@ -234,5 +233,3 @@ app.get("/:category/:subcategory", (req, res) => {
     categories: categories,
   });
 });
-app.use('/postlist', mainRouter);
-app.use('/createpost', mainRouter);

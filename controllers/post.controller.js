@@ -1,8 +1,8 @@
 import expressAsyncHandler from "express-async-handler";
-import { getAllCategories } from "../queries/categories.query";
-import { getCommentsForPost } from "../queries/comments.query";
-import { getPost, getRelatedPosts } from "../queries/posts.query";
-import { canViewPremium } from "../queries/users.query";
+import { getAllCategories } from "../queries/categories.query.js";
+import { getCommentsForPost } from "../queries/comments.query.js";
+import { getPost, getRelatedPosts } from "../queries/posts.query.js";
+import { canViewPremium } from "../queries/users.query.js";
 
 /**
  * GET /post: Displays the WYSIWYG editor. (?)

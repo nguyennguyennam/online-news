@@ -1,6 +1,6 @@
-import editorModel from "../model/editor.model";
-import userModel from "../model/user.model";
-import categoryModel from "../model/category.model";
+import editorModel from "../model/editor.model.js";
+import userModel from "../model/user.model.js";
+import categoryModel from "../model/category.model.js";
 // Get All Cat : Please look at categories.query.js
 // Some of the CRUD functions with category and tag are in categories.query.js file
 
