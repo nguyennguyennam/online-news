@@ -5,6 +5,7 @@ import session from "express-session";
 import path from "path";
 import { fileURLToPath } from "url";
 import mainRouter from "./routes/index.js";
+import { getAllCategories } from "./queries/categories.query.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -46,6 +47,60 @@ function generateSlug(title) {
   });
 }
 
+app.get("/category/:categoryName", async (req, res) => {
+  const categories = await getAllCategories();
+
+  const categoryParam = req.params.categoryName;
+  const category = categories.find((cat) => cat._id === categoryParam);
+
+  // Check if category exists
+  // if (!category) {
+  //   return res.status(404).render("layouts/main-layout.ejs", {
+  //     title: "404 - Not Found",
+  //     description: "The requested category does not exist",
+  //     content: "../pages/404",
+  //   });
+  // }
+
+  // Fetch articles for this category from database
+  // TODO: Replace with actual DB query using articleController
+  // const articles = [
+  //   {
+  //     _id: "1",
+  //     title: "Sample Article",
+  //     slug: "sample-article",
+  //     imageUrl: "https://placehold.co/600x400/EEE/31343C",
+  //     category: category.name,
+  //     tags: ["technology", "news"],
+  //     datePublished: new Date().toLocaleDateString(),
+  //     abstract: "This is a sample article in this category.",
+  //     isPremium: false,
+  //   },
+  //   {
+  //     _id: "1",
+  //     title: "Sample Article",
+  //     slug: "sample-article",
+  //     imageUrl: "https://placehold.co/600x400/EEE/31343C",
+  //     category: category.name,
+  //     tags: ["technology", "news"],
+  //     datePublished: new Date().toLocaleDateString(),
+  //     abstract: "This is a sample article in this category.",
+  //     isPremium: true,
+  //   },
+  // ];
+
+  const articles = [];
+
+  res.render("layouts/main-layout.ejs", {
+    title: `${category.name} News`,
+    description: `Latest ${category.name} news and updates`,
+    content: "../pages/category-grid",
+    categoryName: category.name,
+    articles: articles,
+    categories: categories,
+  });
+});
+
 app.use("/", mainRouter);
 
 // Catch all handler for error routes.
@@ -85,55 +140,8 @@ app.get("/:slug", (req, res) => {
   });
 });
 
-app.get("/search", (req, res) => {
-  const searchQuery = req.query.query;
-
-  // TODO: Replace with actual DB query using articleController
-  const articles = [
-    {
-      _id: "1",
-      title: "Sample Article",
-      slug: "sample-article",
-      imageUrl: "https://placehold.co/600x400/EEE/31343C",
-      category: "Tech",
-      tags: ["technology", "news"],
-      datePublished: new Date().toLocaleDateString(),
-      abstract: "This is a sample article with this tag.",
-      isPremium: true,
-    },
-    {
-      _id: "1",
-      title: "Sample Article",
-      slug: "sample-article",
-      imageUrl: "https://placehold.co/600x400/EEE/31343C",
-      category: "Tech",
-      tags: ["technology", "news"],
-      datePublished: new Date().toLocaleDateString(),
-      abstract: "This is a sample article with this tag.",
-      isPremium: false,
-    },
-  ];
-
-  res.render("layouts/main-layout.ejs", {
-    title: `Search Results for "${searchQuery}"`,
-    description: "Search results page",
-    content: "../pages/search",
-    searchQuery: searchQuery,
-    articles: articles,
-  });
-});
-
-app.get("/tag/:tagName", (req, res) => {
+app.get("/tag/:tagName", async (req, res) => {
   const requestedTag = req.params.tagName;
-
-  // Check if tag exists in predefined tag list
-  if (!tag.includes(requestedTag)) {
-    return res.status(404).render("layouts/main-layout.ejs", {
-      title: "404 - Not Found",
-      description: "The requested tag does not exist",
-      content: "../pages/404",
-    });
-  }
 
   // TODO: Replace with actual DB query using articleController
   const articles = [
@@ -150,65 +158,21 @@ app.get("/tag/:tagName", (req, res) => {
     },
   ];
 
+  const categories = await getAllCategories();
+
   res.render("layouts/main-layout.ejs", {
     title: `#${requestedTag} Articles`,
     description: `Articles tagged with #${requestedTag}`,
     content: "../pages/tag-grid",
     tagName: requestedTag,
     articles: articles,
+    categories: categories,
   });
 });
 
-app.get("/:category", (req, res) => {
-  const categoryParam = req.params.category;
-  const category = categories.find((cat) => cat.name === categoryParam);
+app.get("category/:category/:subcategory", async (req, res) => {
+  const categories = await getAllCategories();
 
-  // Check if category exists
-  if (!category) {
-    return res.status(404).render("layouts/main-layout.ejs", {
-      title: "404 - Not Found",
-      description: "The requested category does not exist",
-      content: "../pages/404",
-    });
-  }
-
-  // Fetch articles for this category from database
-  // TODO: Replace with actual DB query using articleController
-  const articles = [
-    {
-      _id: "1",
-      title: "Sample Article",
-      slug: "sample-article",
-      imageUrl: "https://placehold.co/600x400/EEE/31343C",
-      category: category.name,
-      tags: ["technology", "news"],
-      datePublished: new Date().toLocaleDateString(),
-      abstract: "This is a sample article in this category.",
-      isPremium: false,
-    },
-    {
-      _id: "1",
-      title: "Sample Article",
-      slug: "sample-article",
-      imageUrl: "https://placehold.co/600x400/EEE/31343C",
-      category: category.name,
-      tags: ["technology", "news"],
-      datePublished: new Date().toLocaleDateString(),
-      abstract: "This is a sample article in this category.",
-      isPremium: true,
-    },
-  ];
-
-  res.render("layouts/main-layout.ejs", {
-    title: `${category.displayName} News`,
-    description: `Latest ${category.displayName} news and updates`,
-    content: "../pages/category-grid",
-    categoryName: category.displayName,
-    articles: articles,
-  });
-});
-
-app.get("/:category/:subcategory", (req, res) => {
   const categoryParam = req.params.category;
   const subcategoryParam = req.params.subcategory;
 
@@ -250,5 +214,6 @@ app.get("/:category/:subcategory", (req, res) => {
     categories: categories,
   });
 });
+
 app.use("/postlist", mainRouter);
 app.use("/createpost", mainRouter);
