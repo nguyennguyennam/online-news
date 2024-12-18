@@ -34,6 +34,7 @@ export async function getAllCategories() {
         },
       },
     })
+    .sort({ _id: 1 })
     .project({
       _id: {
         $toString: "$_id",

@@ -28,7 +28,7 @@ export const homeGetHandler = expressAsyncHandler(async (req, res) => {
   res.render("layouts/main-layout", {
     title: "The Cipher",
     description: "The homepage of the online news website, The Cipher.",
-    content: "..pages/home",
+    content: "../pages/home",
     categories,
     homeData: {
       featured,
@@ -36,6 +36,6 @@ export const homeGetHandler = expressAsyncHandler(async (req, res) => {
       latest,
       latestEach,
     },
-    //userInfo: req.session.userInfo || null,
+    userInfo: req.session.userInfo || null,
   });
 });

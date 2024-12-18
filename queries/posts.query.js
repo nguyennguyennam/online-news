@@ -16,9 +16,10 @@ export async function getFeaturedPosts() {
     })
     .sort({ count: -1 })
     // .match({ postedDate: { $gte: lastWeek } })
+    .limit(4)
     .lookup({
       from: "posts",
-      localField: "post",
+      localField: "_id",
       foreignField: "_id",
       as: "post",
     })
@@ -29,14 +30,8 @@ export async function getFeaturedPosts() {
       foreignField: "_id",
       as: "post.category",
     })
-    .limit(4)
-    .project({
-      _id: {
-        $toString: "$post._id",
-      },
-      name: 1,
-      category: "$post.name",
-    });
+    .unwind("$post.category")
+    .replaceRoot("$post");
 }
 
 /**

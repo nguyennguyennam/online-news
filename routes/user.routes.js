@@ -18,7 +18,7 @@ import {
 import { homeGetHandler } from "../controllers/home.controller.js";
 const router = express.Router();
 
-router.get("/home", homeGetHandler);
+//router.get("/home", homeGetHandler);
 router.post("/check-email", fetchEmail);
 router.get("/register", renderRegister);
 router.post("/register", registerUserController);

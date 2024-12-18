@@ -4,18 +4,18 @@ import nodemailer from "nodemailer";
 import passport from "passport";
 import userModel from "../model/user.model.js";
 import { saved_user } from "../queries/common.query.js";
+import { getAllCategories } from "../queries/categories.query.js";
 dotenv.config();
 
+const categories = getAllCategories();
 // Render trang đăng ký
 export function renderRegister(req, res) {
-  //const message = req.session.message || null; // Lấy thông báo từ session
-  //req.session.message = null; // Xóa thông báo sau khi hiển thị
 
   res.render("layouts/main-layout", {
     title: "Register",
     description: "This is a register page",
     content: "../pages/register",
-    categories: null,
+    categories
   });
 }
 
@@ -24,16 +24,13 @@ export function renderOTP(req, res) {
     title: "OTP pass",
     description: "This is an OTP page",
     content: "../pages/otp_page",
-    //categories: null,
+    categories,
     email: req.session.User,
   });
 }
 
 // Render trang đăng nhập
 export function renderLogin(req, res) {
-  console.log("Rendering Login Page");
-  console.log("Categories:", null);
-  console.log("Content:", "../pages/login");
   const categories = null; // Explicitly set categories
   res.render("layouts/main-layout", {
     title: "Log In",
@@ -47,7 +44,7 @@ export function renderResetPass(req, res) {
     title: "Reset Password",
     description: "This is a reset password page",
     content: "../pages/reset-password",
-    categories: null,
+    categories,
   });
 }
 
@@ -56,7 +53,7 @@ export function renderNewPass(req, res) {
     title: "Save new password for user",
     description: "This page allows users to enter their new passwords",
     content: "../pages/new_password",
-    categories: null,
+    categories,
     email: req.session.User,
   });
 }
@@ -108,7 +105,7 @@ export async function loginUserController(req, res, next) {
       role: user.clearance,
     };
 
-    return res.redirect("/home");
+    return res.redirect("/");
   } catch (err) {
     console.error("Login error:", err);
     return res.render("404");
