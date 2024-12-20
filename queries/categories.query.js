@@ -163,6 +163,6 @@ export async function createCategory(name, parent) {
 export async function insertCategories(parent, ...names) {
   const parentId = parent ? await Category.findOne({ name: parent }) : null;
   return await Category.insertMany(
-    names.map((name) => ({ name, parent: parentId })),
+    names.map((name) => ({ name, parent: parentId?._id })),
   );
 }

@@ -8,16 +8,13 @@ import { hasSubscription } from "./users.query.js";
  * are considered posts that have the most comments in the past week.
  */
 export async function getFeaturedPosts() {
-  const lastWeek = new Date().getTime() - 7 * 24 * 60 * 60 * 1000;
+  const lastWeek = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000);
   return await Comment.aggregate()
-    .match({ state: "published" })
+    .match({ postedDate: { $gte: lastWeek } })
     .group({
       _id: "$post",
       count: { $count: {} },
     })
-    .sort({ count: -1 })
-    .match({ postedDate: { $gte: lastWeek } })
-    .limit(4)
     .lookup({
       from: "posts",
       localField: "_id",
@@ -25,6 +22,9 @@ export async function getFeaturedPosts() {
       as: "post",
     })
     .unwind("$post")
+    .match({ "post.state": "published" })
+    .sort({ count: -1 })
+    .limit(4)
     .lookup({
       from: "categories",
       localField: "post.category",
@@ -151,48 +151,18 @@ export async function getAllPosts({ userId, page, cat, tag, query }) {
 }
 
 /**
- * Retrieves the post with ID.
+ * Retrieves the post with the slug.
  * @param {string} id
- * @returns {Promise<Array<any>>} an array of posts, having length 0 or 1.
+ * @returns {Promise<any>} an array of posts, having length 0 or 1.
  */
 export async function getPost(id) {
-  return Post.aggregate()
-    .match({ _id: new mongoose.Types.ObjectId(id) })
-    .lookup({
-      from: "categories",
-      localField: "category",
-      foreignField: "_id",
-      as: "category",
-    })
-    .unwind("$category")
-    .lookup({
-      from: "categories",
-      localField: "category.parent",
-      foreignField: "_id",
-      as: "category.parent",
-    })
-    .unwind("$category.parent")
-    .lookup({
-      from: "tags",
-      localField: "tags",
-      foreignField: "_id",
-      as: "tags",
-    })
-    .lookup({
-      from: "users",
-      localField: "writer",
-      foreignField: "_id",
-      as: "writer",
-    })
-    .unwind("$writer")
-    .lookup({
-      from: "users",
-      localField: "editor",
-      foreignField: "_id",
-      as: "editor",
-    })
-    .unwind("$editor")
-    .limit(1);
+  const post = await Post.findOne({ slug: id });
+  await post.populate("category");
+  if (post.category?.parent) await post.populate("category.parent");
+  await post.populate("tags");
+  await post.populate("writer");
+  await post.populate("editor");
+  return post;
 }
 
 /**

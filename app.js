@@ -5,7 +5,9 @@ import session from "express-session";
 import path from "path";
 import { fileURLToPath } from "url";
 import { getAllCategories } from "./queries/categories.query.js";
+import * as mock from "./queries/mock.js";
 import mainRouter from "./routes/index.js";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -47,6 +49,13 @@ function generateSlug(title) {
   });
 }
 
+app.get("/fake", async (req, res) => {
+  await mock.unmockAll();
+  await Promise.all([mock.mockCategories(), mock.mockTags(), mock.mockUsers()]);
+  await mock.mockPosts();
+  await mock.mockComments();
+  res.status(200).json({ message: "Finished faking" });
+});
 app.use("/", mainRouter);
 
 // Catch all handler for error routes.
