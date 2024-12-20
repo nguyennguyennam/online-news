@@ -4,8 +4,8 @@ import fileUpload from "express-fileupload";
 import session from "express-session";
 import path from "path";
 import { fileURLToPath } from "url";
-import mainRouter from "./routes/index.js";
 import { getAllCategories } from "./queries/categories.query.js";
+import mainRouter from "./routes/index.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -46,60 +46,6 @@ function generateSlug(title) {
     trim: true, // Trim leading/trailing replacement chars
   });
 }
-
-app.get("/category/:categoryName", async (req, res) => {
-  const categories = await getAllCategories();
-
-  const categoryParam = req.params.categoryName;
-  const category = categories.find((cat) => cat._id === categoryParam);
-
-  // Check if category exists
-  // if (!category) {
-  //   return res.status(404).render("layouts/main-layout.ejs", {
-  //     title: "404 - Not Found",
-  //     description: "The requested category does not exist",
-  //     content: "../pages/404",
-  //   });
-  // }
-
-  // Fetch articles for this category from database
-  // TODO: Replace with actual DB query using articleController
-  // const articles = [
-  //   {
-  //     _id: "1",
-  //     title: "Sample Article",
-  //     slug: "sample-article",
-  //     imageUrl: "https://placehold.co/600x400/EEE/31343C",
-  //     category: category.name,
-  //     tags: ["technology", "news"],
-  //     datePublished: new Date().toLocaleDateString(),
-  //     abstract: "This is a sample article in this category.",
-  //     isPremium: false,
-  //   },
-  //   {
-  //     _id: "1",
-  //     title: "Sample Article",
-  //     slug: "sample-article",
-  //     imageUrl: "https://placehold.co/600x400/EEE/31343C",
-  //     category: category.name,
-  //     tags: ["technology", "news"],
-  //     datePublished: new Date().toLocaleDateString(),
-  //     abstract: "This is a sample article in this category.",
-  //     isPremium: true,
-  //   },
-  // ];
-
-  const articles = [];
-
-  res.render("layouts/main-layout.ejs", {
-    title: `${category.name} News`,
-    description: `Latest ${category.name} news and updates`,
-    content: "../pages/category-grid",
-    categoryName: category.name,
-    articles: articles,
-    categories: categories,
-  });
-});
 
 app.use("/", mainRouter);
 

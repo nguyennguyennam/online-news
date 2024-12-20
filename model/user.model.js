@@ -24,7 +24,6 @@ const userSchema = new mongoose.Schema({
     max: 4,
   },
   subscription: Date,
-  expiry_date: Date,
   penName: String, // This does nothing if they have clearance = 1.
 });
 
