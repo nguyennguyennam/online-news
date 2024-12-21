@@ -4,3 +4,4 @@ CHANGELOG.md
 .env
 .git/
 package-lock.json
+public/css/tailwind.css
