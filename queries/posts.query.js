@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import slugify from "slugify";
 import Comment from "../model/comment.model.js";
 import Post from "../model/post.model.js";
 import { hasSubscription } from "./users.query.js";
@@ -242,5 +243,24 @@ export async function getPostsUnderCategory(catId, recurse = false) {
       localField: "tags",
       as: "tags",
     })
+    .sort({ publishedDate: -1 });
+}
+
+/**
+ * Retrieves all posts tagged, sorted from newest first.
+ *
+ * @param {string} tag
+ */
+export async function getPostsTagged(tag) {
+  tag = slugify(tag, { lower: true, strict: true, trim: true });
+  return await Post.aggregate()
+    .match({ state: "published" })
+    .lookup({
+      from: "tags",
+      foreignField: "_id",
+      localField: "tags",
+      as: "tags",
+    })
+    .match({ tags: { $elemMatch: { tag } } })
     .sort({ publishedDate: -1 });
 }
