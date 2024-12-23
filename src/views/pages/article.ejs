@@ -63,7 +63,7 @@
     />
 
     <!-- Article Body -->
-    <div class="prose prose-lg text-gray-800"><%= post.content %></div>
+    <div class="prose prose-lg text-gray-800"><%- post.content %></div>
 
     <!-- Tags Section -->
     <div class="mt-6">
@@ -71,7 +71,7 @@
         <h3 class="text-xl font-semibold">Tags:</h3>
         <% post.tags.forEach(tag => { %>
         <a
-          href="/all?tag=<%= tag.tag %>"
+          href="/tag/<%= tag.tag %>"
           class="rounded-full px-3 py-1 text-sm text-blue-800 transition-colors duration-300 hover:text-blue-600"
         >
           #<%= tag.tag %>

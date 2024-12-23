@@ -4,6 +4,11 @@ import Comment from "../model/comment.model.js";
 import Post from "../model/post.model.js";
 import { hasSubscription } from "./users.query.js";
 
+// I have no clue why it's not preloaded. But you need to import this to make it so
+// .populate understands where "Tag" is.
+// Don't remove this.
+import "../model/tag.model.js";
+
 /**
  * Retrieves a list of 4 posts that are "featured". Featured posts
  * are considered posts that have the most comments in the past week.

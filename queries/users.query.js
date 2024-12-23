@@ -16,6 +16,16 @@ export async function hasSubscription(userId) {
 }
 
 /**
+ * Finds a user with the provided ID.
+ *
+ * @param {string} id
+ * @returns {Promise<any>}
+ */
+export async function getUser(id) {
+  return await User.findById(id);
+}
+
+/**
  * Checks if a user can view a premium post.
  *
  * A user can view the post if their clearance level is 2 (Writer) or higher,

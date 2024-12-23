@@ -2,17 +2,16 @@ import "dotenv/config";
 import express from "express";
 import fileUpload from "express-fileupload";
 import session from "express-session";
+import createMemoryStore from "memorystore";
 import path from "path";
 import { fileURLToPath } from "url";
 import mainRouter from "./routes/index.js";
-
-import User from "./model/user.model.js";
-import { getAllCategories } from "./queries/categories.query.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+const store = createMemoryStore(session);
 
 // 1. Setup view engine EJS.
 // 2. Serve /public as root.
@@ -39,6 +38,7 @@ app.use(
     resave: false, // Không lưu session nếu không thay đổi
     saveUninitialized: true, // Lưu session mới ngay cả khi không có dữ liệu
     cookie: { maxAge: 1000 * 60 * 60 * 24 }, // Cookie có thời hạn 1 ngày
+    store: new store(),
   }),
 );
 
@@ -62,41 +62,3 @@ export default app;
 
 app.use("/postlist", mainRouter);
 app.use("/createpost", mainRouter);
-
-app.get("/profile", async (req, res) => {
-  try {
-    const categories = await getAllCategories();
-
-    if (!req.session.userInfo) {
-      return res.redirect("/login");
-    }
-
-    // Fetch fresh user data from database
-    const user = await User.findById(req.session.userInfo.id);
-    if (!user) {
-      return res.redirect("/login");
-    }
-
-    res.render("layouts/main-layout", {
-      title: "Profile Settings",
-      description: "Update your profile information",
-      content: "../pages/profile",
-      categories,
-      userInfo: {
-        ...req.session.userInfo,
-        fullName: user.fullName,
-        dob: user.dob,
-        subscription: user.subscription,
-      },
-    });
-  } catch (error) {
-    console.error("Profile fetch error:", error);
-    res.status(500).render("layouts/main-layout", {
-      title: "Error",
-      description: "Internal server error",
-      content: "../pages/500",
-      categories: [],
-      message: "Error loading profile",
-    });
-  }
-});
