@@ -219,6 +219,7 @@
               </svg>
             </a>
           </li>
+
           <!-- Dynamic Categories -->
           <% categories.forEach(category=> { %>
           <li
@@ -251,9 +252,8 @@
         </ul>
       </div>
     </nav>
-    <% } %>
+    <% } %> <%- include(content) %>
 
-     <%- include (content)%>
     <footer
       class="flex flex-col items-center justify-between gap-8 border-t-2 border-t-zinc-300 p-6 text-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] xl:px-20"
     >
@@ -331,6 +331,41 @@
     </button>
   </body>
 </html>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // Get the button
+    const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+
+    // Show or hide the button depending on the scroll position
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > 200) {
+        scrollToTopBtn.classList.remove("hidden");
+      } else {
+        scrollToTopBtn.classList.add("hidden");
+      }
+    });
+
+    // Scroll to the top of the page when the button is clicked
+    scrollToTopBtn.addEventListener("click", () => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    });
+    const dropdownBtn = document.getElementById("userDropdownBtn");
+    const dropdownMenu = document.getElementById("userDropdownMenu");
+
+    dropdownBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      dropdownMenu.classList.toggle("hidden");
+    });
+
+    window.addEventListener("click", () => {
+      dropdownMenu.classList.add("hidden");
+    });
+  });
+</script>
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {

@@ -144,6 +144,12 @@ export async function delete_Cat(del_cat) {
   return await categoryModel.deleteOne(del_cat);
 }
 
+export async function fetch_sub_Cat() {
+  return await categoryModel.find ({
+    "parent": {$ne: null}
+  })
+}
+
 /**
  * Creates a category with the name.
  *

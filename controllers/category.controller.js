@@ -6,8 +6,8 @@ import {
   findChildCategoryBySlug,
   getAllCategories,
   getChildrenCategoriesOf,
-} from "../queries/categories.query";
-import { getPostsUnderCategory } from "../queries/posts.query";
+} from "../queries/categories.query.js";
+import { getPostsUnderCategory } from "../queries/posts.query.js";
 
 /**
  * GET /category/:id: Retrieves the parent ID.

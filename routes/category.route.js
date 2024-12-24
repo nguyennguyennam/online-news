@@ -2,7 +2,7 @@ import express from "express";
 import {
   getPostByCatController,
   getPostsByChildCatController,
-} from "../controllers/category.controller";
+} from "../controllers/category.controller.js";
 
 const router = express.Router();
 router.route("/:parent/:child").get(getPostsByChildCatController);

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Post List</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="mb-6 text-center text-4xl font-bold">Post List</h1>
+
+        <!-- Post Container -->
+        <div id="post-container">
+            <!-- Bài viết sẽ được render ở đây -->
+        </div>
+
+        <!-- Pagination Section -->
+        <div id="pagination" class="flex justify-center mt-6">
+            <!-- Nút phân trang sẽ được thêm động -->
+        </div>
+    </div>
+
+    <script>
+        let currentPage;
+        async function loadPosts(page) {
+            try {
+                console.log("Page clicked:", page);
+                const response = await fetch(
+                    `http://localhost:3000/writer/post_list_api?page=${page}&writer_id=67654bfb387a8e7e75b54d33`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Fetched data:", data);
+
+                const postList = data.post_list.postList || [];
+                const currentPage = parseInt(data.post_list.currentPage) || 1;
+                const totalPages = Math.ceil(data.post_list.totalPages);
+
+                renderPosts(postList);
+                renderPagination(currentPage, totalPages);
+            } catch (error) {
+                console.error("Error loading posts:", error);
+                document.getElementById("post-container").innerHTML = `
+      <p class="text-center text-red-500">Failed to load posts. Please try again later.</p>
+    `;
+            }
+        }
+
+        function renderPagination(currentPage, totalPages) {
+            const pagination = document.getElementById("pagination");
+            currentPage = pagination.value;
+            pagination.innerHTML = ""; // Xóa nút phân trang cũ
+
+            for (let i = 1; i <= totalPages; i++) {
+                const pageButton = document.createElement("button");
+                pageButton.textContent = i;
+                pageButton.classList.add(
+                    "mx-1",
+                    "px-4",
+                    "py-2",
+                    "rounded",
+                    "cursor-pointer"
+                );
+
+                if (i === currentPage) {
+                    pageButton.classList.add("bg-blue-500", "text-white");
+                } else {
+                    pageButton.classList.add("bg-gray-200", "text-gray-700");
+                }
+
+                pageButton.addEventListener("click", () => {
+                    loadPosts(i);
+                });
+
+                pagination.appendChild(pageButton);
+            }
+        }
+
+        function renderPosts(postList) {
+            const container = document.getElementById("post-container");
+            container.innerHTML = ""; // Xóa nội dung cũ
+
+            if (!postList || postList.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-500">No posts available.</p>`;
+                return;
+            }
+
+            postList.forEach((post) => {
+                const postCard = `
+      <div class="rounded-lg bg-white p-4 shadow-md mb-6">
+        <img
+          src="${post.thumbnail?.small || '/images/default-thumbnail.jpg'}"
+          alt="${post.name}"
+          class="mb-4 h-48 w-full rounded-t-lg object-cover"
+        />
+        <a href="/posts/${post._id}" class="text-blue-600 hover:underline">
+          <h3 class="text-xl font-semibold">${post.name}</h3>
+        </a>
+        <p class="text-gray-600 mb-2">${post.abstract}</p>
+        <p class="text-sm text-gray-700"><strong>Category:</strong> ${post["Category details"]?.[0]?.name || "Unspecified"
+                    }</p>
+        <p class="text-sm text-gray-700"><strong>Tags:</strong> ${post["Tag details"]?.map((tag) => tag.tag).join(", ") || "No tags"
+                    }</p>
+      </div>
+    `;
+                container.innerHTML += postCard;
+            });
+        }
+
+        // Load trang đầu tiên khi mở trang
+        loadPosts(1);
+
+    </script>
+</body>
+
+</html>

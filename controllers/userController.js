@@ -5,19 +5,18 @@ import userModel from "../model/user.model.js";
 import { getAllCategories } from "../queries/categories.query.js";
 import { saved_user } from "../queries/common.query.js";
 
-const categories = getAllCategories();
-// Render trang đăng ký
-export function renderRegister(req, res) {
-
+export async function renderRegister(req, res) {
+  const categories = await getAllCategories(); // Chờ hàm trả về mảng
   res.render("layouts/main-layout", {
     title: "Register",
     description: "This is a register page",
     content: "../pages/register",
-    categories
+    categories,
   });
 }
 
-export function renderOTP(req, res) {
+export async function renderOTP(req, res) {
+  const categories = await getAllCategories(); // Chờ hàm trả về mảng
   res.render("layouts/main-layout", {
     title: "OTP pass",
     description: "This is an OTP page",
@@ -28,8 +27,8 @@ export function renderOTP(req, res) {
 }
 
 // Render trang đăng nhập
-export function renderLogin(req, res) {
-  const categories = null; // Explicitly set categories
+export async function renderLogin(req, res) {
+  const categories = await getAllCategories(); // Chờ hàm trả về mảng
   res.render("layouts/main-layout", {
     title: "Log In",
     description: "This is a login page",
@@ -37,7 +36,8 @@ export function renderLogin(req, res) {
     content: "../pages/login",
   });
 }
-export function renderResetPass(req, res) {
+export async function renderReset_pass(req, res) {
+  const categories = await getAllCategories(); // Chờ hàm trả về mảng
   res.render("layouts/main-layout", {
     title: "Reset Password",
     description: "This is a reset password page",
@@ -46,7 +46,8 @@ export function renderResetPass(req, res) {
   });
 }
 
-export function renderNewPass(req, res) {
+export async function render_NewPass(req, res) {
+  const categories = await getAllCategories(); // Chờ hàm trả về mảng
   res.render("layouts/main-layout", {
     title: "Save new password for user",
     description: "This page allows users to enter their new passwords",
