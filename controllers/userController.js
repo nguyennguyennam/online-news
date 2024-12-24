@@ -84,20 +84,33 @@ export async function fetchEmail(req, res, next) {
 }
 
 // Đăng nhập (Local)
-export async function loginUserController(req, res, next) {
+export async function loginUserController(req, res) {
   try {
     const { email, password } = req.body;
-    const user = await userModel.findOne({
-      email: email,
-    });
+    const user = await userModel.findOne({ email });
+
     if (!user) {
-      // Trả về lỗi nếu không tìm thấy người dùng
-      return res.status(404).json({ message: "fail" });
+      return res.render("layouts/main-layout", {
+        title: "Login",
+        description: "This is a login page",
+        categories: null,
+        content: "../pages/login",
+        error: "Invalid email or password",
+      });
     }
+
     const pass_check = await bcrypt.compare(password, user.password);
     if (!pass_check) {
-      return res.status(404).json({ message: "fail" });
+      return res.render("layouts/main-layout", {
+        title: "Login",
+        description: "This is a login page",
+        categories: null,
+        content: "../pages/login",
+        error: "Invalid email or password",
+      });
     }
+
+    // Login successful
     req.session.userInfo = {
       id: user._id,
       gmail: user.email,
@@ -109,7 +122,13 @@ export async function loginUserController(req, res, next) {
     return res.redirect("/");
   } catch (err) {
     console.error("Login error:", err);
-    return res.render("404");
+    res.status(500).render("layouts/main-layout", {
+      title: "Login",
+      description: "This is a login page",
+      categories: null,
+      content: "../pages/login",
+      error: "An error occurred during login",
+    });
   }
 }
 

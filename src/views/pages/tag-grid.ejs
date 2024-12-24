@@ -22,15 +22,15 @@
       <div class="relative mb-4">
         <a href="/<%= article.slug %>">
           <img
-            alt="<%= article.title %>"
+            alt="<%= article.name %>"
             class="h-48 w-full object-cover"
-            src="<%= article.imageUrl || 'https://placehold.co/600x400/EEE/31343C' %>"
+            src="<%= article.thumbnail.small || 'https://placehold.co/600x400/EEE/31343C' %>"
           />
         </a>
 
         <!-- Article Type Tag -->
         <div class="absolute right-2 top-2">
-          <% if (article.isPremium) { %>
+          <% if (article.premium) { %>
           <span
             class="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-3 py-1 text-sm font-semibold text-white shadow-md"
           >
@@ -53,7 +53,7 @@
             href="/<%= article.slug %>"
             class="transition-colors duration-200 hover:text-blue-500"
           >
-            <%= article.title %>
+            <%= article.name %>
           </a>
         </h2>
 
@@ -61,17 +61,17 @@
         <div class="flex flex-wrap gap-2">
           <% article.tags.forEach(tag=> { %>
           <a
-            href="/tag/<%= tag %>"
+            href="/tag/<%= tag.tag %>"
             class="rounded-full bg-gray-100 px-2 py-1 text-sm transition-colors duration-200 hover:bg-blue-500 hover:text-white"
           >
-            #<%= tag %>
+            #<%= tag.tag %>
           </a>
           <% }) %>
         </div>
 
         <!-- Date -->
         <p class="text-sm text-gray-500">
-          Posted on: <%= article.datePublished %>
+          Posted on: <%= article.publishedDate.toLocaleString("vi-VN") %>
         </p>
 
         <!-- Abstract -->

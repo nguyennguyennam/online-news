@@ -3,10 +3,11 @@
 >
   <!-- Category -->
   <nav aria-label="Breadcrumb" class="ml-6 flex font-bold text-blue-500">
+    <% if (post.category.parent) { %>
     <ol class="flex space-x-2">
       <li>
         <a
-          href="/category/<%= post.category.parent._id %>"
+          href="/category/<%= post.category.parent.slug %>"
           class="text-blue-600 hover:text-blue-800"
         >
           <%= post.category.parent.name %>
@@ -15,13 +16,21 @@
       <li>
         <span class="mx-2">&nbsp;&gt; </span>
         <a
-          href="/category/<%= post.category._id %>"
+          href="/category/<%= post.category.slug %>"
           class="text-blue-600 hover:text-blue-800"
         >
           <%= post.category.name %>
         </a>
       </li>
     </ol>
+    <% } else { %>
+    <a
+      href="/category/<%= post.category.slug %>"
+      class="text-blue-600 hover:text-blue-800"
+    >
+      <%= post.category.name %>
+    </a>
+    <% } %>
   </nav>
 
   <!-- Article Content -->

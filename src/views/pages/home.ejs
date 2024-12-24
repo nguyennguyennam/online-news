@@ -5,7 +5,7 @@
     <h2 class="mb-4 text-3xl font-bold">Featured Posts of the Past Week</h2>
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
       <% homeData.featured.forEach(article=> { %>
-      <a href="/post/<%= article._id %>" class="block">
+      <a href="/post/<%= article.slug %>" class="block">
         <article
           class="bg-white p-4 shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg"
         >
@@ -57,7 +57,7 @@
     <h2 class="mb-4 text-3xl font-bold">Most Viewed Articles</h2>
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
       <% homeData.mostViewed.forEach(article=> { %>
-      <a href="/post/<%= article._id %>" class="block">
+      <a href="/post/<%= article.slug %>" class="block">
         <article
           class="bg-white p-4 shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg"
         >
@@ -108,7 +108,7 @@
     <h2 class="mb-4 text-3xl font-bold">Latest Posts</h2>
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
       <% homeData.latest.forEach(article=> { %>
-      <a href="/post/<%= article._id %>" class="block">
+      <a href="/post/<%= article.slug %>" class="block">
         <article
           class="bg-white p-4 shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg"
         >
@@ -161,7 +161,7 @@
       class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
     >
       <% homeData.latestEach.forEach(category=> { %>
-      <a href="/post/<%= category.post._id %>" class="block">
+      <a href="/post/<%= category.post.slug %>" class="block">
         <article
           class="bg-white p-4 shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg"
         >
@@ -183,7 +183,7 @@
             </div>
           </div>
 
-          <h3 class="mb-4 text-xl font-semibold"><%= category.name %></h3>
+          <h3 class="mb-4 text-xl font-semibold"><%= category.category %></h3>
           <div class="flex items-center gap-4">
             <img
               alt="Category thumbnail"

@@ -1,5 +1,9 @@
+import mongoose from "mongoose";
 import slugify from "slugify";
-import Category from "../model/category.model.js";
+import {
+  default as Category,
+  default as categoryModel,
+} from "../model/category.model.js";
 
 /**
  * Aggregates all categories and returns it into an array for easier accessing.
@@ -44,12 +48,72 @@ export async function getAllCategories() {
     });
   return result.map((node) => ({
     ...node,
+    children: node.children.map((child) => ({
+      ...child,
+      slug: slugify(child.name, {
+        lower: true,
+        strict: true,
+        trim: true,
+      }),
+    })),
     slug: slugify(node.name, {
       lower: true,
       strict: true,
       trim: true,
     }),
   }));
+}
+
+/**
+ * Attempts to find a category by its slug.
+ * This function only matches PARENTS, meaning those with the parent field
+ * set to null.
+ *
+ * @param {string} slug
+ * @returns {Promise<any | null>} the category if found.
+ */
+export async function findCategoryBySlug(slug) {
+  const parents = await Category.aggregate().match({ parent: null });
+  return parents
+    .map((p) => ({
+      ...p,
+      slug: slugify(p.name, { lower: true, strict: true, trim: true }),
+    }))
+    .find((v) => v.slug == slug);
+}
+
+/**
+ * Retrieves children of the provided category ID.
+ *
+ * @param {string} catId the category id.
+ * @returns {Promise<Array<any>>}
+ */
+export async function getChildrenCategoriesOf(catId) {
+  return await Category.aggregate()
+    .match({
+      parent: new mongoose.Types.ObjectId(catId),
+    })
+    .sort({ _id: 1 });
+}
+
+/**
+ * Finds a child category, using a parent slug and an additional slug.
+ *
+ * @param {string} parentSlug the slug of the parent.
+ * @param {string} childSlug the slug of the children
+ * @returns {Promise<any | null>}
+ */
+export async function findChildCategoryBySlug(parentSlug, childSlug) {
+  const parent = await findCategoryBySlug(parentSlug);
+  if (parent == null) return null;
+
+  const children = await Category.aggregate().match({ parent: parent._id });
+  return children
+    .map((p) => ({
+      ...p,
+      slug: slugify(p.name, { lower: true, strict: true, trim: true }),
+    }))
+    .find((v) => v.slug == childSlug);
 }
 
 //
@@ -79,6 +143,13 @@ export async function updateCat(old_cat, new_cat) {
 export async function delete_Cat(del_cat) {
   return await categoryModel.deleteOne(del_cat);
 }
+
+export async function fetch_sub_Cat() {
+  return await categoryModel.find ({
+    "parent": {$ne: null}
+  })
+}
+
 /**
  * Creates a category with the name.
  *
@@ -98,6 +169,6 @@ export async function createCategory(name, parent) {
 export async function insertCategories(parent, ...names) {
   const parentId = parent ? await Category.findOne({ name: parent }) : null;
   return await Category.insertMany(
-    names.map((name) => ({ name, parent: parentId })),
+    names.map((name) => ({ name, parent: parentId?._id })),
   );
 }

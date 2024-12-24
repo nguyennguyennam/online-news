@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import slugify from "slugify";
 import Comment from "../model/comment.model.js";
 import Post from "../model/post.model.js";
 import { hasSubscription } from "./users.query.js";
@@ -8,15 +9,13 @@ import { hasSubscription } from "./users.query.js";
  * are considered posts that have the most comments in the past week.
  */
 export async function getFeaturedPosts() {
-  const lastWeek = new Date().getTime() - 7 * 24 * 60 * 60 * 1000;
+  const lastWeek = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000);
   return await Comment.aggregate()
+    .match({ postedDate: { $gte: lastWeek } })
     .group({
       _id: "$post",
       count: { $count: {} },
     })
-    .sort({ count: -1 })
-    // .match({ postedDate: { $gte: lastWeek } })
-    .limit(4)
     .lookup({
       from: "posts",
       localField: "_id",
@@ -24,6 +23,9 @@ export async function getFeaturedPosts() {
       as: "post",
     })
     .unwind("$post")
+    .match({ "post.state": "published" })
+    .sort({ count: -1 })
+    .limit(4)
     .lookup({
       from: "categories",
       localField: "post.category",
@@ -39,6 +41,7 @@ export async function getFeaturedPosts() {
  */
 export async function getMostViewedPosts() {
   return await Post.aggregate()
+    .match({ state: "published" })
     .sort({ views: -1 })
     .lookup({
       from: "categories",
@@ -61,6 +64,7 @@ export async function getMostViewedPosts() {
  */
 export async function getNewestPosts() {
   return await Post.aggregate()
+    .match({ state: "published" })
     .sort({ publishedDate: -1 })
     .lookup({
       from: "categories",
@@ -83,6 +87,7 @@ export async function getNewestPosts() {
  */
 export async function getNewestPostsFromEachCategory() {
   return Post.aggregate()
+    .match({ state: "published" })
     .sort({ publishedDate: -1 })
     .lookup({
       from: "categories",
@@ -140,54 +145,25 @@ export async function getAllPosts({ userId, page, cat, tag, query }) {
       foreignField: "_id",
       as: "tags",
     })
+    .match({ state: "published" })
     .match(cat ? { "category.name": cat } : {})
     .match(tag ? { "tags.tag": { $in: [tag] } } : {});
   return await aggregate.skip((page - 1) * 5).limit(5);
 }
 
 /**
- * Retrieves the post with ID.
+ * Retrieves the post with the slug.
  * @param {string} id
- * @returns {Promise<Array<any>>} an array of posts, having length 0 or 1.
+ * @returns {Promise<any>} an array of posts, having length 0 or 1.
  */
 export async function getPost(id) {
-  return Post.aggregate()
-    .match({ _id: new mongoose.Types.ObjectId(id) })
-    .lookup({
-      from: "categories",
-      localField: "category",
-      foreignField: "_id",
-      as: "category",
-    })
-    .unwind("$category")
-    .lookup({
-      from: "categories",
-      localField: "category.parent",
-      foreignField: "_id",
-      as: "category.parent",
-    })
-    .unwind("$category.parent")
-    .lookup({
-      from: "tags",
-      localField: "tags",
-      foreignField: "_id",
-      as: "tags",
-    })
-    .lookup({
-      from: "users",
-      localField: "writer",
-      foreignField: "_id",
-      as: "writer",
-    })
-    .unwind("$writer")
-    .lookup({
-      from: "users",
-      localField: "editor",
-      foreignField: "_id",
-      as: "editor",
-    })
-    .unwind("$editor")
-    .limit(1);
+  const post = await Post.findOne({ slug: id });
+  await post.populate("category");
+  if (post.category?.parent) await post.populate("category.parent");
+  await post.populate("tags");
+  await post.populate("writer");
+  await post.populate("editor");
+  return post;
 }
 
 /**
@@ -206,6 +182,7 @@ export async function getRelatedPosts(id) {
   return Post.aggregate()
     .match({
       _id: { $nin: [new mongoose.Types.ObjectId(id)] },
+      state: "published",
     })
     .match({
       $or: [
@@ -226,4 +203,64 @@ export async function getRelatedPosts(id) {
       ],
     })
     .sample(5);
+}
+
+/**
+ * Retrieves all posts under the provided category.
+ *
+ * @param {string} catId
+ * @returns {Promise<Array<any>>}
+ */
+export async function getPostsUnderCategory(catId, recurse = false) {
+  return Post.aggregate()
+    .match({ state: "published" })
+    .lookup({
+      from: "categories",
+      foreignField: "_id",
+      localField: "category",
+      as: "category",
+    })
+    .unwind("$category")
+    .match(
+      recurse
+        ? {
+            $or: [
+              {
+                "category._id": new mongoose.Types.ObjectId(catId),
+              },
+              {
+                "category.parent": new mongoose.Types.ObjectId(catId),
+              },
+            ],
+          }
+        : {
+            "category._id": new mongoose.Types.ObjectId(catId),
+          },
+    )
+    .lookup({
+      from: "tags",
+      foreignField: "_id",
+      localField: "tags",
+      as: "tags",
+    })
+    .sort({ publishedDate: -1 });
+}
+
+/**
+ * Retrieves all posts tagged, sorted from newest first.
+ *
+ * @param {string} tag
+ */
+export async function getPostsTagged(tag) {
+  tag = slugify(tag, { lower: true, strict: true, trim: true });
+  return await Post.aggregate()
+    .match({ state: "published" })
+    .lookup({
+      from: "tags",
+      foreignField: "_id",
+      localField: "tags",
+      as: "tags",
+    })
+    .match({ tags: { $elemMatch: { tag } } })
+    .sort({ publishedDate: -1 });
 }

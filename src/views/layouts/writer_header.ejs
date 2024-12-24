@@ -4,25 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title><%= title %></title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body>
+    <!-- Header -->
     <a href="/" class="flex flex-col justify-center items-center hover:opacity-80 transition-opacity">
         <h1 class="text-7xl font-black">The Cipher</h1>
         <p class="text-xl text-gray-600 mt-2 italic">The world is in your hand</p>
     </a>
+
+    <!-- Navbar -->
     <nav class="bg-white text-black border border-current">
         <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
             <div class="relative flex h-16 items-center justify-between">
-                <!-- Căn giữa các mục điều hướng -->
                 <div class="hidden sm:flex sm:ml-6 sm:justify-center w-full">
                     <div class="flex space-x-4">
-                        <a href="/postlist"
+                        <a href="/writer/post_list"
                             class="rounded-md px-3 py-2 text-sm font-medium text-black hover:bg-gray-700 hover:text-white"
                             id="article-list-link">Article list</a>
-                        <a href="/createpost"
+                        <a href="/writer/create-post"
                             class="rounded-md px-3 py-2 text-sm font-medium text-black hover:bg-gray-700 hover:text-white"
                             id="create-post-link">Create Post</a>
                     </div>
@@ -57,8 +59,12 @@
         </div>
     </nav>
 
+    <!-- Content Section -->
+    <main class="container mx-auto mt-6 px-4">
+        <%- include(content) %>
+    </main>
+
     <script>
-        // JavaScript để hiển thị menu khi di chuột qua avatar
         const userMenuButton = document.getElementById('user-menu-button');
         const userMenu = document.getElementById('user-menu');
 
@@ -78,28 +84,11 @@
             userMenu.classList.add('hidden');
         });
 
-        // Logic để xác định trang hiện tại
-        const currentPage = window.location.pathname; // Lấy đường dẫn hiện tại
-
-        // Kiểm tra và thay đổi lớp cho liên kết tương ứng
-        const articleListLink = document.getElementById('article-list-link');
-        const homeLink = document.getElementById('home-link');
         const createPostLink = document.getElementById('create-post-link');
-
-        if (currentPage === '/postlist') {
-            articleListLink.setAttribute('aria-current', 'page');
-            articleListLink.classList.remove('text-gray-300', 'hover:bg-gray-700', 'hover:text-white');
-            articleListLink.classList.add('bg-gray-900', 'text-white');
-        } else if (currentPage === '/createpost') {
-            createPostLink.setAttribute('aria-current', 'page');
-            createPostLink.classList.remove('text-gray-300', 'hover:bg-gray-700', 'hover:text-white');
-            createPostLink.classList.add('bg-gray-900', 'text-white');
-        }
-        else if (currentPage === '/') {
-            homeLink.setAttribute('aria-current', 'page');
-            homeLink.classList.remove('text-gray-300', 'hover:bg-gray-700', 'hover:text-white');
-            homeLink.classList.add('bg-gray-900', 'text-white');
-        }
+        createPostLink.addEventListener('click', (event) => {
+            event.preventDefault();
+            window.location.href = '/writer/create-post';
+        });
     </script>
 </body>
 </html>

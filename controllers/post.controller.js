@@ -114,15 +114,17 @@ export const postImageHandler = expressAsyncHandler(async (req, res) => {
  *   + 404/NotFound: renders pages/404
  */
 export const getPostIdHandler = expressAsyncHandler(async (req, res) => {
-  const [post, categories, comments, related] = await Promise.all([
+  const [post, categories] = await Promise.all([
     getPost(req.params.id),
     getAllCategories(),
-    getCommentsForPost(req.params.id),
-    getRelatedPosts(req.params.id),
+  ]);
+  const [comments, related] = await Promise.all([
+    getCommentsForPost(post._id),
+    getRelatedPosts(post._id),
   ]);
 
   // 404 if not found.
-  if (post.length == 0) {
+  if (post == null) {
     res.render("layouts/main-layout", {
       title: "Page not found",
       description:
@@ -134,7 +136,7 @@ export const getPostIdHandler = expressAsyncHandler(async (req, res) => {
   }
 
   // 401 if post is premium and clearance level <= 1 and no subscription.
-  if (post[0].premium) {
+  if (post.premium) {
     const userInfo = req.session.userInfo;
     if (!userInfo || !(await canViewPremium(userInfo.id))) {
       res.render("layouts/main-layout", {
@@ -149,12 +151,12 @@ export const getPostIdHandler = expressAsyncHandler(async (req, res) => {
 
   // 200 and show if everything passed.
   res.render("layouts/main-layout", {
-    title: post[0].name,
-    description: post[0].abstract,
+    title: post.name,
+    description: post.abstract,
     content: "../pages/article",
     categories,
     comments,
     related,
-    post: post[0],
+    post,
   });
 });
