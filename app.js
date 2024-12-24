@@ -5,7 +5,9 @@ import session from "express-session";
 import createMemoryStore from "memorystore";
 import path from "path";
 import { fileURLToPath } from "url";
+import { getAllCategories } from "./queries/categories.query.js";
 import mainRouter from "./routes/index.js";
+const categories = getAllCategories();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,22 +45,19 @@ app.use(
 );
 
 app.use("/", mainRouter);
+export default app;
 
-// Catch all handler for error routes.
-app.use((err, req, res, next) => {
-  if (!err) next();
-  console.log(err);
+//Catch all handler for error routes.
+app.use((req, res, next) => {
   res.render("layouts/main-layout", {
     title: "Internal Server Error",
     description:
       "Landing page for when a route produced an error, basically the server's fault and not the user's.",
-    categories: null,
+    categories,
     content: "../pages/500",
-    message: err,
+    //message: err,
   });
 });
-
-export default app;
 
 app.use("/postlist", mainRouter);
 app.use("/createpost", mainRouter);

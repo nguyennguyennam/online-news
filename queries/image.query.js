@@ -4,7 +4,7 @@ This module involves retrieving/sending files to S3 storage.
 
 import { HeadObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import crypto from "crypto";
-import { s3 } from "./db";
+import { s3 } from "./db.js";
 
 /**
  * Attempts to post an image on S3.

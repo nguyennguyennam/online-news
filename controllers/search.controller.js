@@ -1,7 +1,7 @@
 import expressAsyncHandler from "express-async-handler";
 import { z } from "zod";
-import { getAllCategories } from "../queries/categories.query";
-import { getAllPosts } from "../queries/posts.query";
+import { getAllCategories } from "../queries/categories.query.js";
+import { getAllPosts } from "../queries/posts.query.js";
 
 /**
  * GET /search: Retrieves all posts.

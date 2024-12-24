@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import commentModel from "../model/comment.model";
+import commentModel from "../model/comment.model.js";
 
 /**
  * Resolves an array of comments on posts.

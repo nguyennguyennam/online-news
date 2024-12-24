@@ -1,21 +1,19 @@
 import bcrypt from "bcryptjs";
-import dotenv from "dotenv";
 import nodemailer from "nodemailer";
 import passport from "passport";
 import userModel from "../model/user.model.js";
+import { getAllCategories } from "../queries/categories.query.js";
 import { saved_user } from "../queries/common.query.js";
-dotenv.config();
 
+const categories = getAllCategories();
 // Render trang đăng ký
 export function renderRegister(req, res) {
-  //const message = req.session.message || null; // Lấy thông báo từ session
-  //req.session.message = null; // Xóa thông báo sau khi hiển thị
 
   res.render("layouts/main-layout", {
     title: "Register",
     description: "This is a register page",
     content: "../pages/register",
-    categories: null,
+    categories
   });
 }
 
@@ -23,36 +21,37 @@ export function renderOTP(req, res) {
   res.render("layouts/main-layout", {
     title: "OTP pass",
     description: "This is an OTP page",
-    content: "../pages/otp",
-    categories: null,
+    content: "../pages/otp_page",
+    categories,
     email: req.session.User,
   });
 }
 
 // Render trang đăng nhập
 export function renderLogin(req, res) {
+  const categories = null; // Explicitly set categories
   res.render("layouts/main-layout", {
     title: "Log In",
     description: "This is a login page",
-    categories: null,
+    categories,
     content: "../pages/login",
   });
 }
-export function renderReset_pass(req, res) {
+export function renderResetPass(req, res) {
   res.render("layouts/main-layout", {
     title: "Reset Password",
     description: "This is a reset password page",
     content: "../pages/reset-password",
-    categories: null,
+    categories,
   });
 }
 
-export function render_NewPass(req, res) {
+export function renderNewPass(req, res) {
   res.render("layouts/main-layout", {
     title: "Save new password for user",
     description: "This page allows users to enter their new passwords",
     content: "../pages/new_password",
-    categories: null,
+    categories,
     email: req.session.User,
   });
 }
@@ -117,7 +116,7 @@ export async function loginUserController(req, res) {
       role: user.clearance,
     };
 
-    return res.redirect("/home");
+    return res.redirect("/");
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).render("layouts/main-layout", {

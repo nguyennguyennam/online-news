@@ -1,9 +1,9 @@
 import expressAsyncHandler from "express-async-handler";
-import { getAllCategories } from "../queries/categories.query";
-import { getCommentsForPost } from "../queries/comments.query";
-import { postImage } from "../queries/image.query";
-import { getPost, getRelatedPosts } from "../queries/posts.query";
-import { canViewPremium, getClearanceLevel } from "../queries/users.query";
+import { getAllCategories } from "../queries/categories.query.js";
+import { getCommentsForPost } from "../queries/comments.query.js";
+import { postImage } from "../queries/image.query.js";
+import { getPost, getRelatedPosts } from "../queries/posts.query.js";
+import { canViewPremium, getClearanceLevel } from "../queries/users.query.js";
 
 /**
  * GET /post: Displays the WYSIWYG editor. (?)
