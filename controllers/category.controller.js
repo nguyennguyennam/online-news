@@ -41,6 +41,7 @@ export const getPostByCatController = expressAsyncHandler(async (req, res) => {
       description: "Category was not found",
       categories,
       content: "../pages/404",
+      userInfo: req.session?.userInfo,
     });
     return;
   }
@@ -64,6 +65,7 @@ export const getPostByCatController = expressAsyncHandler(async (req, res) => {
     path: req.path,
     category: parentCat,
     articles,
+    userInfo: req.session?.userInfo,
     content: "../pages/category-grid",
   });
 });
@@ -102,6 +104,7 @@ export const getPostsByChildCatController = expressAsyncHandler(
         description: "Category was not found",
         categories,
         content: "../pages/404",
+        userInfo: req.session?.userInfo,
       });
       return;
     }
@@ -129,6 +132,7 @@ export const getPostsByChildCatController = expressAsyncHandler(
       articles,
       path: req.path,
       category: category,
+      userInfo: req.session?.userInfo,
       content: "../pages/category-grid",
     });
   },

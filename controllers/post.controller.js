@@ -1,8 +1,13 @@
 import expressAsyncHandler from "express-async-handler";
+import { z } from "zod";
 import { getAllCategories } from "../queries/categories.query.js";
 import { getCommentsForPost } from "../queries/comments.query.js";
 import { postImage } from "../queries/image.query.js";
-import { getPost, getRelatedPosts } from "../queries/posts.query.js";
+import {
+  createPost,
+  getPost,
+  getRelatedPosts,
+} from "../queries/posts.query.js";
 import { canViewPremium, getClearanceLevel } from "../queries/users.query.js";
 
 /**
@@ -34,6 +39,7 @@ export const getPostHandler = expressAsyncHandler(async (req, res) => {
       title: "Unauthorized",
       description: "You are not authorized to view that resource.",
       content: "../pages/401",
+      userInfo: req.session?.userInfo,
       categories,
     });
     return;
@@ -42,10 +48,73 @@ export const getPostHandler = expressAsyncHandler(async (req, res) => {
   res.render("layouts/main-layout", {
     title: "Write a post",
     description: "A text editor for writing a post.",
-    content: "../writer/create-post",
+    content: "../pages/create-post",
+    userInfo: req.session?.userInfo,
     categories: null,
+    availCategories: categories.flatMap((n) =>
+      n.children.map((c) => ({ ...c, name: `${n.name} / ${c.name}` })),
+    ),
     tinymce: true,
   });
+});
+
+/**
+ * POST /post: Endpoint for posting a new article.
+ *
+ * - Clearance Level: 2 (Writer)
+ * - Object Class: Euclid
+ * - Special Containment Procedures:
+ *   + Mutates the S3 storage.
+ *   + Mutates the collection posts.
+ */
+export const postPostHandler = expressAsyncHandler(async (req, res) => {
+  if (
+    !req.session.userInfo ||
+    (await getClearanceLevel(req.session.userInfo.id)) < 2
+  ) {
+    res.redirect("/");
+    return;
+  }
+
+  const categories = await getAllCategories();
+  const largeThumbnail = req.files["thumbnail-large"][0];
+  const smallThumbnail = req.files["thumbnail-small"][0];
+  const schema = z.object({
+    name: z.string(),
+    summary: z.string(),
+    content: z.string(),
+    category: z.string(),
+    tags: z.string(),
+    premium: z.coerce.boolean().default(false),
+  });
+  const body = schema.safeParse(req.body);
+
+  if (body.error) {
+    res.redirect("/post");
+    return;
+  }
+
+  const id = req.session.userInfo.id;
+  const [largeUrl, smallUrl] = await Promise.all([
+    postImage(id, largeThumbnail.buffer, largeThumbnail.mimetype),
+    postImage(id, smallThumbnail.buffer, smallThumbnail.mimetype),
+  ]);
+
+  await createPost({
+    writer: id,
+    name: body.data.name,
+    abstract: body.data.summary,
+    thumbnail: {
+      large: largeUrl,
+      small: smallUrl,
+    },
+    category: body.data.category,
+    tags: body.data.tags,
+    content: body.data.content,
+    premium: body.data.premium,
+  });
+
+  res.redirect("/works");
 });
 
 /**
@@ -61,7 +130,6 @@ export const getPostHandler = expressAsyncHandler(async (req, res) => {
  *   + 401/Unauthorized: Not enough clearance level.
  */
 export const postImageHandler = expressAsyncHandler(async (req, res) => {
-  console.log(req.files);
   if (
     !req.session.userInfo ||
     (await getClearanceLevel(req.session.userInfo.id)) < 2
@@ -131,6 +199,7 @@ export const getPostIdHandler = expressAsyncHandler(async (req, res) => {
         "Landing page for when the requested resource could not be found.",
       content: "../pages/404",
       categories,
+      userInfo: req.session?.userInfo,
     });
     return;
   }
@@ -144,6 +213,7 @@ export const getPostIdHandler = expressAsyncHandler(async (req, res) => {
         description: "You are not authorized to view that resource.",
         content: "../pages/401",
         categories,
+        userInfo: req.session?.userInfo,
       });
       return;
     }
@@ -158,5 +228,6 @@ export const getPostIdHandler = expressAsyncHandler(async (req, res) => {
     comments,
     related,
     post,
+    userInfo: req.session?.userInfo,
   });
 });

@@ -8,6 +8,7 @@ import { hasSubscription } from "./users.query.js";
 // .populate understands where "Tag" is.
 // Don't remove this.
 import "../model/tag.model.js";
+import { getOrCreate } from "./tag.query.js";
 
 /**
  * Retrieves a list of 4 posts that are "featured". Featured posts
@@ -268,4 +269,32 @@ export async function getPostsTagged(tag) {
     })
     .match({ tags: { $elemMatch: { tag } } })
     .sort({ publishedDate: -1 });
+}
+
+/**
+ * Creates a new post with the provided data.
+ *
+ * @param {any} param0 post data
+ */
+export async function createPost({
+  writer,
+  name,
+  abstract,
+  category,
+  tags,
+  content,
+  premium,
+  thumbnail,
+}) {
+  const tagIds = await Promise.all(tags.split(",").map(getOrCreate));
+  await Post.create({
+    writer,
+    name,
+    abstract,
+    category,
+    tags: tagIds.map((it) => it._id),
+    thumbnail,
+    content,
+    premium,
+  });
 }

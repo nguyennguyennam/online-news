@@ -145,9 +145,9 @@ export async function delete_Cat(del_cat) {
 }
 
 export async function fetch_sub_Cat() {
-  return await categoryModel.find ({
-    "parent": {$ne: null}
-  })
+  return await categoryModel.find({
+    parent: { $ne: null },
+  });
 }
 
 /**
@@ -167,8 +167,15 @@ export async function createCategory(name, parent) {
  * @param  {...string} names
  */
 export async function insertCategories(parent, ...names) {
-  const parentId = parent ? await Category.findOne({ name: parent }) : null;
+  let parentId = parent
+    ? (await Category.findOne({ name: parent }))?._id || null
+    : null;
+  if (parentId == null) {
+    const p = await createCategory(parent);
+    parentId = p._id;
+  }
+
   return await Category.insertMany(
-    names.map((name) => ({ name, parent: parentId?._id })),
+    names.map((name) => ({ name, parent: parentId })),
   );
 }

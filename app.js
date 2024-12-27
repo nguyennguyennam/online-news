@@ -1,6 +1,5 @@
 import "dotenv/config";
 import express from "express";
-import fileUpload from "express-fileupload";
 import session from "express-session";
 import createMemoryStore from "memorystore";
 import path from "path";
@@ -18,19 +17,11 @@ const store = createMemoryStore(session);
 // 3. Open path to src/views for res.render.
 // 4. Auto-accept JSON if Content-Type: application/json is found.
 // 5. Auto-accept query parameters.
-// 6. Accept file upload routes.
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.set("views", path.join(__dirname, "src", "views"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  fileUpload({
-    limits: {
-      fileSize: 10 * 1024 * 1024, // 10MB limit.
-    },
-  }),
-);
 
 app.use(
   session({
@@ -42,16 +33,22 @@ app.use(
   }),
 );
 
+app.get("/fake", async (req, res) => {
+  res.status(200).json({});
+});
+
 app.use("/", mainRouter);
 export default app;
 
 //Catch all handler for error routes.
-app.use((req, res, next) => {
+app.use((err, req, res, next) => {
+  console.log(err);
   res.render("layouts/main-layout", {
     title: "Internal Server Error",
     description:
       "Landing page for when a route produced an error, basically the server's fault and not the user's.",
     content: "../pages/500",
     message: err,
+    userInfo: req.session?.userInfo,
   });
 });

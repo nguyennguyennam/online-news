@@ -7,6 +7,7 @@ import searchRouter from "./search.route.js";
 import tagRouter from "./tag.route.js";
 import userRouter from "./user.routes.js";
 import writerRouter from "./writer.route.js";
+
 const mainRouter = express.Router();
 
 mainRouter.use("/search", searchRouter);

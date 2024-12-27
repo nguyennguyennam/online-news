@@ -14,6 +14,9 @@ const postSchema = new mongoose.Schema({
   writtenDate: {
     type: Date,
     required: true,
+    default: function () {
+      return new Date();
+    },
   },
   publishedDate: Date,
   state: {
