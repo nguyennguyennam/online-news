@@ -20,7 +20,6 @@ export const getPostsHandler = expressAsyncHandler(async (req, res) => {
     return;
   }
 
-  console.log(req.session?.userInfo);
   const posts = await getPostsBy(userId);
   res.render("layouts/main-layout", {
     title: "My posts",

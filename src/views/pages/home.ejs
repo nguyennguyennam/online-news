@@ -97,6 +97,12 @@
               Posted Date: <%= article.publishedDate.toLocaleString("vi-VN") %>
             </p>
           </div>
+
+          <div class="flex w-full">
+            <h5 class="text-right text-sm font-semibold">
+              <%= article.views %> view<%= article.views == 1 ? "" : "s" %>
+            </h5>
+          </div>
         </article>
       </a>
       <% }) %>
