@@ -272,9 +272,46 @@ export async function getPostsTagged(tag) {
 }
 
 /**
+ * Retrieves posts written by the ID.
+ *
+ * @param {string} writerId
+ * @returns {Promise<Array<any>>}
+ */
+export async function getPostsBy(writerId) {
+  return Post.aggregate()
+    .match({ writer: new mongoose.Types.ObjectId(writerId) })
+    .lookup({
+      from: "categories",
+      localField: "category",
+      foreignField: "_id",
+      as: "category",
+    })
+    .unwind("$category")
+    .lookup({
+      from: "tags",
+      localField: "tags",
+      foreignField: "_id",
+      as: "tags",
+    })
+    .sort({ writtenDate: -1 });
+
+  return Post.find({ _id: writerId });
+}
+
+/**
+ * Adds one view to the post.
+ *
+ * @param {string} postId
+ */
+export async function increaseView(postId) {
+  await Post.updateOne({ _id: postId }, { $inc: { views: 1 } });
+}
+
+/**
  * Creates a new post with the provided data.
  *
  * @param {any} param0 post data
+ * @returns {any}
  */
 export async function createPost({
   writer,
@@ -287,12 +324,13 @@ export async function createPost({
   thumbnail,
 }) {
   const tagIds = await Promise.all(tags.split(",").map(getOrCreate));
-  await Post.create({
+  return await Post.create({
     writer,
     name,
     abstract,
     category,
     tags: tagIds.map((it) => it._id),
+    state: "draft",
     thumbnail,
     content,
     premium,

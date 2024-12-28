@@ -7,6 +7,7 @@ import {
   createPost,
   getPost,
   getRelatedPosts,
+  increaseView,
 } from "../queries/posts.query.js";
 import { canViewPremium, getClearanceLevel } from "../queries/users.query.js";
 
@@ -100,7 +101,7 @@ export const postPostHandler = expressAsyncHandler(async (req, res) => {
     postImage(id, smallThumbnail.buffer, smallThumbnail.mimetype),
   ]);
 
-  await createPost({
+  const post = await createPost({
     writer: id,
     name: body.data.name,
     abstract: body.data.summary,
@@ -113,8 +114,7 @@ export const postPostHandler = expressAsyncHandler(async (req, res) => {
     content: body.data.content,
     premium: body.data.premium,
   });
-
-  res.redirect("/works");
+  res.redirect(`/edit/${post._id}`);
 });
 
 /**
@@ -218,6 +218,8 @@ export const getPostIdHandler = expressAsyncHandler(async (req, res) => {
       return;
     }
   }
+
+  await increaseView(post._id);
 
   // 200 and show if everything passed.
   res.render("layouts/main-layout", {

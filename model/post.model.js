@@ -22,6 +22,7 @@ const postSchema = new mongoose.Schema({
   state: {
     type: String,
     enum: ["draft", "denied", "approved", "published"],
+    default: "draft",
   },
   thumbnail: {
     small: {
@@ -80,6 +81,7 @@ const postSchema = new mongoose.Schema({
     required: true,
     default: false,
   },
+  deniedReason: String,
 });
 
 const Post = mongoose.model("Post", postSchema, "posts");

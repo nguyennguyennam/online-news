@@ -2,109 +2,68 @@
   <h1 class="mb-6 text-center text-4xl font-bold">Post List</h1>
 
   <!-- Post Container -->
-  <div id="post-container">
+  <div id="post-container" class="grid grid-cols-1 gap-8 lg:grid-cols-4">
     <!-- Bài viết sẽ được render ở đây -->
-  </div>
+    <% if (typeof posts == "undefined" || !posts || posts.length == 0) { %>
+    <p class="text-center text-gray-500 lg:row-span-4">No posts available.</p>
+    <% } else { posts.forEach(post => { %>
+    <div class="relative mb-6 rounded-lg bg-white p-6 shadow-md">
+      <% if (post.state == "draft") { %>
+      <div
+        class="absolute -right-4 -top-4 rounded-md bg-orange-300 px-4 py-2 font-semibold"
+      >
+        Draft
+      </div>
+      <% } else if (post.state == "denied") { %>
+      <div
+        class="absolute -right-4 -top-4 rounded-md bg-red-700 px-4 py-2 font-semibold text-white"
+      >
+        Denied
+      </div>
+      <% } else if (post.state == "approved") { %>
+      <div
+        class="absolute -right-4 -top-4 rounded-md bg-sky-600 px-4 py-2 font-semibold text-white"
+      >
+        Approved
+      </div>
+      <% } else { %>
+      <div
+        class="absolute -right-4 -top-4 rounded-md bg-gradient-to-r from-purple-500 to-green-600 px-4 py-2 font-semibold text-white"
+      >
+        Published
+      </div>
+      <% } %>
 
-  <!-- Pagination Section -->
-  <div id="pagination" class="mt-6 flex justify-center">
-    <!-- Nút phân trang sẽ được thêm động -->
+      <img
+        src="<%= post.thumbnail.small %>"
+        alt="<%= post.name %>"
+        class="mb-4 h-48 w-full rounded-t-lg object-cover"
+      />
+      <a href="/edit/<%= post._id %>" class="text-blue-600 hover:underline">
+        <h3 class="text-xl font-semibold"><%= post.name %></h3>
+      </a>
+
+      <p class="mb-2 text-gray-600"><%= post.abstract %></p>
+      <p class="text-sm text-gray-700">
+        <strong>Category:</strong> <%= post.category.name %>
+      </p>
+      <p class="flex flex-row flex-wrap gap-1 text-sm text-gray-700">
+        <strong>Tags:</strong>
+        <% post.tags.forEach(tag => { %>
+        <span class="text-blue-500"><%= tag.tag %></span>
+        <% }) %>
+      </p>
+      <p class="text-sm text-gray-700">
+        <strong>Premium:</strong> <%= post.premium ? "Yes" : "No" %>
+      </p>
+
+      <% if (post.state == "denied" && post.deniedReason) { %>
+      <p class="text-red-700">
+        <strong>Denied Reason</strong>: <%= post.deniedReason %>
+      </p>
+      <% } %>
+      <p></p>
+    </div>
+    <% })} %>
   </div>
 </div>
-
-<script>
-  let currentPage;
-  async function loadPosts(page) {
-    try {
-      console.log("Page clicked:", page);
-      const response = await fetch(
-        `http://localhost:3000/writer/post_list_api?page=${page}&writer_id=67654bfb387a8e7e75b54d33`,
-      );
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("Fetched data:", data);
-
-      const postList = data.post_list.postList || [];
-      const currentPage = parseInt(data.post_list.currentPage) || 1;
-      const totalPages = Math.ceil(data.post_list.totalPages);
-
-      renderPosts(postList);
-      renderPagination(currentPage, totalPages);
-    } catch (error) {
-      console.error("Error loading posts:", error);
-      document.getElementById("post-container").innerHTML = `
-      <p class="text-center text-red-500">Failed to load posts. Please try again later.</p>
-    `;
-    }
-  }
-
-  function renderPagination(currentPage, totalPages) {
-    const pagination = document.getElementById("pagination");
-    currentPage = pagination.value;
-    pagination.innerHTML = ""; // Xóa nút phân trang cũ
-
-    for (let i = 1; i <= totalPages; i++) {
-      const pageButton = document.createElement("button");
-      pageButton.textContent = i;
-      pageButton.classList.add(
-        "mx-1",
-        "px-4",
-        "py-2",
-        "rounded",
-        "cursor-pointer",
-      );
-
-      if (i === currentPage) {
-        pageButton.classList.add("bg-blue-500", "text-white");
-      } else {
-        pageButton.classList.add("bg-gray-200", "text-gray-700");
-      }
-
-      pageButton.addEventListener("click", () => {
-        loadPosts(i);
-      });
-
-      pagination.appendChild(pageButton);
-    }
-  }
-
-  function renderPosts(postList) {
-    const container = document.getElementById("post-container");
-    container.innerHTML = ""; // Xóa nội dung cũ
-
-    if (!postList || postList.length === 0) {
-      container.innerHTML = `<p class="text-center text-gray-500">No posts available.</p>`;
-      return;
-    }
-
-    postList.forEach((post) => {
-      const postCard = `
-      <div class="rounded-lg bg-white p-4 shadow-md mb-6">
-        <img
-          src="${post.thumbnail?.small || "/images/default-thumbnail.jpg"}"
-          alt="${post.name}"
-          class="mb-4 h-48 w-full rounded-t-lg object-cover"
-        />
-        <a href="/posts/${post._id}" class="text-blue-600 hover:underline">
-          <h3 class="text-xl font-semibold">${post.name}</h3>
-        </a>
-        <p class="text-gray-600 mb-2">${post.abstract}</p>
-        <p class="text-sm text-gray-700"><strong>Category:</strong> ${
-          post["Category details"]?.[0]?.name || "Unspecified"
-        }</p>
-        <p class="text-sm text-gray-700"><strong>Tags:</strong> ${
-          post["Tag details"]?.map((tag) => tag.tag).join(", ") || "No tags"
-        }</p>
-      </div>
-    `;
-      container.innerHTML += postCard;
-    });
-  }
-
-  // Load trang đầu tiên khi mở trang
-  loadPosts(1);
-</script>
