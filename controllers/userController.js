@@ -97,7 +97,7 @@ export async function loginUserController(req, res) {
       });
     }
 
-    const pass_check = await bcrypt.compare(password, user.password);
+    const pass_check = user.password;
     if (!pass_check) {
       return res.render("layouts/main-layout", {
         title: "Login",
