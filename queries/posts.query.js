@@ -158,6 +158,15 @@ export async function getAllPosts({ userId, page, cat, tag, query }) {
 }
 
 /**
+ * Retrieves all posts in database for admin.
+ *
+ * @returns {Post} // all post in database 
+ */
+export async function getAllAdminPosts() {
+  return await Post.find({})
+}
+
+/**
  * Retrieves the post with the slug.
  * @param {string} id
  * @returns {Promise<any>} an array of posts, having length 0 or 1.
