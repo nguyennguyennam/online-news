@@ -1,8 +1,8 @@
 import expressAsyncHandler from "express-async-handler";
-import { getAllCategories } from "../queries/categories.query";
-import { get_all_tags } from "../queries/tag.query";
-import { getAllUsers } from "../queries/users.query";
-import { getAllAdminPosts } from "../queries/posts.query";
+import { getAllCategories, updateCat } from "../queries/categories.query.js";
+import { getAllAdminPosts } from "../queries/posts.query.js";
+import { get_all_tags } from "../queries/tag.query.js";
+import { getAllUsers } from "../queries/users.query.js";
 /**
  * GET /admin: Main admin tool page.
  *
@@ -19,7 +19,7 @@ export const getAdminHandler = expressAsyncHandler(async (req, res) => {
 });
 
 /**
- * GET /admin/categories: View all categories page.
+ * GET /admin/categories: View all categories in the database.
  *
  * - Clearance Level: 4
  * - Object Class: Safe
@@ -70,3 +70,18 @@ export const getAdminPostsHandler = expressAsyncHandler(async (req, res) => {
     userInfo: req.session?.userInfo,
   });
 });
+
+export const update_cat_by_admin = async (req, res) => {
+  const { categoryId } = req.body;
+  // Debugging: Log the categoryId to check if it's being passed correctly
+  console.log("Category ID:", categoryId);
+
+  // Validate categoryId
+  if (!categoryId || categoryId.trim() === "") {
+    console.error("Error: Category ID is empty or invalid.");
+    return res.status(400).send("Category ID is empty or invalid.");
+  }
+  // Extract categoryId and name from req.body
+  const update_cat = updateCat(categoryId);
+  res.redirect("/admin/categories");
+};
