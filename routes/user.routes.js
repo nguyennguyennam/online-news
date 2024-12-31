@@ -1,9 +1,9 @@
 import express from "express";
 import {
-  facebookCallbackController,
   fetchEmail,
+  GoogleCallbackController,
   loginUserController,
-  loginWithFacebook,
+  loginWithGoogle,
   registerUserController,
   render_NewPass,
   renderLogin,
@@ -28,10 +28,10 @@ router.get("/verify-otp", renderOTP);
 router.post("/verify-otp", verifyOtpController);
 router.get("/set-new-password", render_NewPass);
 router.post("/set-new-password", saveNewPasswordController);
-router.get("/facebook", loginWithFacebook);
-router.get("/facebook/callback", facebookCallbackController);
+router.get("/google", loginWithGoogle);
+router.get("/auth/google/callback", GoogleCallbackController);
 router.get("/logout", (req, res) => {
   req.session.destroy();
-  res.redirect("/home"); // Chuyển về trang home sau khi đăng xuất
+  res.redirect("/"); // Chuyển về trang home sau khi đăng xuất
 });
 export default router;

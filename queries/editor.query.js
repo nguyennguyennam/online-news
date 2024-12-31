@@ -65,7 +65,6 @@ export async function checkPost(
 /**
  * Fetch all posts in "Draft" state and their categories that are managed by the specified editor.
  */
-
  export const posts_fetched = async(id_editor) => {
     const editor = await editorModel.findById(id_editor);
     const categories = editor.authorizedCategories;

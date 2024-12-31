@@ -5,6 +5,7 @@ import createMemoryStore from "memorystore";
 import path from "path";
 import { fileURLToPath } from "url";
 import mainRouter from "./routes/index.js";
+import passport from "./config/passport.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -48,3 +49,6 @@ app.use((err, req, res, next) => {
     userInfo: req.session?.userInfo,
   });
 });
+
+app.use(passport.initialize());
+app.use(passport.session());
