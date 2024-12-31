@@ -2,105 +2,26 @@ import postModel from "../model/post.model";
 import editorModel from "../model/editor.model";
 import categoryModel from "../model/category.model";
 import tagModel from "../model/tag.model";
+import { promise } from "zod";
 
-export async function getEditorCategories(editor_id) {
-  const result = await editorModel.aggregate([
-    // Lọc editor theo editor_id
-    {
-      $match: {
-        user: mongoose.Types.ObjectId(editor_id),
-      },
-    },
-    // Join với bảng categories để lấy thông tin chi tiết danh mục
-    {
-      $lookup: {
-        from: "categories", // Tên collection categories
-        localField: "authorizedCategories", // Trường trong editors
-        foreignField: "_id", // Trường trong categories
-        as: "categoryDetails", // Tên trường chứa dữ liệu join
-      },
-    },
-    // Giữ lại các trường cần thiết
-    {
-      $project: {
-        _id: 0, // Không trả về _id của editor
-        categoryDetails: {
-          _id: 1, // ID của danh mục
-          name: 1, // Tên của danh mục
-        },
-      },
-    },
-  ]);
-
-  if (result.length === 0) {
-    throw new Error("Editor not found or no categories found");
-  }
-
-  // Trả về danh sách danh mục
-  return result[0].categoryDetails;
-}
-
-export async function list_draft(editor_id, page = 1, limit = 5) {
-  // Lấy danh mục mà editor quản lý
-  const authorizedCategories = await getEditorCategories(editor_id);
-
-  // Trích xuất danh sách ID từ danh mục
-  const categoryIds = authorizedCategories.map((category) => category._id);
-
-  let list_posts = await postModel.aggregate([
-    // Lọc các bài viết ở trạng thái "draft"
-    {
-      $match: {
-        state: "draft",
-        category: { $in: categoryIds }, // Chỉ lấy bài viết thuộc danh mục mà editor quản lý
-      },
-    },
-    // Join với bảng categories để lấy thông tin chi tiết danh mục của bài viết
-    {
-      $lookup: {
-        from: "categories", // Collection category
-        localField: "category",
-        foreignField: "_id",
-        as: "categoryInfo",
-      },
-    },
-    // Giải nén mảng categoryInfo
-    {
-      $unwind: "$categoryInfo",
-    },
-    {
-      $skip: (page - 1) * limit,
-    },
-    {
-      $limit: limit,
-    },
-    // Chỉ chọn các trường cần thiết trả về
-    {
-      $project: {
-        _id: 1,
-        name: 1, // Tên bài viết
-        category: "$categoryInfo.name", // Tên danh mục
-        state: 1,
-        writtenDate: 1,
-      },
-    },
-  ]);
-  const total_Draft_post = await postModel.countDocuments({
-    state: "Draft",
-    category: { $in: categoryIds },
-  });
-  const totalPage = total_Draft_post / limit + 1;
-  return {
-    list_posts,
-    pagination: {
-      currentPage: page,
-      totalPage,
-      limit: limit,
-    },
-  };
-}
-
+/**
+ * Handles the approval or denial of a post.
+ *
+ * This function checks the status of the post and performs the corresponding action:
+ * - If the status is 'deny', the post's state is set to 'deny', and the reason for denial is recorded.
+ * - If the status is 'approved', it checks if the provided publish date is in the future,
+ *   then updates the post with the approved state, category, tags, and published date.
+ *
+ * @param {string} status The status of the post ('deny' or 'approved').
+ * @param {string} post_id The ID of the post to be updated.
+ * @param {string} reason The reason for denying the post (if status is 'deny').
+ * @param {string} category The category to be assigned to the post (if status is 'approved').
+ * @param {Array} tags The tags to be assigned to the post (if status is 'approved').
+ * @param {Date} datePublish The date when the post will be published (if status is 'approved').
+ * @returns The updated post after applying the status change.
+ */
 export async function checkPost(
+  editor_id,
   status,
   post_id,
   reason,
@@ -113,32 +34,43 @@ export async function checkPost(
   }
 
   if (status === "deny") {
-    // Xử lý từ chối bài viết
     return await postModel.findByIdAndUpdate(
-      post_id, // Truy vấn dựa trên _id
+      post_id, 
       {
+        editor: editor_id,
         state: status,
-        reason_of_deny: reason, // Lý do từ chối
+        reason_of_deny: reason, // Reason for denial
       },
-      { new: true }, // Trả về bài viết đã cập nhật
+      { new: true }, 
     );
   } else if (status === "approved") {
-    // Kiểm tra ngày xuất bản hợp lệ
     const now = new Date();
     if (new Date(datePublish) < now) {
       throw new Error("Publish date must be in the future.");
     }
-
-    // Xử lý duyệt bài viết
     return await postModel.findByIdAndUpdate(
-      post_id, // Truy vấn dựa trên _id
+      post_id, 
       {
+        editor: editor_id,
         state: status,
-        category: category, // Chuyên mục
-        tags: tags, // Nhãn
-        publishedDate: datePublish, // Ngày xuất bản
+        category: category, 
+        tags: tags, // Tags
+        publishedDate: datePublish, 
       },
-      { new: true }, // Trả về bài viết đã cập nhật
+      { new: true },
     );
   }
 }
+
+/**
+ * Fetch all posts in "Draft" state and their categories that are managed by the specified editor.
+ */
+
+ export const posts_fetched = async(id_editor) => {
+    const editor = await editorModel.findById(id_editor);
+    const categories = editor.authorizedCategories;
+    return await postModel.find(
+      {category: { $in: categories },
+       state: "draft"
+    })
+  };

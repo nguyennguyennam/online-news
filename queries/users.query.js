@@ -12,3 +12,5 @@ export async function hasSubscription(userId) {
     user.subscription && user.subscription.getTime() > new Date().getTime()
   );
 }
+
+
