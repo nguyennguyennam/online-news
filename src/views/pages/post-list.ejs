@@ -2,33 +2,43 @@
   <h1 class="mb-6 text-center text-4xl font-bold">Post List</h1>
 
   <!-- Post Container -->
+  <% states.forEach(state => { %>
+  <h2 class="text-2xl font-semibold">
+    <%= state.slice(0, 1).toUpperCase() %><%= state.slice(1).toLowerCase() %>
+  </h2>
+
   <div id="post-container" class="grid grid-cols-1 gap-8 lg:grid-cols-4">
     <!-- Bài viết sẽ được render ở đây -->
-    <% if (typeof posts == "undefined" || !posts || posts.length == 0) { %>
-    <p class="text-center text-gray-500 lg:row-span-4">No posts available.</p>
-    <% } else { posts.forEach(post => { %>
+    <% if (typeof posts == "undefined" || !posts || posts.filter(post =>
+    post.state == state).length == 0) { %>
+    <p
+      class="my-4 w-full text-center text-gray-500 lg:col-start-1 lg:col-end-5"
+    >
+      No posts available.
+    </p>
+    <% } else { posts.filter(post => post.state == state).forEach(post => { %>
     <div class="relative mb-6 rounded-lg bg-white p-6 shadow-md">
       <% if (post.state == "draft") { %>
       <div
-        class="absolute -right-4 -top-4 rounded-md bg-orange-300 px-4 py-2 font-semibold"
+        class="absolute right-4 top-4 rounded-md bg-orange-300 px-4 py-2 font-semibold"
       >
         Draft
       </div>
       <% } else if (post.state == "denied") { %>
       <div
-        class="absolute -right-4 -top-4 rounded-md bg-red-700 px-4 py-2 font-semibold text-white"
+        class="absolute right-4 top-4 rounded-md bg-red-700 px-4 py-2 font-semibold text-white"
       >
         Denied
       </div>
       <% } else if (post.state == "approved") { %>
       <div
-        class="absolute -right-4 -top-4 rounded-md bg-sky-600 px-4 py-2 font-semibold text-white"
+        class="absolute right-4 top-4 rounded-md bg-sky-600 px-4 py-2 font-semibold text-white"
       >
         Approved
       </div>
       <% } else { %>
       <div
-        class="absolute -right-4 -top-4 rounded-md bg-gradient-to-r from-purple-500 to-green-600 px-4 py-2 font-semibold text-white"
+        class="absolute right-4 top-4 rounded-md bg-gradient-to-r from-purple-500 to-green-600 px-4 py-2 font-semibold text-white"
       >
         Published
       </div>
@@ -66,4 +76,5 @@
     </div>
     <% })} %>
   </div>
+  <% }) %>
 </div>

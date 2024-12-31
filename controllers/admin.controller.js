@@ -3,6 +3,7 @@ import { getAllCategories, updateCat } from "../queries/categories.query.js";
 import { getAllAdminPosts } from "../queries/posts.query.js";
 import { get_all_tags } from "../queries/tag.query.js";
 import { getAllUsers } from "../queries/users.query.js";
+
 /**
  * GET /admin: Main admin tool page.
  *
