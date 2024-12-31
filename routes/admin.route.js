@@ -6,8 +6,8 @@ import {
   getAdminTagsHandler,
   getAdminUsersHandler,
   update_cat_by_admin,
-} from "../controllers/admin.controller";
-import { clearanceCheck } from "../controllers/middlewares";
+} from "../controllers/admin.controller.js";
+import { clearanceCheck } from "../controllers/middlewares.js";
 
 const adminRouter = express.Router();
 adminRouter

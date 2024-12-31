@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Draft Articles Review</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50">
+  <main class="py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="text-3xl font-bold mb-6 text-gray-800 border-b pb-2">Danh sách bài viết draft</h1>
+      <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Tiêu đề</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Tác giả</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Tóm tắt</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Chuyên mục</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Nhãn</th>
+              <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">Hành động</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200" id="draft-articles">
+            <!-- Dữ liệu sẽ được thêm vào đây -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal chi tiết bài viết -->
+  <div id="detail-modal" class="fixed inset-0 z-50 hidden bg-gray-900 bg-opacity-75 flex justify-center items-center">
+    <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-3xl">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Chi tiết bài viết</h2>
+      <div id="detail-body">
+        <!-- Nội dung chi tiết bài viết -->
+      </div>
+      <div class="mt-6 text-right">
+        <button class="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded-lg font-medium" onclick="closeModal('detail-modal')">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal duyệt bài viết -->
+  <div id="approve-modal" class="fixed inset-0 z-50 hidden bg-gray-900 bg-opacity-75 flex justify-center items-center">
+    <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Duyệt bài viết</h2>
+      <div>
+        <label class="block text-gray-700 font-medium mb-1">Chuyển trạng thái Public:</label>
+        <input type="checkbox" id="toggle-public" class="mb-4">
+        <label class="block text-gray-700 font-medium mb-1">Chọn ngày public:</label>
+        <input type="date" id="publish-date" class="block w-full border-gray-300 rounded-md shadow-sm mb-4">
+      </div>
+      <div class="mt-6 text-right">
+        <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium" onclick="confirmApprove()">Xác nhận</button>
+        <button class="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded-lg font-medium" onclick="closeModal('approve-modal')">Hủy</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal từ chối bài viết -->
+  <div id="reject-modal" class="fixed inset-0 z-50 hidden bg-gray-900 bg-opacity-75 flex justify-center items-center">
+    <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Từ chối bài viết</h2>
+      <div>
+        <label class="block text-gray-700 font-medium mb-2">Lý do từ chối:</label>
+        <textarea id="reject-reason" class="block w-full border-2 border-gray-300 rounded-md shadow-sm mb-4 p-2" style="margin-top: 0.5rem;"></textarea>
+      </div>
+      <div class="mt-6 text-right">
+        <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium" onclick="confirmReject()">Xác nhận</button>
+        <button class="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded-lg font-medium" onclick="closeModal('reject-modal')">Hủy</button>
+      </div>
+    </div>
+  </div>
+  
+  
+
+  <script>
+    const draftArticles = [
+      { id: 1, title: "Bài viết 1", author: "Tác giả 1", summary: "Tóm tắt bài viết 1", category: "Giải trí", tags: ["Tag1", "Tag2"], content: "Nội dung chi tiết bài viết 1" },
+      { id: 2, title: "Bài viết 2", author: "Tác giả 2", summary: "Tóm tắt bài viết 2", category: "Khoa học", tags: ["Tag3", "Tag4"], content: "Nội dung chi tiết bài viết 2" },
+      { id: 3, title: "Bài viết 3", author: "Tác giả 3", summary: "Tóm tắt bài viết 3", category: "Thể thao", tags: ["Tag5", "Tag6"], content: "Nội dung chi tiết bài viết 3" },
+    ];
+
+    const draftTableBody = document.getElementById('draft-articles');
+
+    function populateDraftArticles() {
+      draftArticles.forEach(article => {
+        const row = document.createElement('tr');
+        row.classList.add('hover:bg-gray-100', 'cursor-pointer');
+        row.innerHTML = `
+          <td class="px-6 py-4 text-sm text-gray-700">${article.title}</td>
+          <td class="px-6 py-4 text-sm text-gray-700">${article.author}</td>
+          <td class="px-6 py-4 text-sm text-gray-700">${article.summary}</td>
+          <td class="px-6 py-4 text-sm text-gray-700">${article.category}</td>
+          <td class="px-6 py-4 text-sm text-gray-700">${article.tags.join(', ')}</td>
+          <td class="px-6 py-4 text-center">
+            <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg" onclick="openDetailModal(${article.id})">Chi tiết</button>
+            <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg" onclick="openApproveModal(${article.id})">Duyệt</button>
+            <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg" onclick="openRejectModal(${article.id})">Từ chối</button>
+          </td>
+        `;
+        draftTableBody.appendChild(row);
+      });
+    }
+
+    function openDetailModal(id) {
+      const article = draftArticles.find(a => a.id === id);
+      const modal = document.getElementById('detail-modal');
+      const body = document.getElementById('detail-body');
+      body.innerHTML = `
+        <p><strong>Tiêu đề:</strong> ${article.title}</p>
+        <p><strong>Tác giả:</strong> ${article.author}</p>
+        <p><strong>Nội dung:</strong> ${article.content}</p>
+      `;
+      modal.classList.remove('hidden');
+    }
+
+    function openApproveModal(id) {
+      document.getElementById('approve-modal').classList.remove('hidden');
+    }
+
+    function openRejectModal(id) {
+      document.getElementById('reject-modal').classList.remove('hidden');
+    }
+
+    function confirmApprove() {
+      alert("Bài viết đã được duyệt.");
+      closeModal('approve-modal');
+    }
+
+    function confirmReject() {
+      alert("Bài viết đã bị từ chối.");
+      closeModal('reject-modal');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.add('hidden');
+    }
+
+    populateDraftArticles();
+  </script>
+</body>
+
+</html>

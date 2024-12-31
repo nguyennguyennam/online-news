@@ -2,8 +2,8 @@ import express from "express";
 import {
   getEditHandler,
   getEditIdHandler,
-} from "../controllers/edit.controller";
-import { clearanceCheck } from "../controllers/middlewares";
+} from "../controllers/edit.controller.js";
+import { clearanceCheck } from "../controllers/middlewares.js";
 
 const editRouter = express.Router();
 editRouter.route("/").get(getEditHandler);
