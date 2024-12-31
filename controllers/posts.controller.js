@@ -1,6 +1,6 @@
 import expressAsyncHandler from "express-async-handler";
-import { getPostsBy } from "../queries/posts.query";
-import { getClearanceLevel } from "../queries/users.query";
+import { getPostsBy } from "../queries/posts.query.js";
+import { getClearanceLevel } from "../queries/users.query.js";
 
 /**
  * GET /posts: Retrieves all of my posts.

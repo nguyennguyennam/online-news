@@ -14,7 +14,6 @@ export async function hasSubscription(userId) {
     user.subscription.getTime() > new Date().getTime()
   );
 }
-
 /**
  * Finds a user with the provided ID.
  *

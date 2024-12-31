@@ -1,5 +1,5 @@
 import expressAsyncHandler from "express-async-handler";
-import { getClearanceLevel } from "../queries/users.query";
+import { getClearanceLevel } from "../queries/users.query.js";
 
 export const clearanceCheck = function (level) {
   return expressAsyncHandler(async (req, res, next) => {

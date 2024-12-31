@@ -5,12 +5,12 @@ import {
   getAdminHandler,
   getAdminUsersHandler,
   getAdminPostsHandler,
-  getAdminUsersEditHandler,
-} from "../controllers/admin.controller";
-import { clearanceCheck } from "../controllers/middlewares";
+  update_cat_by_admin
+} from "../controllers/admin.controller.js";
+import { clearanceCheck } from "../controllers/middlewares.js";
 
 const adminRouter = express.Router();
-adminRouter.route("/").get(clearanceCheck(4), getAdminHandler);
+adminRouter.route("/categories").post(update_cat_by_admin)
 adminRouter
   .route("/categories")
   .get(clearanceCheck(4), getAdminCategoriesHandler);
@@ -34,6 +34,5 @@ adminRouter
 adminRouter
   .route("/posts")
   .get(clearanceCheck(4), getAdminPostsHandler);
-
-
+  adminRouter.route("/").get(clearanceCheck(4), getAdminHandler);
 export default adminRouter;
