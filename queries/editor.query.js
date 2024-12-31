@@ -1,5 +1,5 @@
-import postModel from "../model/post.model";
-import editorModel from "../model/editor.model";
+import postModel from "../model/post.model.js";
+import editorModel from "../model/editor.model.js";
 import categoryModel from "../model/category.model";
 import tagModel from "../model/tag.model";
 import { promise } from "zod";

@@ -1,18 +1,19 @@
 import expressAsyncHandler from "express-async-handler";
 import { z } from "zod";
-import { getAllPosts } from "../queries/posts.query";
+import { getAllCategories } from "../queries/categories.query.js";
+import { getAllPosts } from "../queries/posts.query.js";
 
 /**
- * GET /all: Retrieves all posts.
+ * GET /search: Retrieves all posts.
  *
  * - Clearance Level: 0
  * - Accepts query: { query: string, page: number, cat: string, tag: string }
  * - Mutates: none
  * - Renders:
  *   + File pages/400 with main-layout: if there was a schema parse error.
- *   + File pages/all with main-layout: if it was success.
+ *   + File pages/search with main-layout: if it was success.
  */
-export const allGetHandler = expressAsyncHandler(async (req, res) => {
+export const searchGetHandler = expressAsyncHandler(async (req, res) => {
   const schema = z.object({
     query: z.string().optional(),
     page: z.coerce.number().positive().default(1),
@@ -34,11 +35,14 @@ export const allGetHandler = expressAsyncHandler(async (req, res) => {
   // How to get the UserId?
 
   const result = await getAllPosts({ ...query.data });
+  const categories = await getAllCategories();
   res.render("layouts/main-layout", {
     title: "All posts",
     description:
       "A curated list of all posts written by talented journalists of The Cipher.",
-    content: "../pages/all",
+    content: "../pages/search",
+    searchQuery: query.data.query,
     posts: result,
+    categories,
   });
 });

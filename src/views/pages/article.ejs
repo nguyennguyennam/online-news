@@ -1,0 +1,167 @@
+<main
+  class="container mx-auto w-2/3 px-4 py-8 sm:w-2/3 md:w-2/3 lg:w-2/3 xl:w-2/3"
+>
+  <!-- Category -->
+  <nav aria-label="Breadcrumb" class="ml-6 flex font-bold text-blue-500">
+    <% if (post.category.parent) { %>
+    <ol class="flex space-x-2">
+      <li>
+        <a
+          href="/category/<%= post.category.parent.slug %>"
+          class="text-blue-600 hover:text-blue-800"
+        >
+          <%= post.category.parent.name %>
+        </a>
+      </li>
+      <li>
+        <span class="mx-2">&nbsp;&gt; </span>
+        <a
+          href="/category/<%= post.category.slug %>"
+          class="text-blue-600 hover:text-blue-800"
+        >
+          <%= post.category.name %>
+        </a>
+      </li>
+    </ol>
+    <% } else { %>
+    <a
+      href="/category/<%= post.category.slug %>"
+      class="text-blue-600 hover:text-blue-800"
+    >
+      <%= post.category.name %>
+    </a>
+    <% } %>
+  </nav>
+
+  <!-- Article Content -->
+  <article class="rounded-lg bg-white p-6 shadow-md">
+    <!-- Article Title -->
+    <h1 class="mb-4 text-3xl font-bold"><%= post.name %></h1>
+
+    <p class="my-2 text-sm">
+      <%= post.views %> view<%= post.views == 1 ? "" : "s" %>
+    </p>
+
+    <!-- Author Information and Publish Date -->
+    <div class="mb-6 flex items-center text-gray-600">
+      <img
+        src="https://placehold.co/40x40/EEE/31343C"
+        alt="Author's Avatar"
+        class="mr-3 h-10 w-10 rounded-full"
+      />
+      <div>
+        <p class="text-sm font-medium">
+          <%= post.writer.penName || post.writer.fullName %>
+        </p>
+        <p class="text-xs">
+          Published Date: <%= post.publishedDate.toLocaleString("vi-VN") %>
+        </p>
+      </div>
+    </div>
+
+    <!-- Main Image -->
+    <img
+      src="<%= post.thumbnail.large %>"
+      alt="Article Image"
+      class="mx-auto mb-6 w-3/4 rounded object-cover sm:w-3/4 md:w-3/4 lg:w-3/4 xl:w-3/4"
+    />
+
+    <!-- Article Body -->
+    <div class="prose prose-lg text-gray-800"><%- post.content %></div>
+
+    <!-- Tags Section -->
+    <div class="mt-6">
+      <div class="flex flex-wrap items-center gap-3">
+        <h3 class="text-xl font-semibold">Tags:</h3>
+        <% post.tags.forEach(tag => { %>
+        <a
+          href="/tag/<%= tag.tag %>"
+          class="rounded-full px-3 py-1 text-sm text-blue-800 transition-colors duration-300 hover:text-blue-600"
+        >
+          #<%= tag.tag %>
+        </a>
+        <% }) %>
+      </div>
+    </div>
+  </article>
+
+  <!-- Comments -->
+  <section class="mt-12">
+    <h2 class="mb-6 text-2xl font-bold">Comments</h2>
+    <% if (comments.length === 0) { %>
+    <p class="text-center text-lg">There are no comments on this post.</p>
+    <% } else { comments.forEach(comment => { %>
+    <div class="mt-2">
+      <div class="mb-0.5 flex justify-between">
+        <span class="username"><%= comment.user.fullName %></span>
+        <span class="time">
+          <%= comment.postedDate.toLocaleString("vi-VN") %>
+        </span>
+      </div>
+      <div class="comment-body"><%= comment.content %></div>
+
+      <!-- Comment Actions -->
+      <div class="comment-actions mt-2 flex space-x-4">
+        <button
+          class="flex items-center rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+          <i class="fas fa-reply mr-2"></i> Reply
+        </button>
+        <button
+          class="flex items-center rounded-lg bg-green-500 px-4 py-2 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400"
+        >
+          <i class="fas fa-thumbs-up mr-2"></i> Like
+        </button>
+        <button
+          class="flex items-center rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
+        >
+          <i class="fas fa-thumbs-down mr-2"></i> Dislike
+        </button>
+      </div>
+    </div>
+    <% }) %> <% } %>
+
+    <!-- Write a Comment Form -->
+    <h3 class="my-4 text-xl font-semibold">Write a comment</h3>
+    <form class="comment-form">
+      <textarea
+        class="w-full rounded border border-gray-300 p-2"
+        placeholder="Enter your comment..."
+        rows="4"
+      ></textarea>
+      <button
+        type="submit"
+        class="mt-4 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+      >
+        Post Comment
+      </button>
+    </form>
+  </section>
+
+  <!-- Related Articles -->
+  <section class="mt-12">
+    <h2 class="mb-6 text-2xl font-bold">Related Articles</h2>
+    <% if (related && related.length > 0) { %>
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <% related.forEach(article => { %>
+      <a href="/post/<%= article._id %>" class="block">
+        <article
+          class="rounded bg-white p-4 shadow-md transition-shadow duration-300 hover:shadow-lg"
+        >
+          <img
+            src="<%= article.thumbnail.small %>"
+            alt="<%= article.name %>"
+            class="mb-4 h-32 w-full rounded object-cover"
+          />
+          <h3 class="mb-2 text-xl font-semibold"><%= article.name %></h3>
+          <p class="text-sm text-gray-600">
+            Published Date: <%= article.publishedDate.toLocaleString("vi-VN") %>
+          </p>
+        </article>
+      </a>
+      <% })} else { %>
+      <p class="text-center text-lg">No related articles</p>
+      <% } %>
+    </div>
+  </section>
+</main>

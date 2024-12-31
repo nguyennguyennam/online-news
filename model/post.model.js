@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import slugify from "slugify";
 
 const postSchema = new mongoose.Schema({
   writer: {
@@ -9,19 +10,19 @@ const postSchema = new mongoose.Schema({
   editor: {
     type: mongoose.SchemaTypes.ObjectId,
     ref: "User",
-    required: true,
   },
   writtenDate: {
     type: Date,
     required: true,
+    default: function () {
+      return new Date();
+    },
   },
-  publishedDate: {
-    type: Date,
-    required: true,
-  },
+  publishedDate: Date,
   state: {
     type: String,
     enum: ["draft", "denied", "approved", "published"],
+    default: "draft",
   },
   thumbnail: {
     small: {
@@ -36,10 +37,24 @@ const postSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    index: true,
+  },
+  slug: {
+    type: String,
+    required: true,
+    default: function () {
+      const slug = slugify(this.name, {
+        lower: true,
+        strict: true,
+        trim: true,
+      });
+      return `${slug}-${this._id?.toString()?.slice(-6)}`;
+    },
   },
   abstract: {
     type: String,
     required: true,
+    index: true,
   },
   category: {
     type: mongoose.SchemaTypes.ObjectId,
@@ -54,6 +69,7 @@ const postSchema = new mongoose.Schema({
   content: {
     type: String, // Whatever from the text editor
     required: true,
+    index: true,
   },
   views: {
     type: Number,
@@ -65,27 +81,8 @@ const postSchema = new mongoose.Schema({
     required: true,
     default: false,
   },
+  deniedReason: String,
 });
 
 const Post = mongoose.model("Post", postSchema, "posts");
-
-// Create full-text search support on provided fields: name, abstract, content.
-// However, this only supports full-words, for example, searching "example" will work,
-// but "examp" won't.
-// Do we need that?
-Post.createIndexes(
-  {
-    name: "text",
-    abstract: "text",
-    content: "text",
-  },
-  {
-    weights: {
-      name: 5, // Matches on the title are worth more.
-      abstract: 2, // Then the abstract.
-      content: 1, // If no matches, then search the content.
-    },
-  },
-);
-
 export default Post;

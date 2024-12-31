@@ -3,21 +3,19 @@
   <div class="mx-4 mb-3 border border-blue-500"></div>
 
   <!-- Category title-->
-  <h1 class="mx-4 mb-3 text-3xl font-bold"><%= categoryName %> News</h1>
+  <h1 class="mx-4 mb-3 text-3xl font-bold"><%= category.name %> News</h1>
 
   <!-- Separator Line -->
   <div class="mx-4 mb-3 border border-blue-500"></div>
 
   <!-- Subcategories Navigation -->
   <div class="mx-4 mb-3 flex flex-wrap gap-4">
-    <% const currentUrlParts=locals.req.path.split('/').filter(Boolean);
-    categories.find(cat=> cat.name ===
-    currentUrlParts[0])?.subcategories.forEach(sub => { %>
+    <% children.forEach(sub => { %>
     <a
-      href="<%= sub.link %>"
-      class="<%= currentUrlParts[1] === sub.name ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:text-white' %> rounded-full px-4 py-2 font-semibold transition-all duration-200 hover:bg-blue-500"
+      href="/category/<%= parentSlug %>/<%= sub.slug %>"
+      class="<%= typeof selected != "undefined" && selected == sub.slug ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:text-white' %> rounded-full px-4 py-2 font-semibold transition-all duration-200 hover:bg-blue-500"
     >
-      <%= sub.displayName %>
+      <%= sub.name %>
     </a>
     <% }) %>
   </div>
@@ -25,6 +23,7 @@
   <!-- Separator Line -->
   <div class="mx-4 border border-gray-300"></div>
 </div>
+
 <div class="container mx-auto px-4 py-8">
   <!-- Articles -->
   <% if (articles.length===0) { %>
@@ -37,17 +36,17 @@
     >
       <!-- Featured Image with Article Type Tag -->
       <div class="relative mb-4">
-        <a href="/<%= article.slug %>">
+        <a href="/post/<%= article.slug %>">
           <img
-            alt="<%= article.title %>"
+            alt="<%= article.name %>"
             class="h-48 w-full object-cover"
-            src="<%= article.imageUrl || 'https://placehold.co/600x400/EEE/31343C' %>"
+            src="<%= article.thumbnail.small || 'https://placehold.co/600x400/EEE/31343C' %>"
           />
         </a>
 
         <!-- Article Type Tag -->
         <div class="absolute right-2 top-2">
-          <% if (article.isPremium) { %>
+          <% if (article.premium) { %>
           <span
             class="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-3 py-1 text-sm font-semibold text-white shadow-md"
           >
@@ -67,34 +66,34 @@
       <div class="space-y-2">
         <h2 class="text-xl font-semibold">
           <a
-            href="/<%= article.slug %>"
+            href="/post/<%= article.slug %>"
             class="transition-colors duration-200 hover:text-blue-500"
           >
-            <%= article.title %>
+            <%= article.name %>
           </a>
         </h2>
 
         <!-- Category -->
         <p class="text-gray-600">
           <span class="font-medium">Category:</span>
-          <%= article.category %>
+          <%= article.category.name %>
         </p>
 
         <!-- Tags -->
         <div class="flex flex-wrap gap-2">
           <% article.tags.forEach(tag=> { %>
           <a
-            href="/tag/<%= tag %>"
+            href="/tag/<%= tag.tag %>"
             class="rounded-full bg-gray-100 px-2 py-1 text-sm transition-colors duration-200 hover:bg-blue-500 hover:text-white"
           >
-            #<%= tag %>
+            #<%= tag.tag %>
           </a>
           <% }) %>
         </div>
 
         <!-- Date -->
         <p class="text-sm text-gray-500">
-          Posted on: <%= article.datePublished %>
+          Posted on: <%= article.publishedDate.toLocaleString("vi-VN") %>
         </p>
 
         <!-- Abstract -->

@@ -29,13 +29,13 @@ export const homeGetHandler = expressAsyncHandler(async (req, res) => {
     title: "The Cipher",
     description: "The homepage of the online news website, The Cipher.",
     content: "../pages/home",
+    categories,
     homeData: {
       featured,
       mostViewed,
       latest,
       latestEach,
-      categories,
     },
-    User_info : req.session.user_info || null
+    userInfo: req.session.userInfo || null,
   });
 });

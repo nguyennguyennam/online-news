@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body>
+    <!-- Header -->
+    <a
+      href="/"
+      class="flex flex-col items-center justify-center transition-opacity hover:opacity-80"
+    >
+      <h1 class="text-7xl font-black">The Cipher</h1>
+      <p class="mt-2 text-xl italic text-gray-600">The world is in your hand</p>
+    </a>
+
+    <!-- Navbar -->
+    <nav class="border border-current bg-white text-black">
+      <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+        <div class="relative flex h-16 items-center justify-between">
+          <div class="hidden w-full sm:ml-6 sm:flex sm:justify-center">
+            <div class="flex space-x-4">
+              <a
+                href="/writer/post_list"
+                class="rounded-md px-3 py-2 text-sm font-medium text-black hover:bg-gray-700 hover:text-white"
+                id="article-list-link"
+                >Article list</a
+              >
+              <a
+                href="/writer/create-post"
+                class="rounded-md px-3 py-2 text-sm font-medium text-black hover:bg-gray-700 hover:text-white"
+                id="create-post-link"
+                >Create Post</a
+              >
+            </div>
+          </div>
+
+          <div
+            class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0"
+          >
+            <div class="relative ml-3">
+              <div>
+                <button
+                  type="button"
+                  class="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                  id="user-menu-button"
+                  aria-expanded="false"
+                  aria-haspopup="true"
+                >
+                  <span class="absolute -inset-1.5"></span>
+                  <span class="sr-only">Open user menu</span>
+                  <img
+                    class="size-8 rounded-full"
+                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                    alt=""
+                  />
+                </button>
+              </div>
+              <div
+                id="user-menu"
+                class="absolute right-0 z-10 mt-2 hidden w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5"
+                role="menu"
+                aria-orientation="vertical"
+                aria-labelledby="user-menu-button"
+                tabindex="-1"
+              >
+                <a
+                  href="#"
+                  class="block px-4 py-2 text-sm text-gray-700"
+                  role="menuitem"
+                  tabindex="-1"
+                  id="user-menu-item-0"
+                  >Your Profile</a
+                >
+                <a
+                  href="#"
+                  class="block px-4 py-2 text-sm text-gray-700"
+                  role="menuitem"
+                  tabindex="-1"
+                  id="user-menu-item-1"
+                  >Settings</a
+                >
+                <a
+                  href="#"
+                  class="block px-4 py-2 text-sm text-gray-700"
+                  role="menuitem"
+                  tabindex="-1"
+                  id="user-menu-item-2"
+                  >Sign out</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Content Section -->
+    <main class="container mx-auto mt-6 px-4"><%- include(content) %></main>
+
+    <script>
+      const userMenuButton = document.getElementById("user-menu-button");
+      const userMenu = document.getElementById("user-menu");
+
+      userMenuButton.addEventListener("mouseenter", () => {
+        userMenu.classList.remove("hidden");
+      });
+
+      userMenuButton.addEventListener("mouseleave", () => {
+        userMenu.classList.add("hidden");
+      });
+
+      userMenu.addEventListener("mouseenter", () => {
+        userMenu.classList.remove("hidden");
+      });
+
+      userMenu.addEventListener("mouseleave", () => {
+        userMenu.classList.add("hidden");
+      });
+
+      const createPostLink = document.getElementById("create-post-link");
+      createPostLink.addEventListener("click", (event) => {
+        event.preventDefault();
+        window.location.href = "/writer/create-post";
+      });
+    </script>
+  </body>
+</html>

@@ -3,6 +3,55 @@
 >
   <h1 class="text-center text-3xl font-bold">Login to an Existing Account</h1>
 
+  <!-- Add error message div -->
+  <% if (typeof error !=='undefined' && error) { %>
+  <div
+    id="error-popup"
+    class="animate-slideDown fixed left-1/2 top-4 w-[28rem] -translate-x-1/2 transform overflow-hidden rounded-md bg-white shadow-lg transition-all duration-300 ease-out"
+  >
+    <div class="border-l-4 border-red-500">
+      <!-- Enhanced title section -->
+      <div class="border-b border-gray-100 bg-gray-50 px-6 py-4">
+        <h3 class="text-2xl font-semibold text-gray-800">Error</h3>
+      </div>
+
+      <!-- Message content -->
+      <div class="px-6 py-4">
+        <span class="text-sm text-gray-600"> <%= error %> </span>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes slideDown {
+      from {
+        transform: translate(-50%, -100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+      }
+    }
+
+    .animate-slideDown {
+      animation: slideDown 0.3s ease-out forwards;
+    }
+  </style>
+
+  <script>
+    setTimeout(() => {
+      const errorPopup = document.getElementById("error-popup");
+      if (errorPopup) {
+        errorPopup.style.transform = "translate(-50%, -100%)";
+        errorPopup.style.opacity = "0";
+        setTimeout(() => errorPopup.remove(), 300);
+      }
+    }, 3000);
+  </script>
+  <% } %>
+
   <form
     action="/login"
     method="POST"
@@ -46,10 +95,28 @@
       </svg>
     </button>
 
-    <p class="flex self-end text-right">
-      <a href="/reset-password">I don't have an account yet </a>
-      <a href="/register" class="text-zinc-500 underline">Register</a>.
-    </p>
+    <div class="flex w-full flex-col gap-6">
+      <!-- Password Recovery Section -->
+      <p class="text-center">
+        <a
+          href="/reset-password"
+          class="text-sm font-semibold text-black transition-colors hover:underline"
+        >
+          Forgotten password?
+        </a>
+      </p>
+
+      <!-- Account Creation Section -->
+      <div class="flex items-center justify-center gap-2">
+        <span class="text-sm text-gray-500">Don't have an account?</span>
+        <a
+          href="/register"
+          class="text-sm font-semibold text-black transition-all hover:underline"
+        >
+          Create New Account
+        </a>
+      </div>
+    </div>
   </form>
 
   <div
@@ -76,24 +143,23 @@
 </main>
 
 <script>
-  document.querySelector('form').addEventListener('submit', async function () {
-      const email = document.querySelector("#email").value;
-      const password = document.querySelector("#password").value;
-      const response = await fetch(`/login`, {
-        method: "POST", 
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({email,password})
-      });
-      const result = response.json();
-      if (!result) {
-        alert("no data found");
-      }
-      if (response.ok) {
-        // Chuyển hướng đến trang dựa trên clearance
-        window.location.href = result.redirectUrl;
-      } 
-    })
+  document.querySelector("form").addEventListener("submit", async function () {
+    const email = document.querySelector("#email").value;
+    const password = document.querySelector("#password").value;
+    const response = await fetch(`/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+    const result = response.json();
+    if (!result) {
+      alert("no data found");
+    }
+    if (response.ok) {
+      // Chuyển hướng đến trang dựa trên clearance
+      window.location.href = result.redirectUrl;
+    }
+  });
 </script>
-

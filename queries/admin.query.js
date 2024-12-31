@@ -1,7 +1,6 @@
 import editorModel from "../model/editor.model";
 import userModel from "../model/user.model";
 import categoryModel from "../model/category.model";
-
 // Manage users
 
 /**
