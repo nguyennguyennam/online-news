@@ -21,20 +21,22 @@ export async function render_Writer_page (req, res) {
 };
 export async function render_create_post(req, res) {
     try {
-        const [categories, tags] = await Promise.all([
+        // Lấy dữ liệu categories và tags
+        const [ availCategories, tags] = await Promise.all([
             fetch_sub_Cat(),
             get_all_tags(),
         ]);
-
+        // Render trang với dữ liệu đã xử lý
         res.render("layouts/writer_header", {
             title: "Creating posts",
             description: "Writer writes articles in this page",
             content: "../pages/create-post",
-            categories,
+            availCategories,
             tags,
         });
     } catch (error) {
-        console.error("Error in render_create_post:", error); // Ghi log lỗi
+        // Ghi log lỗi chi tiết
+        console.error("Error in render_create_post:", error);
         res.status(500).send(`
             <h1>Internal Server Error</h1>
             <p>Error Message: ${error.message}</p>
@@ -42,6 +44,8 @@ export async function render_create_post(req, res) {
         `);
     }
 }
+
+
 
 export async function render_post_list(req, res) {
         return res.render("layouts/writer_header", {

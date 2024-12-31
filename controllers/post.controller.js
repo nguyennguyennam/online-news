@@ -114,7 +114,7 @@ export const postPostHandler = expressAsyncHandler(async (req, res) => {
     content: body.data.content,
     premium: body.data.premium,
   });
-  res.redirect(`/edit/${post._id}`);
+  res.redirect(`/posts`);
 });
 
 /**

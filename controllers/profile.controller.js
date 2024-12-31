@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import expressAsyncHandler from "express-async-handler";
 import { z } from "zod";
-import { getUser } from "../queries/users.query";
+import { getUser } from "../queries/users.query.js";
 
 /**
  * GET /profile: View a form to edit my profile.
