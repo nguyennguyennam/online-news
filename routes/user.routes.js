@@ -1,24 +1,22 @@
 import express from "express";
 import {
-  renderRegister,
-  renderLogin,
-  registerUserController,
-  loginUserController,
-  resetPasswordController,
-  loginWithFacebook,
   facebookCallbackController,
-  renderReset_pass,
-  verifyOtpController,
-  saveNewPasswordController,
-  renderOTP,
   fetchEmail,
+  loginUserController,
+  loginWithFacebook,
+  registerUserController,
   render_NewPass,
+  renderLogin,
+  renderOTP,
+  renderRegister,
+  renderReset_pass,
+  resetPasswordController,
+  saveNewPasswordController,
+  verifyOtpController,
 } from "../controllers/userController.js";
 
-import { homeGetHandler } from "../controllers/home.controller.js";
 const router = express.Router();
 
-router.get("/home", homeGetHandler);
 router.post("/check-email", fetchEmail);
 router.get("/register", renderRegister);
 router.post("/register", registerUserController);

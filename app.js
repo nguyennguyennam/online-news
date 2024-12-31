@@ -33,10 +33,6 @@ app.use(
   }),
 );
 
-app.get("/fake", async (req, res) => {
-  res.status(200).json({});
-});
-
 app.use("/", mainRouter);
 export default app;
 

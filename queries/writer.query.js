@@ -13,17 +13,20 @@ export async function savePost(
   category,
   tags,
   premium,
-)
-{
+) {
   const date = new Date(0);
   return await postModel.create({
     writer: writerId,
     name: name,
-    writtenDate: date.toLocaleString('vi-VN', {hour: '2-digit',hour12: false, timeZone: 'Asia/Ho_Chi_Minh' }),
+    writtenDate: date.toLocaleString("vi-VN", {
+      hour: "2-digit",
+      hour12: false,
+      timeZone: "Asia/Ho_Chi_Minh",
+    }),
     abstract: abstract,
     thumbnail: {
       small: thumbnail_small,
-      large: thumbnail_large
+      large: thumbnail_large,
     },
     content: content,
     category: category,
@@ -37,10 +40,12 @@ export async function savePost(
 export async function post_Lists(writer_id, page) {
   const writerObjectId = new mongoose.Types.ObjectId(writer_id);
   // find a number of documents in a post model to find the total pages
-  const total_posts = await postModel.countDocuments({ writer: writerObjectId });
+  const total_posts = await postModel.countDocuments({
+    writer: writerObjectId,
+  });
   page = 1;
   const post_per_page = 5;
-  const total_pages = Math.ceil(total_posts/post_per_page) + 1;
+  const total_pages = Math.ceil(total_posts / post_per_page) + 1;
   const rawData = await postModel.aggregate([
     { $match: { writer: writerObjectId } },
     {
@@ -82,14 +87,14 @@ export async function post_Lists(writer_id, page) {
   return {
     currentPage: page,
     totalPages: total_pages,
-    postList: rawData??[],
+    postList: rawData ?? [],
   };
 }
 
 export async function modified_post(id_post, name, abstract, content) {
   return await postModel.updateOne(
     {
-      $where: {_id: id_post}
+      $where: { _id: id_post },
     },
     {
       name: name,

@@ -160,10 +160,10 @@ export async function getAllPosts({ userId, page, cat, tag, query }) {
 /**
  * Retrieves all posts in database for admin.
  *
- * @returns {Post} // all post in database 
+ * @returns {Post} // all post in database
  */
 export async function getAllAdminPosts() {
-  return await Post.find({})
+  return await Post.find({});
 }
 
 /**
