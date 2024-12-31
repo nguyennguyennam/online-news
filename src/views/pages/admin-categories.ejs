@@ -12,6 +12,7 @@
           id="edit-btn-cat-<%= cat._id %>"
           class="flex items-center justify-center p-2 duration-200 hover:bg-zinc-200"
           onclick="startEditing('<%= cat._id %>', 'cat')"
+          title = "Edit"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -50,6 +51,7 @@
                 id="add-btn-cat-<%= cat._id %>"
                 class="flex items-center justify-center p-2 duration-200 hover:bg-zinc-200 "
                 onclick="showAddInputForm('<%= cat._id %>')"
+                title="Add new category"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -66,6 +68,7 @@
         <button
           class="flex items-center justify-center p-2 duration-200 hover:bg-zinc-200"
           onclick="confirmDelete('<%= cat._id %>')"
+          title="Delete"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -128,6 +131,7 @@
           id="edit-btn-sub-<%= sub._id %>"
           class="p-2 duration-200 hover:bg-zinc-200"
           onclick="startEditing('<%= sub._id %>', 'sub')"
+          title="Edit"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -161,9 +165,11 @@
             </button>
           </div>
           
-          <a
-            href="./delete/<%= cat._id %>"
-            class="flex items-center justify-center p-2 duration-200 hover:bg-zinc-200"
+          <button
+          id="delete-btn-sub-<%= sub._id %>"
+          class="p-2 duration-200 hover:bg-zinc-200"
+          onclick="confirmDelete('<%= sub._id %>')"
+          title="Delete"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -175,7 +181,7 @@
                 d="M273.78-100.78q-44.3 0-75.15-30.85-30.85-30.85-30.85-75.15v-507q-22.09 0-37.54-15.46-15.46-15.46-15.46-37.54 0-22.09 15.46-37.55 15.45-15.45 37.54-15.45H347q0-22.09 15.46-37.55 15.45-15.45 37.54-15.45h158.87q22.09 0 37.54 15.45 15.46 15.46 15.46 37.55h180.35q22.09 0 37.54 15.45 15.46 15.46 15.46 37.55 0 22.08-15.46 37.54-15.45 15.46-37.54 15.46v507q0 44.3-30.85 75.15-30.85 30.85-75.15 30.85H273.78Zm412.44-613H273.78v507h412.44v-507ZM396.61-280.57q19.26 0 32.74-13.47 13.48-13.48 13.48-32.74v-267.57q0-19.26-13.48-32.74t-32.74-13.48q-19.26 0-33.02 13.48-13.76 13.48-13.76 32.74v267.57q0 19.26 13.76 32.74 13.76 13.47 33.02 13.47Zm167.35 0q19.26 0 32.74-13.47 13.47-13.48 13.47-32.74v-267.57q0-19.26-13.47-32.74-13.48-13.48-32.74-13.48t-33.03 13.48q-13.76 13.48-13.76 32.74v267.57q0 19.26 13.76 32.74 13.77 13.47 33.03 13.47ZM273.78-713.78v507-507Z"
               />
             </svg>
-          </a>
+          </button>
         </div>
       </li>
       <% }) %>
@@ -205,6 +211,64 @@
   </div>
   </details>
   <% }) %>
+  <button id="addCategoryBtn" class="px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600">
+    Add Category
+  </button>
+
+   <!-- Modal -->
+   <div id="modal" 
+        class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden"
+        style="
+            display: none !important; 
+            position: fixed; 
+            inset: 0; 
+            background-color: rgba(0, 0, 0, 0.5); 
+            z-index: 1000; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;"
+   >
+    <div class="bg-white w-96 rounded-lg shadow-lg p-6">
+      <h2 class="text-lg font-bold mb-4">Add Category</h2>
+      
+      <!-- Category Name -->
+      <div class="mb-4">
+        <label for="categoryName" class="block text-sm font-medium text-gray-700">Category Name</label>
+        <input type="text" id="categoryName" placeholder="Enter category name" 
+               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      
+      <!-- Subcategory Count -->
+      <div class="mb-4">
+        <label for="subcategoryCount" class="block text-sm font-medium text-gray-700">Number of Subcategories</label>
+        <select id="subcategoryCount" 
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+          <option value="0">Select</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+        </select>
+      </div>
+
+      <!-- Subcategories -->
+      <div id="subcategories" class="space-y-4"></div>
+      
+      <!-- Actions -->
+      <div class="mt-6 flex justify-end space-x-4">
+        <button id="cancelBtn" class="px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600">
+          Cancel
+        </button>
+        <button id="confirmBtn" class="px-4 py-2 bg-green-500 text-white rounded shadow hover:bg-green-600">
+          Confirm
+        </button>
+      </div>
+    </div>
 </div>
 
 <script>
@@ -306,4 +370,52 @@ function closeModal() {
     const modal = document.getElementById('delete-modal');
     modal.style.display = 'none';
 }
+
+//Hàm sử lí nút add category
+ // DOM Elements
+ const addCategoryBtn = document.getElementById("addCategoryBtn");
+    const modal = document.getElementById("modal");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const confirmBtn = document.getElementById("confirmBtn");
+    const subcategoryCount = document.getElementById("subcategoryCount");
+    const subcategoriesContainer = document.getElementById("subcategories");
+
+    // Show modal
+    addCategoryBtn.addEventListener("click", () => {
+      modal.style.display = 'flex';
+    });
+
+    // Hide modal
+    cancelBtn.addEventListener("click", () => {
+      modal.style.display = 'none';
+    });
+
+    // Update subcategories input fields based on count
+    subcategoryCount.addEventListener("change", () => {
+      const count = parseInt(subcategoryCount.value, 10);
+      subcategoriesContainer.innerHTML = ""; // Clear existing inputs
+      for (let i = 1; i <= count; i++) {
+        const inputGroup = document.createElement("div");
+        inputGroup.className = "mb-4";
+        inputGroup.innerHTML = `
+          <label for="subcategory-${i}" class="block text-sm font-medium text-gray-700">Subcategory ${i}</label>
+          <input type="text" id="subcategory-${i}" placeholder="Enter subcategory ${i}" 
+                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+        `;
+        subcategoriesContainer.appendChild(inputGroup);
+      }
+    });
+
+    // Handle confirm
+    confirmBtn.addEventListener("click", () => {
+      const categoryName = document.getElementById("categoryName").value;
+      const subcategories = [];
+      for (let i = 1; i <= subcategoryCount.value; i++) {
+        const subcategory = document.getElementById(`subcategory-${i}`).value;
+        subcategories.push(subcategory);
+      }
+      console.log({ categoryName, subcategories });
+      alert("Data saved! Check the console for output.");
+      modal.classList.add("hidden"); // Hide modal
+    });
 </script>

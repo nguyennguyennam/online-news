@@ -1,7 +1,7 @@
 import expressAsyncHandler from "express-async-handler";
 import { getAllCategories } from "../queries/categories.query";
 import { get_all_tags } from "../queries/tag.query";
-import { getAllUsers} from "../queries/users.query";
+import { getAllUsers, getUser} from "../queries/users.query";
 import { getAllAdminPosts } from "../queries/posts.query";
 /**
  * GET /admin: Main admin tool page.
@@ -63,6 +63,39 @@ export const getAdminUsersHandler = expressAsyncHandler(
       adminUsers: users,
       userInfo: req.session?.userInfo,
     });
+  },
+);
+
+export const getAdminUsersEditHandler = expressAsyncHandler(
+  async (req, res) => {
+    const userId = req.params.id;
+    try {
+      // Tìm kiếm người dùng theo ID
+      const userProfile = await getUser(userId);
+
+      // Kiểm tra nếu không tìm thấy người dùng
+      if (!userProfile) {
+        return res.status(404).render("layouts/main-layout", {
+          title: "User Not Found",
+          description: "The user with the given ID does not exist.",
+          content: "../pages/admin-edit-user",
+          userInfo: req.session?.userInfo,
+        });
+      }
+
+      // Nếu tìm thấy người dùng, render trang chỉnh sửa
+      res.render("layouts/main-layout", {
+        title: "Edit User",
+        description: "Administrative tools editing users",
+        content: "../pages/admin-edit-user",
+        AdminEditUsers: userProfile,  // Truyền dữ liệu người dùng vào template
+        userInfo: req.session?.userInfo,
+      });
+    } catch (error) {
+      // Xử lý lỗi khi truy vấn
+      console.error(error);
+      res.status(500).send("Server error");
+    }
   },
 );
 

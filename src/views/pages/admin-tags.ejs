@@ -12,6 +12,7 @@
             id="edit-btn-tags-<%= tags._id %>"
             class="flex items-center justify-center p-2 duration-200 hover:bg-zinc-200"
             onclick="startEditing('<%= tags._id %>', 'tags')"
+            title="Edit"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -49,6 +50,7 @@
           <button
             class="flex items-center justify-center p-2 duration-200 hover:bg-zinc-200"
             onclick="confirmDelete('<%= tags._id %>')"
+            title="Delete"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
