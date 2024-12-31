@@ -1,10 +1,13 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { Strategy as FacebookStrategy } from "passport-facebook";
+import { OAuth2Strategy as GoogleStrategy } from "passport-google-oauth";
 import bcrypt from "bcryptjs";
 import userModel from "../model/user.model.js";
 
-// Chiến lược Local (Email & Password)
+const GMAIL_ID=process.env.GMAIL_ID;
+const GMAIL_SECRET=process.env.GMAIL_SECRET;
+
+// Local Strategy (Email & Password)
 passport.use(
   new LocalStrategy(
     { usernameField: "email", passwordField: "password" },
@@ -28,14 +31,13 @@ passport.use(
   ),
 );
 
-// Chiến lược Facebook
+// Google Strategy (New addition)
 passport.use(
-  new FacebookStrategy(
+  new GoogleStrategy(
     {
-      clientID: "FACEBOOK_APP_ID", // Thay bằng Facebook App ID
-      clientSecret: "FACEBOOK_APP_SECRET", // Thay bằng Facebook App Secret
-      callbackURL: "http://localhost:3000/api/users/facebook/callback",
-      profileFields: ["id", "emails", "name"],
+      clientID: GMAIL_ID, // Google Client ID
+      clientSecret: GMAIL_SECRET, // Google Client Secret
+      callbackURL: "http://localhost:3000/auth/google/callback", 
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -45,10 +47,11 @@ passport.use(
 
         if (!user) {
           user = await userModel.create({
-            name: `${profile.name.givenName} ${profile.name.familyName}`,
+            fullName: profile.displayName,
             email: email || "",
-            role: "subscriber",
-            facebookId: profile.id,
+            clearance: 1,
+            password: 123456,
+            subscription: new Date(),
           });
         }
 

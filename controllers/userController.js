@@ -130,15 +130,13 @@ export async function loginUserController(req, res) {
   }
 }
 
-// Đăng nhập qua Facebook
-export function loginWithFacebook(req, res, next) {
-  passport.authenticate("facebook")(req, res, next);
+export function loginWithGoogle(req, res, next) {
+  passport.authenticate("google", { scope: ['profile', 'email'] })(req, res, next);  // Added 'email' permission
 }
 
-// Callback từ Facebook
-export function facebookCallbackController(req, res, next) {
+export function GoogleCallbackController(req, res, next) {
   passport.authenticate(
-    "facebook",
+    "google",
     { failureRedirect: "/login" },
     (err, user) => {
       if (err) return next(err);
@@ -146,8 +144,8 @@ export function facebookCallbackController(req, res, next) {
 
       req.logIn(user, (err) => {
         if (err) return next(err);
-        req.session.user = { id: user._id, name: user.name, role: user.role };
-        res.redirect("/main");
+        req.session.userInfo = { id: user._id, name: user.fullName, role: user.clearance }; // Store user info in session
+        res.redirect("/");
       });
     },
   )(req, res, next);
