@@ -53,12 +53,25 @@ export async function getClearanceLevel(userId) {
   return user ? user.clearance : 0;
 }
 
-
 /**
- * Retrieves the clearance level of a user.
+ * Retrieves the clearance level of a user and group them by their clearance.
  *
- * @returns {User} all users
+ * @returns {User[]} A list of users grouped by their clearance level.
  */
 export async function getAllUsers() {
-  return await User.find({})
+  return await User.aggregate([
+    {
+      $group: {
+        _id: "$clearance", // Group by the 'clearance' field
+        users: { $push: "$$ROOT" }, // Push all user documents into the 'users' array
+      },
+    },
+    {
+      $project: {
+        _id: 0, // Hide the _id field
+        clearance: "$_id", // Rename _id to 'clearance'
+        users: 1, // Include the 'users' array
+      },
+    },
+  ]);
 }
