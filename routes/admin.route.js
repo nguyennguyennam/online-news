@@ -7,6 +7,7 @@ import {
   getAdminHandler,
   getAdminPostsHandler,
   getAdminTagsHandler,
+  getAdminUsersEditHandler,
   getAdminUsersHandler,
   updateCategoryHandler,
 } from "../controllers/admin.controller";
@@ -26,8 +27,11 @@ adminRouter
   .post(clearanceCheck(4), adoptCategoryHandler);
 
 adminRouter.route("/tags").get(clearanceCheck(4), getAdminTagsHandler);
+
 adminRouter.route("/users").get(clearanceCheck(4), getAdminUsersHandler);
+
+adminRouter.route("/edit/:id").get(clearanceCheck(4), getAdminUsersEditHandler);
+
 adminRouter.route("/posts").get(clearanceCheck(4), getAdminPostsHandler);
 adminRouter.route("/").get(clearanceCheck(4), getAdminHandler);
-
 export default adminRouter;

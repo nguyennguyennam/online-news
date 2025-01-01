@@ -2,15 +2,17 @@ import expressAsyncHandler from "express-async-handler";
 import { z } from "zod";
 import {
   createCategory,
+  delete_Cat,
   deleteCategory,
   existsCategoryWithName,
   findCategoryById,
   getAllCategories,
+  insertCategories,
   updateCat,
 } from "../queries/categories.query.js";
 import { getAllAdminPosts } from "../queries/posts.query.js";
 import { get_all_tags } from "../queries/tag.query.js";
-import { getAllUsers } from "../queries/users.query.js";
+import { getAllUsers, getAllUsersAdmin } from "../queries/users.query.js";
 
 /**
  * GET /admin: Main admin tool page.
@@ -59,7 +61,7 @@ export const getAdminTagsHandler = expressAsyncHandler(async (req, res) => {
 });
 
 export const getAdminUsersHandler = expressAsyncHandler(async (req, res) => {
-  const users = await getAllUsers();
+  const users = await getAllUsersAdmin();
   res.render("layouts/main-layout", {
     title: "All Users",
     description: "Administrative tools for viewing all current available users",
@@ -68,6 +70,19 @@ export const getAdminUsersHandler = expressAsyncHandler(async (req, res) => {
     userInfo: req.session?.userInfo,
   });
 });
+
+export const getAdminUsersEditHandler = expressAsyncHandler(
+  async (req, res) => {
+    const users = await getAllUsers();
+    res.render("layouts/main-layout", {
+      title: "All Users",
+      description: "Administrative tools for editing users",
+      content: "../pages/admin-edit-user",
+      AdminEditUsers: users,
+      userInfo: req.session?.userInfo,
+    });
+  },
+);
 
 export const getAdminPostsHandler = expressAsyncHandler(async (req, res) => {
   const posts = await getAllAdminPosts();
@@ -233,15 +248,25 @@ export const deleteCategoryHandler = expressAsyncHandler(async (req, res) => {
 
 export const update_cat_by_admin = async (req, res) => {
   const { categoryId } = req.body;
-  // Debugging: Log the categoryId to check if it's being passed correctly
-  console.log("Category ID:", categoryId);
-
-  // Validate categoryId
-  if (!categoryId || categoryId.trim() === "") {
-    console.error("Error: Category ID is empty or invalid.");
-    return res.status(400).send("Category ID is empty or invalid.");
-  }
   // Extract categoryId and name from req.body
   const update_cat = updateCat(categoryId);
   res.redirect("/admin/categories");
+};
+
+export const delete_cat = async (req, res) => {
+  const { categoryId } = req.body;
+  await delete_Cat(categoryId);
+  res.redirect("/admin/categories");
+};
+
+export const insert_sub_cat = async (req, res) => {
+  const { sub_categoryId, parent_categoryId } = req.body;
+  await insertCategories(sub_categoryId, parent_categoryId);
+  res.redirect("/admin/categories");
+};
+
+export const insert_tag = async (req, res) => {
+  const { tagId } = req.body;
+  await insertCategories(tagId);
+  res.redirect("/admin/tags");
 };

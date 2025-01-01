@@ -1,6 +1,6 @@
 import expressAsyncHandler from "express-async-handler";
-import { getAllCategories } from "../queries/categories.query";
-import { getPostById } from "../queries/posts.query";
+import { getAllCategories } from "../queries/categories.query.js";
+import { getPostById } from "../queries/posts.query.js";
 
 /**
  * GET /edit:

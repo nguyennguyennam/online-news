@@ -22,8 +22,7 @@
 
   <form
     action="/edit/<%= post._id %>"
-    method="post"
-    enctype="multipart/form-data"
+    method="POST"
     class="flex w-full max-w-screen-md flex-col gap-6"
   >
     <label class="flex w-full flex-col gap-2">
@@ -31,7 +30,8 @@
       <input
         type="text"
         value="<%= post._id %>"
-        disabled
+        name="post_id"
+        readonly
         class="flex h-12 items-center rounded-md border-[1px] border-black px-4 disabled:cursor-not-allowed disabled:bg-zinc-200"
       />
     </label>

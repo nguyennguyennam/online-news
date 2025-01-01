@@ -10,7 +10,8 @@ import {
   increaseView,
 } from "../queries/posts.query.js";
 import { canViewPremium, getClearanceLevel } from "../queries/users.query.js";
-
+import { modified_post } from "../queries/writer.query.js";
+import { getTagsArray } from "../queries/tag.query.js";
 /**
  * GET /post: Displays the WYSIWYG editor. (?)
  *
@@ -233,3 +234,43 @@ export const getPostIdHandler = expressAsyncHandler(async (req, res) => {
     userInfo: req.session?.userInfo,
   });
 });
+
+/**
+ * POST: Update a post with new information.
+ *
+ * @param {Object} req - The HTTP request object containing post data.
+ * @param {string} req.body.post_id - The ID of the post to update.
+ * @param {string} req.body.title - The updated title of the post.
+ * @param {string} req.body.abstract - The updated abstract of the post.
+ * @param {string} req.body.content - The updated content of the post.
+ * @param {string} req.body.category - The ID of the updated category for the post.
+ * @param {string} req.body.tags - A comma-separated string of tags to update the post with.
+ * @param {string} req.body.postType - The type of the post ("premium" or "standard").
+ *
+ * @param {Object} res - The HTTP response object for sending back a result.
+ *
+ * @returns {void} Redirects to the "/posts" page upon successful update.
+ */
+export const update_post = async (req, res) => {
+  const { post_id, title, abstract, content, category, tags, postType } =
+    req.body;
+  let premium = false;
+  if (postType === "premium") {
+    premium = true;
+  }
+
+  // Process tags into an array and fetch corresponding IDs
+  const tagsArray = tags.split(",").map((tag) => tag.trim());
+  const tagDocuments = await getTagsArray(tagsArray);
+  const tag_id = tagDocuments.map((doc) => doc._id);
+  await modified_post(
+    post_id,
+    title,
+    abstract,
+    content,
+    category,
+    tag_id,
+    premium,
+  );
+  res.redirect("/posts");
+};
