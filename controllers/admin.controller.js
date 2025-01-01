@@ -2,7 +2,7 @@ import expressAsyncHandler from "express-async-handler";
 import { getAllCategories, updateCat, delete_Cat, insertCategories } from "../queries/categories.query.js";
 import { getAllAdminPosts } from "../queries/posts.query.js";
 import { get_all_tags } from "../queries/tag.query.js";
-import { getAllUsers } from "../queries/users.query.js";
+import { getAllUsers, getAllUsersAdmin } from "../queries/users.query.js";
 
 /**
  * GET /admin: Main admin tool page.
@@ -51,12 +51,23 @@ export const getAdminTagsHandler = expressAsyncHandler(async (req, res) => {
 });
 
 export const getAdminUsersHandler = expressAsyncHandler(async (req, res) => {
-  const users = await getAllUsers();
+  const users = await getAllUsersAdmin();
   res.render("layouts/main-layout", {
     title: "All Users",
     description: "Administrative tools for viewing all current available users",
     content: "../pages/admin-users",
     adminUsers: users,
+    userInfo: req.session?.userInfo,
+  });
+});
+
+export const getAdminUsersEditHandler = expressAsyncHandler(async (req, res) => {
+  const users = await getAllUsers();
+  res.render("layouts/main-layout", {
+    title: "All Users",
+    description: "Administrative tools for editing users",
+    content: "../pages/admin-edit-user",
+    AdminEditUsers: users,
     userInfo: req.session?.userInfo,
   });
 });

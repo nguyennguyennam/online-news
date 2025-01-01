@@ -1,0 +1,165 @@
+<style>
+    .hidden {
+        display: none;
+    }
+</style>
+
+<div class="container mx-auto px-4 py-8">
+    <!-- Profile Header -->
+    <div class="mb-8 flex items-center justify-between">
+      <h1 class="text-3xl font-bold">Profile Settings</h1>
+      <div id = "subscriber-status">
+        <% if (AdminEditUsers.subscription && AdminEditUsers.subscription > Date.now()) { %>
+        <span
+          class="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-md"
+        >
+          Premium
+          <span class="ml-2 text-xs">
+            (<%= Math.ceil((AdminEditUsers.subscription - Date.now()) / (1000 * 60 * 60
+            * 24)) %> days left)
+          </span>
+        </span>
+        <% } else { %>
+        <span
+          class="rounded-full border border-black bg-black px-4 py-2 text-sm font-semibold text-white"
+        >
+          Extend
+        </span>
+        <% } %>
+      </div>
+    </div>
+  
+    <!-- Profile Form -->
+    <div class="rounded-lg bg-white p-6 shadow-md">
+      <form action="/profile" method="POST" class="space-y-6">
+        <!-- Full Name -->
+        <div class="flex space-x-4 w-full">
+            <div class="flex-1">
+                <label
+                    for="fullName"
+                    class="mb-2 block text-sm font-medium text-gray-700"
+                >Full Name</label>
+                <input
+                    type="text"
+                    id="fullName"
+                    name="fullName"
+                    value="<%= AdminEditUsers.fullName %>"
+                    class="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
+                    required
+                />
+            </div>
+            <div class="flex-1">
+                <form id="form-wrap">
+                    <label
+                        for="dropdown"
+                        class="mb-2 block text-sm font-medium text-gray-700"
+                    >Clearance:</label>
+                    <select id="dropdown" name="dropdown" onchange="updateFormStates()" class=" w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none">
+                      <% if (AdminEditUsers.clearance == 1) { %>
+                        <option value="1" selected>1 (Subscriber)</option>
+                    <% } else { %>
+                        <option value="1">1 (Subscriber)</option>
+                    <% } %>
+        
+                    <% if (AdminEditUsers.clearance == 2) { %>
+                        <option value="2" selected>2 (writer)</option>
+                    <% } else { %>
+                        <option value="2">2 (writer)</option>
+                    <% } %>
+        
+                    <% if (AdminEditUsers.clearance == 3) { %>
+                        <option value="3" selected>3 (editor)</option>
+                    <% } else { %>
+                        <option value="3">3 (editor)</option>
+                    <% } %>
+                  </select>
+                </form>
+            </div>
+        </div>
+  
+        <!--Email-->
+        <div>
+          <label for="email" class="mb-2 block text-sm font-medium text-gray-700"
+            >Email</label
+          >
+          <input
+            type="text"
+            id="email"
+            name="email"
+            value="<%= AdminEditUsers.email %>"
+            class="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
+            required
+            disabled
+          />
+        </div>
+
+        <!-- Date of Birth -->
+        <div>
+          <label for="dob" class="mb-2 block text-sm font-medium text-gray-700"
+            >Date of Birth</label
+          >
+          <input
+            type="date"
+            id="dob"
+            name="dob"
+            value="<%= AdminEditUsers.dob?.toISOString().split('T')[0] %>"
+            class="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
+            required
+          />
+        </div>
+
+        <!--penName-->
+
+        <div>
+          <label for="penName" class="mb-2 block text-sm font-medium text-gray-700">Pen Name:</label>
+          <input 
+            type="text"
+            id="penName" 
+            name="penName" 
+            class =" w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none" 
+            value="<%= AdminEditUsers.penName %>"
+            disabled />
+        </div>
+  
+        <!-- Submit Button -->
+        <div class="flex justify-end">
+          <button
+            type="submit"
+            class="rounded-md mt-6 bg-blue-500 px-6 py-2 text-white transition duration-200 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            Save Changes
+          </button>
+
+          <button
+            type="submit"
+            class="rounded-md ml-6 mt-6 bg-red-500 px-6 py-2 text-white transition duration-200 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+          >
+            Delete Account
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const dropdown = document.getElementById('dropdown');
+    const subscriberStatus = document.getElementById('subscriber-status');
+    const penNameInput = document.getElementById('penName');
+
+    function updateFormStates() {
+            const value = dropdown.value;
+
+            // Update button visibility
+            if (value === '1') {
+              subscriberStatus.classList.remove('hidden');
+            } else {
+              subscriberStatus.classList.add('hidden');
+            }
+
+            // Update penName input state
+            penNameInput.disabled = value === '1';
+        }
+        document.addEventListener('DOMContentLoaded', updateFormStates);
+
+</script>
+  

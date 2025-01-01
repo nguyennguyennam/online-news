@@ -53,6 +53,10 @@ export async function getClearanceLevel(userId) {
   return user ? user.clearance : 0;
 }
 
+
+export async function getAllUsersAdmin() {
+  return await User.find({})
+}
 /**
  * Retrieves the clearance level of a user and group them by their clearance.
  *
