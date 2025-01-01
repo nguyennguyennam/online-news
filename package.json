@@ -50,7 +50,7 @@
   "scripts": {
     "start": "node --experimental-loader=extensionless index.js",
     "build:css": "tailwindcss -o public/css/tailwind.css --watch",
-    "format": "prettier --w src tests routes queries model controllers config app.js index.js",
+    "format": "prettier --w src routes queries model controllers config app.js index.js",
     "start:babel": "nodemon --exec npx babel-node index.js"
   },
   "keywords": [],

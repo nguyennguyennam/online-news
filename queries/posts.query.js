@@ -114,6 +114,24 @@ export async function getNewestPostsFromEachCategory() {
 }
 
 /**
+ * Get a post by ID.
+ *
+ * @param {string} id
+ * @returns {Promise<any>}
+ */
+export async function getPostById(id) {
+  const post = await Post.findById(id);
+  if (post != null) {
+    await post.populate("category");
+    if (post.category?.parent) await post.populate("category.parent");
+    await post.populate("tags");
+    await post.populate("writer");
+    await post.populate("editor");
+  }
+  return post;
+}
+
+/**
  * Retrieves all posts, given available params.
  *
  * @param {{ userId: string?, page: number, cat: string?, tag: string?, query: string? }} param0
@@ -160,10 +178,10 @@ export async function getAllPosts({ userId, page, cat, tag, query }) {
 /**
  * Retrieves all posts in database for admin.
  *
- * @returns {Post} // all post in database 
+ * @returns {Post} // all post in database
  */
 export async function getAllAdminPosts() {
-  return await Post.find({})
+  return await Post.find({});
 }
 
 /**
