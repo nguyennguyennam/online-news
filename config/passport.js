@@ -4,8 +4,8 @@ import { OAuth2Strategy as GoogleStrategy } from "passport-google-oauth";
 import bcrypt from "bcryptjs";
 import userModel from "../model/user.model.js";
 
-const GMAIL_ID=process.env.GMAIL_ID;
-const GMAIL_SECRET=process.env.GMAIL_SECRET;
+const GMAIL_ID = process.env.GMAIL_ID;
+const GMAIL_SECRET = process.env.GMAIL_SECRET;
 
 // Local Strategy (Email & Password)
 passport.use(
@@ -37,7 +37,7 @@ passport.use(
     {
       clientID: GMAIL_ID, // Google Client ID
       clientSecret: GMAIL_SECRET, // Google Client Secret
-      callbackURL: "http://localhost:3000/auth/google/callback", 
+      callbackURL: "http://localhost:3000/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       try {

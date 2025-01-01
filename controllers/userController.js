@@ -131,7 +131,11 @@ export async function loginUserController(req, res) {
 }
 
 export function loginWithGoogle(req, res, next) {
-  passport.authenticate("google", { scope: ['profile', 'email'] })(req, res, next);  // Added 'email' permission
+  passport.authenticate("google", { scope: ["profile", "email"] })(
+    req,
+    res,
+    next,
+  ); // Added 'email' permission
 }
 
 export function GoogleCallbackController(req, res, next) {
@@ -144,7 +148,11 @@ export function GoogleCallbackController(req, res, next) {
 
       req.logIn(user, (err) => {
         if (err) return next(err);
-        req.session.userInfo = { id: user._id, name: user.fullName, role: user.clearance }; // Store user info in session
+        req.session.userInfo = {
+          id: user._id,
+          name: user.fullName,
+          role: user.clearance,
+        }; // Store user info in session
         res.redirect("/");
       });
     },

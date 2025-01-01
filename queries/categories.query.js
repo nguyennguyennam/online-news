@@ -4,6 +4,7 @@ import {
   default as Category,
   default as categoryModel,
 } from "../model/category.model.js";
+import { deletePostsUnderCategory } from "./posts.query.js";
 
 /**
  * Aggregates all categories and returns it into an array for easier accessing.
@@ -16,52 +17,14 @@ import {
  * @returns All categories array
  */
 export async function getAllCategories() {
-  const result = await Category.aggregate()
+  return await Category.aggregate()
     .lookup({
       from: "categories",
-      localField: "parent",
-      foreignField: "_id",
-      as: "parentDetails",
+      localField: "_id",
+      foreignField: "parent",
+      as: "children",
     })
-    .unwind({ path: "$parentDetails" })
-    .group({
-      _id: "$parent",
-      name: {
-        $first: "$parentDetails.name",
-      },
-      children: {
-        $push: {
-          _id: {
-            $toString: "$_id",
-          },
-          name: "$name",
-        },
-      },
-    })
-    .sort({ _id: 1 })
-    .project({
-      _id: {
-        $toString: "$_id",
-      },
-      name: 1,
-      children: 1,
-    });
-  return result.map((node) => ({
-    ...node,
-    children: node.children.map((child) => ({
-      ...child,
-      slug: slugify(child.name, {
-        lower: true,
-        strict: true,
-        trim: true,
-      }),
-    })),
-    slug: slugify(node.name, {
-      lower: true,
-      strict: true,
-      trim: true,
-    }),
-  }));
+    .match({ parent: null });
 }
 
 /**
@@ -116,18 +79,59 @@ export async function findChildCategoryBySlug(parentSlug, childSlug) {
     .find((v) => v.slug == childSlug);
 }
 
+/**
+ * Finds a category, using the ID.
+ *
+ * @param {string} id
+ * @returns {Promise<any>}
+ */
+export async function findCategoryById(id) {
+  return Category.findById(id);
+}
+
+/**
+ * Checks if a category already exists with a name, after slugifying.
+ *
+ * @param {string} name the name of the category, after slugifying.
+ * @returns {Promise<boolean>}
+ */
+export async function existsCategoryWithName(name) {
+  const slug = slugify(name, { lower: true, strict: true, trim: true });
+  return (await Category.find()).some(
+    (val) =>
+      slugify(val.name, { lower: true, strict: true, trim: true }) == slug,
+  );
+}
+
+/**
+ * Deletes a category. If the category has children, ALL of it's children becomes
+ * parents.
+ *
+ * This also cascades and deletes all posts related.
+ *
+ * @param {string} id the id to delete
+ */
+export async function deleteCategory(id) {
+  const deleting = await Category.findOneAndDelete({ _id: id });
+  if (deleting == null) {
+    return;
+  }
+
+  // Cascade 1, all children no longer points to this.
+  await Category.updateMany({ parent: deleting._id }, { parent: null });
+
+  // Cascade 2. drop all posts.
+  await deletePostsUnderCategory(deleting._id);
+}
+
 //
 export async function updateCat(old_cat, new_cat) {
   const result = await categoryModel.findByIdAndUpdate(
-    {_id: old_cat},
-    {name: new_cat},
-    {new: true}
-  )
-  return result
-}
-
-export async function delete_Cat(del_cat) {
-  return await categoryModel.deleteOne(del_cat);
+    { _id: old_cat },
+    { name: new_cat },
+    { new: true },
+  );
+  return result;
 }
 
 export async function fetch_sub_Cat() {

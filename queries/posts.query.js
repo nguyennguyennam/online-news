@@ -239,6 +239,15 @@ export async function getRelatedPosts(id) {
 }
 
 /**
+ * Deletes all posts under a certain category.
+ *
+ * @param {string} catId the category id
+ */
+export async function deletePostsUnderCategory(catId) {
+  await Post.deleteMany({ category: catId });
+}
+
+/**
  * Retrieves all posts under the provided category.
  *
  * @param {string} catId

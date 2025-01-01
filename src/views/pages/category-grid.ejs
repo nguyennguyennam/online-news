@@ -3,28 +3,29 @@
   <div class="mx-4 mb-3 border border-blue-500"></div>
 
   <!-- Category title-->
-  <h1 class="mx-4 mb-3 text-3xl font-bold">
-    <%= category.name %> News
-  </h1>
+  <h1 class="mx-4 mb-3 text-3xl font-bold"><%= category.name %> News</h1>
 
   <!-- Separator Line -->
   <div class="mx-4 mb-3 border border-blue-500"></div>
 
   <!-- Subcategories Navigation -->
   <div class="mx-4 mb-3 flex flex-wrap gap-4">
-    <% children.forEach(sub=> { %>
-      <% if (typeof selected !=="undefined" && selected==sub.slug) { %>
-        <a href="/category/<%= parentSlug %>/<%= sub.slug %>"
-          class="rounded-full bg-blue-500 px-4 py-2 font-semibold text-white transition-all duration-200">
-          <%= sub.name %>
-        </a>
-        <% } else { %>
-          <a href="/category/<%= parentSlug %>/<%= sub.slug %>"
-            class="rounded-full bg-gray-100 px-4 py-2 font-semibold text-black transition-all duration-200 hover:bg-blue-500 hover:text-white">
-            <%= sub.name %>
-          </a>
-          <% } %>
-            <% }) %>
+    <% children.forEach(sub=> { %> <% if (typeof selected !=="undefined" &&
+    selected==sub.slug) { %>
+    <a
+      href="/category/<%= parentSlug %>/<%= sub.slug %>"
+      class="rounded-full bg-blue-500 px-4 py-2 font-semibold text-white transition-all duration-200"
+    >
+      <%= sub.name %>
+    </a>
+    <% } else { %>
+    <a
+      href="/category/<%= parentSlug %>/<%= sub.slug %>"
+      class="rounded-full bg-gray-100 px-4 py-2 font-semibold text-black transition-all duration-200 hover:bg-blue-500 hover:text-white"
+    >
+      <%= sub.name %>
+    </a>
+    <% } %> <% }) %>
   </div>
   <!-- Separator Line -->
   <div class="mx-4 border border-gray-300"></div>
@@ -33,69 +34,80 @@
 <div class="container mx-auto px-4 py-8">
   <!-- Articles -->
   <% if (articles.length===0) { %>
-    <p class="text-gray-600">No articles found in this category.</p>
-    <% } else { %>
-      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <% articles.forEach(article=> { %>
-          <article class="bg-white p-4 shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg">
-            <!-- Featured Image with Article Type Tag -->
-            <div class="relative mb-4">
-              <a href="/post/<%= article.slug %>">
-                <img alt="<%= article.name %>" class="h-48 w-full object-cover"
-                  src="<%= article.thumbnail.small || 'https://placehold.co/600x400/EEE/31343C' %>" />
-              </a>
+  <p class="text-gray-600">No articles found in this category.</p>
+  <% } else { %>
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <% articles.forEach(article=> { %>
+    <article
+      class="bg-white p-4 shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg"
+    >
+      <!-- Featured Image with Article Type Tag -->
+      <div class="relative mb-4">
+        <a href="/post/<%= article.slug %>">
+          <img
+            alt="<%= article.name %>"
+            class="h-48 w-full object-cover"
+            src="<%= article.thumbnail.small || 'https://placehold.co/600x400/EEE/31343C' %>"
+          />
+        </a>
 
-              <!-- Article Type Tag -->
-              <div class="absolute right-2 top-2">
-                <% if (article.premium) { %>
-                  <span
-                    class="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-3 py-1 text-sm font-semibold text-white shadow-md">
-                    Premium
-                  </span>
-                  <% } else { %>
-                    <span class="rounded-full border border-black bg-black px-3 py-1 text-sm font-semibold text-white">
-                      Standard
-                    </span>
-                    <% } %>
-              </div>
-            </div>
-
-            <!-- Article Info -->
-            <div class="space-y-2">
-              <h2 class="text-xl font-semibold">
-                <a href="/post/<%= article.slug %>" class="transition-colors duration-200 hover:text-blue-500">
-                  <%= article.name %>
-                </a>
-              </h2>
-
-              <!-- Category -->
-              <p class="text-gray-600">
-                <span class="font-medium">Category:</span>
-                <%= article.category.name %>
-              </p>
-
-              <!-- Tags -->
-              <div class="flex flex-wrap gap-2">
-                <% article.tags.forEach(tag=> { %>
-                  <a href="/tag/<%= tag.tag %>"
-                    class="rounded-full bg-gray-100 px-2 py-1 text-sm transition-colors duration-200 hover:bg-blue-500 hover:text-white">
-                    #<%= tag.tag %>
-                  </a>
-                  <% }) %>
-              </div>
-
-              <!-- Date -->
-              <p class="text-sm text-gray-500">
-                Posted on: <%= article.publishedDate.toLocaleString("vi-VN") %>
-              </p>
-
-              <!-- Abstract -->
-              <p class="line-clamp-3 text-gray-600">
-                <%= article.abstract %>
-              </p>
-            </div>
-          </article>
-          <% }) %>
+        <!-- Article Type Tag -->
+        <div class="absolute right-2 top-2">
+          <% if (article.premium) { %>
+          <span
+            class="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-3 py-1 text-sm font-semibold text-white shadow-md"
+          >
+            Premium
+          </span>
+          <% } else { %>
+          <span
+            class="rounded-full border border-black bg-black px-3 py-1 text-sm font-semibold text-white"
+          >
+            Standard
+          </span>
+          <% } %>
+        </div>
       </div>
-      <% } %>
+
+      <!-- Article Info -->
+      <div class="space-y-2">
+        <h2 class="text-xl font-semibold">
+          <a
+            href="/post/<%= article.slug %>"
+            class="transition-colors duration-200 hover:text-blue-500"
+          >
+            <%= article.name %>
+          </a>
+        </h2>
+
+        <!-- Category -->
+        <p class="text-gray-600">
+          <span class="font-medium">Category:</span>
+          <%= article.category.name %>
+        </p>
+
+        <!-- Tags -->
+        <div class="flex flex-wrap gap-2">
+          <% article.tags.forEach(tag=> { %>
+          <a
+            href="/tag/<%= tag.tag %>"
+            class="rounded-full bg-gray-100 px-2 py-1 text-sm transition-colors duration-200 hover:bg-blue-500 hover:text-white"
+          >
+            #<%= tag.tag %>
+          </a>
+          <% }) %>
+        </div>
+
+        <!-- Date -->
+        <p class="text-sm text-gray-500">
+          Posted on: <%= article.publishedDate.toLocaleString("vi-VN") %>
+        </p>
+
+        <!-- Abstract -->
+        <p class="line-clamp-3 text-gray-600"><%= article.abstract %></p>
+      </div>
+    </article>
+    <% }) %>
+  </div>
+  <% } %>
 </div>

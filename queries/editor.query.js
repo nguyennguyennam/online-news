@@ -35,13 +35,13 @@ export async function checkPost(
 
   if (status === "deny") {
     return await postModel.findByIdAndUpdate(
-      post_id, 
+      post_id,
       {
         editor: editor_id,
         state: status,
         reason_of_deny: reason, // Reason for denial
       },
-      { new: true }, 
+      { new: true },
     );
   } else if (status === "approved") {
     const now = new Date();
@@ -49,13 +49,13 @@ export async function checkPost(
       throw new Error("Publish date must be in the future.");
     }
     return await postModel.findByIdAndUpdate(
-      post_id, 
+      post_id,
       {
         editor: editor_id,
         state: status,
-        category: category, 
+        category: category,
         tags: tags, // Tags
-        publishedDate: datePublish, 
+        publishedDate: datePublish,
       },
       { new: true },
     );
@@ -65,11 +65,11 @@ export async function checkPost(
 /**
  * Fetch all posts in "Draft" state and their categories that are managed by the specified editor.
  */
- export const posts_fetched = async(id_editor) => {
-    const editor = await editorModel.findById(id_editor);
-    const categories = editor.authorizedCategories;
-    return await postModel.find(
-      {category: { $in: categories },
-       state: "draft"
-    })
-  };
+export const posts_fetched = async (id_editor) => {
+  const editor = await editorModel.findById(id_editor);
+  const categories = editor.authorizedCategories;
+  return await postModel.find({
+    category: { $in: categories },
+    state: "draft",
+  });
+};
