@@ -5,7 +5,6 @@ import {
   getAdminPostsHandler,
   getAdminTagsHandler,
   getAdminUsersHandler,
-  getAdminPostsHandler,
   update_cat_by_admin,
   getAdminUsersEditHandler
 } from "../controllers/admin.controller.js";
