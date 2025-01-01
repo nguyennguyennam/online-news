@@ -10,17 +10,27 @@
       <% } else { adminPosts.forEach(adminPosts => { %>
       <div class="relative mb-6 rounded-lg bg-white p-6 shadow-md">
         <% if (adminPosts.state == "draft") { %>
-        <div
-          class="absolute -right-4 -top-4 rounded-md bg-orange-300 px-4 py-2 font-semibold"
-        >
-          Draft
+        <div>
+          <div
+            class="absolute -right-4 -top-4 rounded-md bg-orange-300 px-4 py-2 font-semibold"
+          >
+            Draft
+          </div>
         </div>
         <% } else if (adminPosts.state == "denied") { %>
-        <div
-          class="absolute -right-4 -top-4 rounded-md bg-red-700 px-4 py-2 font-semibold text-white"
-        >
-          Denied
-        </div>
+          <div>
+            <button
+            type="submit"
+            class="rounded-md mb-6 bg-green-500 px-6 py-2 text-white transition duration-200 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+          >
+            Publish
+          </button>
+            <div
+              class="absolute -right-4 -top-4 rounded-md bg-red-700 px-4 py-2 font-semibold text-white"
+            >
+              Denied
+            </div>
+          </div>
         <% } else if (adminPosts.state == "approved") { %>
         <div
           class="absolute -right-4 -top-4 rounded-md bg-sky-600 px-4 py-2 font-semibold text-white"
@@ -28,10 +38,18 @@
           Approved
         </div>
         <% } else { %>
-        <div
-          class="absolute -right-4 -top-4 rounded-md bg-gradient-to-r from-purple-500 to-green-600 px-4 py-2 font-semibold text-white"
-        >
-          Published
+        <div>
+          <button
+            type="submit"
+            class="rounded-md mb-6 bg-red-500 px-6 py-2 text-white transition duration-200 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+          >
+            Unpublish
+          </button>
+          <div
+            class="absolute -right-4 -top-4 rounded-md bg-gradient-to-r from-purple-500 to-green-600 px-4 py-2 font-semibold text-white"
+          >
+            Published
+          </div>
         </div>
         <% } %>
   
@@ -45,24 +63,31 @@
         </a>
   
         <p class="mb-2 text-gray-600"><%= adminPosts.abstract %></p>
-        <p class="text-sm text-gray-700">
-          <strong>Category:</strong> <%= adminPosts.category.name %>
-        </p>
-        <p class="flex flex-row flex-wrap gap-1 text-sm text-gray-700">
-          <strong>Tags:</strong>
-          <% adminPosts.tags.forEach(tag => { %>
-          <span class="text-blue-500"><%= tag.tag %></span>
-          <% }) %>
-        </p>
-        <p class="text-sm text-gray-700">
-          <strong>Premium:</strong> <%= adminPosts.premium ? "Yes" : "No" %>
-        </p>
-  
+        <div >
+          <div>
+            <p class="text-sm text-gray-700">
+              <strong>Category:</strong> <%= adminPosts.category.name %>
+            </p>
+            <p class="flex flex-row flex-wrap gap-1 text-sm text-gray-700">
+              <strong>Tags:</strong>
+              <% adminPosts.tags.forEach(tag => { %>
+              <span class="text-blue-500"><%= tag.tag %></span>
+              <% }) %>
+            </p>
+            <p class="text-sm text-gray-700">
+              <strong>Premium:</strong> <%= adminPosts.premium ? "Yes" : "No" %>
+            </p>
+          </div>
+        </div>
+        
         <% if (adminPosts.state == "denied" && adminPosts.deniedReason) { %>
         <p class="text-red-700">
           <strong>Denied Reason</strong>: <%= adminPosts.deniedReason %>
         </p>
         <% } %>
+
+
+
         <p></p>
       </div>
       <% })} %>
