@@ -1,117 +1,83 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%= title %></title>
-    <meta name="description" content="<%= description %>" />
 
-    <meta name="og:title" content="<%= title %>" />
-    <meta name="og:description" content="<%= description %>" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>
+    <%= title %>
+  </title>
+  <meta name="description" content="<%= description %>" />
 
-    <link rel="stylesheet" href="/css/tailwind.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
-      rel="stylesheet"
-    />
+  <meta name="og:title" content="<%= title %>" />
+  <meta name="og:description" content="<%= description %>" />
 
-    <% if (typeof tinymce !== "undefined") { %>
-    <script
-      src="https://cdn.tiny.cloud/1/zdydn25rh7p4n5ascy4i8ktwypa83h58l70erb1yga9fxd2e/tinymce/7/tinymce.min.js"
-      referrerpolicy="origin"
-    ></script>
+  <link rel="stylesheet" href="/css/tailwind.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+    rel="stylesheet" />
+
+  <% if (typeof tinymce !=="undefined" ) { %>
+    <script src="https://cdn.tiny.cloud/1/zdydn25rh7p4n5ascy4i8ktwypa83h58l70erb1yga9fxd2e/tinymce/7/tinymce.min.js"
+      referrerpolicy="origin"></script>
     <% } %>
-  </head>
+</head>
 
-  <body class="font-nunito">
-    <header class="flex flex-col">
-      <!-- Title Section -->
-      <div
-        class="container mx-auto flex h-36 items-center justify-between px-4 font-playfair"
-      >
-        <!-- Search Bar -->
-        <div class="relative w-1/4">
-          <form id="searchForm" action="/search" method="GET">
-            <div class="relative">
-              <input
-                type="text"
-                name="query"
-                placeholder="Search"
-                class="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:border-blue-500 focus:outline-none"
-              />
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </div>
-          </form>
-        </div>
+<body class="font-nunito">
+  <header class="flex flex-col">
+    <!-- Title Section -->
+    <div class="container mx-auto flex h-36 items-center justify-between px-4 font-playfair">
+      <!-- Search Bar -->
+      <div class="relative w-1/4">
+        <form id="searchForm" action="/search" method="GET">
+          <div class="relative">
+            <input type="text" name="query" placeholder="Search"
+              class="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:border-blue-500 focus:outline-none" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+        </form>
+      </div>
 
-        <!-- Title -->
-        <a
-          href="/"
-          class="flex flex-col items-center justify-center transition-opacity hover:opacity-80"
-        >
-          <h1 class="text-7xl font-black">The Cipher</h1>
-          <p class="mt-2 text-xl italic text-gray-600">
-            The world is in your hand
-          </p>
-        </a>
+      <!-- Title -->
+      <a href="/" class="flex flex-col items-center justify-center transition-opacity hover:opacity-80">
+        <h1 class="text-7xl font-black">The Cipher</h1>
+        <p class="mt-2 text-xl italic text-gray-600">
+          The world is in your hand
+        </p>
+      </a>
 
-        <!-- Auth Buttons -->
-        <div class="flex w-1/4 justify-end gap-4">
-          <% if (typeof userInfo !=="undefined" && userInfo) { %>
+      <!-- Auth Buttons -->
+      <div class="flex w-1/4 justify-end gap-4">
+        <% if (typeof userInfo !=="undefined" && userInfo) { %>
           <!-- User Info Dropdown -->
           <div class="relative">
             <!-- User Button -->
-            <button
-              id="userDropdownBtn"
-              class="flex items-center gap-3 rounded-full border border-gray-300 bg-gray-100 px-3 py-2 shadow transition-all hover:border-gray-300 hover:shadow-md focus:outline-none"
-            >
+            <button id="userDropdownBtn"
+              class="flex items-center gap-3 rounded-full border border-gray-300 bg-gray-100 px-3 py-2 shadow transition-all hover:border-gray-300 hover:shadow-md focus:outline-none">
               <!-- Avatar -->
-              <img
-                class="h-8 w-8 rounded-full object-cover"
+              <img class="h-8 w-8 rounded-full object-cover"
                 src="https://ui-avatars.com/api/?name=<%= userInfo.fullName %>&background=random"
-                alt="<%= userInfo.fullName %>'s avatar"
-              />
+                alt="<%= userInfo.fullName %>'s avatar" />
               <!-- User Name -->
               <span class="text-sm font-medium text-gray-700">
                 <%= userInfo.fullName %>
               </span>
               <!-- Dropdown Arrow with transition -->
-              <svg
-                class="h-4 w-4 transform text-gray-400 transition-transform duration-200"
-                id="dropdownArrow"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 9l-7 7-7-7"
-                />
+              <svg class="h-4 w-4 transform text-gray-400 transition-transform duration-200" id="dropdownArrow"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
 
             <!-- Dropdown Menu -->
-            <div
-              id="userDropdownMenu"
-              class="absolute right-0 z-50 mt-2 hidden w-48 overflow-hidden rounded-lg border border-gray-100 bg-white shadow-lg ring-1 ring-black ring-opacity-5"
-            >
+            <div id="userDropdownMenu"
+              class="absolute right-0 z-50 mt-2 hidden w-48 overflow-hidden rounded-lg border border-gray-100 bg-white shadow-lg ring-1 ring-black ring-opacity-5">
               <div class="border-b border-gray-100 px-4 py-3">
                 <p class="text-sm text-gray-500">Signed in as</p>
                 <p class="truncate text-sm font-medium text-gray-900">
@@ -119,133 +85,84 @@
                 </p>
               </div>
               <div class="py-1">
-                <a
-                  href="/profile"
-                  class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 -960 960 960"
-                    class="mr-3 size-4 text-gray-400"
-                  >
+                <a href="/profile" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="mr-3 size-4 text-gray-400">
                     <path
-                      d="M480-489.61q-74.48 0-126.85-52.37-52.37-52.37-52.37-126.85 0-74.48 52.37-126.56 52.37-52.09 126.85-52.09 74.48 0 126.85 52.09 52.37 52.08 52.37 126.56t-52.37 126.85Q554.48-489.61 480-489.61ZM140.78-237.17v-26.35q0-39.26 20.44-72.17 20.43-32.9 54.3-50.22 63.7-31.57 129.93-47.63 66.24-16.07 134.55-16.07 69.39 0 135.65 15.78 66.26 15.79 128.83 47.35 33.87 17.24 54.3 49.99 20.44 32.75 20.44 72.97v26.35q0 44.3-30.85 75.15-30.85 30.85-75.15 30.85H246.78q-44.3 0-75.15-30.85-30.85-30.85-30.85-75.15Zm106 0h466.44v-23.53q0-10.45-5.5-19t-14.5-13.3q-50.61-24.74-103.92-37.67Q536-343.61 480-343.61q-54.87 0-109.3 12.94-54.44 12.93-103.92 37.67-9 4.75-14.5 13.3t-5.5 19v23.53Zm233.2-358.44q30.19 0 51.72-21.5 21.52-21.5 21.52-51.7 0-30.19-21.5-51.43-21.51-21.24-51.7-21.24t-51.72 21.34q-21.52 21.34-21.52 51.31 0 30.2 21.5 51.71 21.51 21.51 51.7 21.51Zm.02-73.22Zm0 431.66Z"
-                    />
+                      d="M480-489.61q-74.48 0-126.85-52.37-52.37-52.37-52.37-126.85 0-74.48 52.37-126.56 52.37-52.09 126.85-52.09 74.48 0 126.85 52.09 52.37 52.08 52.37 126.56t-52.37 126.85Q554.48-489.61 480-489.61ZM140.78-237.17v-26.35q0-39.26 20.44-72.17 20.43-32.9 54.3-50.22 63.7-31.57 129.93-47.63 66.24-16.07 134.55-16.07 69.39 0 135.65 15.78 66.26 15.79 128.83 47.35 33.87 17.24 54.3 49.99 20.44 32.75 20.44 72.97v26.35q0 44.3-30.85 75.15-30.85 30.85-75.15 30.85H246.78q-44.3 0-75.15-30.85-30.85-30.85-30.85-75.15Zm106 0h466.44v-23.53q0-10.45-5.5-19t-14.5-13.3q-50.61-24.74-103.92-37.67Q536-343.61 480-343.61q-54.87 0-109.3 12.94-54.44 12.93-103.92 37.67-9 4.75-14.5 13.3t-5.5 19v23.53Zm233.2-358.44q30.19 0 51.72-21.5 21.52-21.5 21.52-51.7 0-30.19-21.5-51.43-21.51-21.24-51.7-21.24t-51.72 21.34q-21.52 21.34-21.52 51.31 0 30.2 21.5 51.71 21.51 21.51 51.7 21.51Zm.02-73.22Zm0 431.66Z" />
                   </svg>
                   Profile
                 </a>
-                <a
-                  href="/logout"
-                  class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 -960 960 960"
-                    class="mr-3 size-4 text-gray-400"
-                  >
-                    <path
-                      d="M206.78-100.78q-44.3 0-75.15-30.85-30.85-30.85-30.85-75.15v-546.44q0-44.3 30.85-75.15 30.85-30.85 75.15-30.85h224.74q22.09 0 37.55 15.46 15.45 15.46 15.45 37.54 0 22.09-15.45 37.55-15.46 15.45-37.55 15.45H206.78v546.44h224.74q22.09 0 37.55 15.45 15.45 15.46 15.45 37.55 0 22.08-15.45 37.54-15.46 15.46-37.55 15.46H206.78ZM657.61-427H408.48q-22.09 0-37.55-15.46-15.45-15.45-15.45-37.54t15.45-37.54Q386.39-533 408.48-533h249.13l-62-62q-14.96-14.96-14.96-36.61t14.96-37.04q14.95-15.96 36.76-16.18 21.8-.21 37.76 15.74l152.04 152.05q15.4 15.95 15.4 37.04t-15.4 37.04L670.13-290.91q-15.39 15.95-37.26 15.74-21.87-.22-37.26-16.18-14.96-15.39-14.74-37.26.22-21.87 15.17-36.82L657.61-427Z"
-                    />
-                  </svg>
-                  Log Out
-                </a>
 
-                <% if (userInfo.role >= 2) { %>
-                <a
-                  href="/post"
-                  class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 -960 960 960"
-                    class="mr-3 size-4 text-gray-400"
-                  >
-                    <path
-                      d="M435.48-435.48V-320q0 18.92 12.8 31.72 12.8 12.8 31.72 12.8 18.92 0 31.72-12.8 12.8-12.8 12.8-31.72v-115.48H640q18.92 0 31.72-12.8 12.8-12.8 12.8-31.72 0-18.92-12.8-31.72-12.8-12.8-31.72-12.8H524.52V-640q0-18.92-12.8-31.72-12.8-12.8-31.72-12.8-18.92 0-31.72 12.8-12.8 12.8-12.8 31.72v115.48H320q-18.92 0-31.72 12.8-12.8 12.8-12.8 31.72 0 18.92 12.8 31.72 12.8 12.8 31.72 12.8h115.48ZM480-60.78q-87.52 0-163.91-32.96-76.38-32.96-132.88-89.47-56.51-56.5-89.47-132.88Q60.78-392.48 60.78-480t32.96-163.91q32.96-76.38 89.47-132.88 56.5-56.51 132.88-89.47 76.39-32.96 163.91-32.96t163.91 32.96q76.38 32.96 132.88 89.47 56.51 56.5 89.47 132.88 32.96 76.39 32.96 163.91t-32.96 163.91q-32.96 76.38-89.47 132.88-56.5 56.51-132.88 89.47Q567.52-60.78 480-60.78Zm0-106q131.74 0 222.48-90.74 90.74-90.74 90.74-222.48t-90.74-222.48Q611.74-793.22 480-793.22t-222.48 90.74Q166.78-611.74 166.78-480t90.74 222.48q90.74 90.74 222.48 90.74ZM480-480Z"
-                    />
-                  </svg>
 
-                  Create Post
-                </a>
-                <a
-                  href="/posts"
-                  class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 -960 960 960"
-                    class="mr-3 size-4"
-                  >
-                    <path
-                      d="m413-599.39 31.52-15.26q17.12-8.26 35.56-8.26t35.4 8.26L547-599.39v-153.83H413v153.83Zm-98.65 335.22q-20.96 0-35.57-14.61t-14.61-35.57q0-20.95 14.61-35.56 14.61-14.61 35.57-14.61h115.48q20.95 0 35.56 14.61Q480-335.3 480-314.35q0 20.96-14.61 35.57t-35.56 14.61H314.35ZM206.78-100.78q-44.3 0-75.15-30.85-30.85-30.85-30.85-75.15v-546.44q0-44.3 30.85-75.15 30.85-30.85 75.15-30.85h546.44q44.3 0 75.15 30.85 30.85 30.85 30.85 75.15v546.44q0 44.3-30.85 75.15-30.85 30.85-75.15 30.85H206.78Zm0-652.44v546.44-546.44Zm0 546.44h546.44v-546.44H647.35v230.7q0 29.78-24.94 45.24-24.93 15.45-51.71 2.06L480-520l-90.7 44.78q-26.78 13.39-51.71-2.06-24.94-15.46-24.94-45.24v-230.7H206.78v546.44Z"
-                    />
-                  </svg>
+                <% if (userInfo.role>= 2) { %>
+                  <a href="/post" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="mr-3 size-4 text-gray-400">
+                      <path
+                        d="M435.48-435.48V-320q0 18.92 12.8 31.72 12.8 12.8 31.72 12.8 18.92 0 31.72-12.8 12.8-12.8 12.8-31.72v-115.48H640q18.92 0 31.72-12.8 12.8-12.8 12.8-31.72 0-18.92-12.8-31.72-12.8-12.8-31.72-12.8H524.52V-640q0-18.92-12.8-31.72-12.8-12.8-31.72-12.8-18.92 0-31.72 12.8-12.8 12.8-12.8 31.72v115.48H320q-18.92 0-31.72 12.8-12.8 12.8-12.8 31.72 0 18.92 12.8 31.72 12.8 12.8 31.72 12.8h115.48ZM480-60.78q-87.52 0-163.91-32.96-76.38-32.96-132.88-89.47-56.51-56.5-89.47-132.88Q60.78-392.48 60.78-480t32.96-163.91q32.96-76.38 89.47-132.88 56.5-56.51 132.88-89.47 76.39-32.96 163.91-32.96t163.91 32.96q76.38 32.96 132.88 89.47 56.51 56.5 89.47 132.88 32.96 76.39 32.96 163.91t-32.96 163.91q-32.96 76.38-89.47 132.88-56.5 56.51-132.88 89.47Q567.52-60.78 480-60.78Zm0-106q131.74 0 222.48-90.74 90.74-90.74 90.74-222.48t-90.74-222.48Q611.74-793.22 480-793.22t-222.48 90.74Q166.78-611.74 166.78-480t90.74 222.48q90.74 90.74 222.48 90.74ZM480-480Z" />
+                    </svg>
 
-                  My Posts
-                </a>
-                <% } %> <% if (userInfo.role >= 3) { %>
-                <a
-                  href="/editorial"
-                  class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 -960 960 960"
-                    class="mr-3 size-4 text-gray-400"
-                  >
-                    <path
-                      d="M206.22-206.78h57.56l352.57-352.57-56.44-57-353.69 353.7v55.87Zm-105.44 106v-206.18l526.87-526.43q13.13-12.7 29.33-19.26 16.19-6.57 33.89-6.57 17.13 0 33.83 6.57 16.69 6.56 29.95 19.69l79.31 78.61q13.13 12.7 19.48 29.68 6.34 16.97 6.34 34.24 0 17.69-6.34 34.17-6.35 16.48-19.48 29.61L308.09-100.78H100.78Zm646.78-589.65L691-747.56l56.56 57.13ZM587.91-587.91l-28-28.44 56.44 57-28.44-28.56Z"
-                    />
-                  </svg>
+                    Create Post
+                  </a>
+                  <a href="/posts" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="mr-3 size-4">
+                      <path
+                        d="m413-599.39 31.52-15.26q17.12-8.26 35.56-8.26t35.4 8.26L547-599.39v-153.83H413v153.83Zm-98.65 335.22q-20.96 0-35.57-14.61t-14.61-35.57q0-20.95 14.61-35.56 14.61-14.61 35.57-14.61h115.48q20.95 0 35.56 14.61Q480-335.3 480-314.35q0 20.96-14.61 35.57t-35.56 14.61H314.35ZM206.78-100.78q-44.3 0-75.15-30.85-30.85-30.85-30.85-75.15v-546.44q0-44.3 30.85-75.15 30.85-30.85 75.15-30.85h546.44q44.3 0 75.15 30.85 30.85 30.85 30.85 75.15v546.44q0 44.3-30.85 75.15-30.85 30.85-75.15 30.85H206.78Zm0-652.44v546.44-546.44Zm0 546.44h546.44v-546.44H647.35v230.7q0 29.78-24.94 45.24-24.93 15.45-51.71 2.06L480-520l-90.7 44.78q-26.78 13.39-51.71-2.06-24.94-15.46-24.94-45.24v-230.7H206.78v546.44Z" />
+                    </svg>
 
-                  Editorial Tools
-                </a>
-                <% } %> <% if (userInfo.role >= 4) { %>
-                <a
-                  href="/admin"
-                  class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 -960 960 960"
-                    class="mr-3 size-4 text-gray-400"
-                  >
-                    <path
-                      d="M480-892.65q9.7 0 18.74 1.28t18.3 5.41l233.22 87.18q30.91 11.82 49.94 38.61 19.02 26.78 19.02 60.26V-593q0 22.28-15.46 37.36-15.46 15.07-37.54 15.07-22.09 0-37.55-15.07-15.45-15.08-15.45-37.36v-106.48L480-786.65l-233.22 87.17V-516q0 47.74 13.09 94.06 13.09 46.33 35.48 87.09 22.39 40.76 52.95 73.94 30.57 33.17 65.09 55.6 18.39 13.09 26.02 33.74 7.63 20.66-1.76 40.18-10.39 20.52-31.26 27.09-20.87 6.56-39.83-5.4-103.95-62.78-164.87-173.24Q140.78-393.39 140.78-516v-183.91q0-33.48 19.02-60.26 19.03-26.79 49.94-38.61l233.22-87.18q9.26-4.01 18.52-5.35 9.26-1.34 18.52-1.34ZM680-80q-83 0-141.5-58.5T480-280q0-83 58.5-141.5T680-480q83 0 141.5 58.5T880-280q0 83-58.5 141.5T680-80ZM480-496.26ZM681.13-280q25 0 42.5-17.5t17.5-42.5q0-25-17.5-42.5t-42.5-17.5q-25 0-42.5 17.5t-17.5 42.5q0 25 17.5 42.5t42.5 17.5Zm0 120q23.36 0 43.92-8.09 20.56-8.08 37.56-23.82 7.26-7.13 5.69-17.46-1.56-10.33-11.82-14.89-17.87-8.44-36.97-12.09-19.1-3.65-38.66-3.65-19.57 0-38.66 3.93-19.1 3.94-36.97 11.81-10.26 4.56-11.83 14.89-1.56 10.33 5.7 17.46 17 15.74 37.74 23.82 20.73 8.09 44.3 8.09Z"
-                    />
-                  </svg>
+                    My Posts
+                  </a>
+                  <% } %>
+                    <% if (userInfo.role>= 3) { %>
+                      <a href="/editorial" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"
+                          class="mr-3 size-4 text-gray-400">
+                          <path
+                            d="M206.22-206.78h57.56l352.57-352.57-56.44-57-353.69 353.7v55.87Zm-105.44 106v-206.18l526.87-526.43q13.13-12.7 29.33-19.26 16.19-6.57 33.89-6.57 17.13 0 33.83 6.57 16.69 6.56 29.95 19.69l79.31 78.61q13.13 12.7 19.48 29.68 6.34 16.97 6.34 34.24 0 17.69-6.34 34.17-6.35 16.48-19.48 29.61L308.09-100.78H100.78Zm646.78-589.65L691-747.56l56.56 57.13ZM587.91-587.91l-28-28.44 56.44 57-28.44-28.56Z" />
+                        </svg>
 
-                  Admin Tools
-                </a>
-                <% } %>
+                        Editorial Tools
+                      </a>
+                      <% } %>
+                        <% if (userInfo.role>= 4) { %>
+                          <a href="/admin" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"
+                              class="mr-3 size-4 text-gray-400">
+                              <path
+                                d="M480-892.65q9.7 0 18.74 1.28t18.3 5.41l233.22 87.18q30.91 11.82 49.94 38.61 19.02 26.78 19.02 60.26V-593q0 22.28-15.46 37.36-15.46 15.07-37.54 15.07-22.09 0-37.55-15.07-15.45-15.08-15.45-37.36v-106.48L480-786.65l-233.22 87.17V-516q0 47.74 13.09 94.06 13.09 46.33 35.48 87.09 22.39 40.76 52.95 73.94 30.57 33.17 65.09 55.6 18.39 13.09 26.02 33.74 7.63 20.66-1.76 40.18-10.39 20.52-31.26 27.09-20.87 6.56-39.83-5.4-103.95-62.78-164.87-173.24Q140.78-393.39 140.78-516v-183.91q0-33.48 19.02-60.26 19.03-26.79 49.94-38.61l233.22-87.18q9.26-4.01 18.52-5.35 9.26-1.34 18.52-1.34ZM680-80q-83 0-141.5-58.5T480-280q0-83 58.5-141.5T680-480q83 0 141.5 58.5T880-280q0 83-58.5 141.5T680-80ZM480-496.26ZM681.13-280q25 0 42.5-17.5t17.5-42.5q0-25-17.5-42.5t-42.5-17.5q-25 0-42.5 17.5t-17.5 42.5q0 25 17.5 42.5t42.5 17.5Zm0 120q23.36 0 43.92-8.09 20.56-8.08 37.56-23.82 7.26-7.13 5.69-17.46-1.56-10.33-11.82-14.89-17.87-8.44-36.97-12.09-19.1-3.65-38.66-3.65-19.57 0-38.66 3.93-19.1 3.94-36.97 11.81-10.26 4.56-11.83 14.89-1.56 10.33 5.7 17.46 17 15.74 37.74 23.82 20.73 8.09 44.3 8.09Z" />
+                            </svg>
+
+                            Admin Tools
+                          </a>
+                          <% } %>
+                            <a href="/logout"
+                              class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"
+                                class="mr-3 size-4 text-gray-400">
+                                <path
+                                  d="M206.78-100.78q-44.3 0-75.15-30.85-30.85-30.85-30.85-75.15v-546.44q0-44.3 30.85-75.15 30.85-30.85 75.15-30.85h224.74q22.09 0 37.55 15.46 15.45 15.46 15.45 37.54 0 22.09-15.45 37.55-15.46 15.45-37.55 15.45H206.78v546.44h224.74q22.09 0 37.55 15.45 15.45 15.46 15.45 37.55 0 22.08-15.45 37.54-15.46 15.46-37.55 15.46H206.78ZM657.61-427H408.48q-22.09 0-37.55-15.46-15.45-15.45-15.45-37.54t15.45-37.54Q386.39-533 408.48-533h249.13l-62-62q-14.96-14.96-14.96-36.61t14.96-37.04q14.95-15.96 36.76-16.18 21.8-.21 37.76 15.74l152.04 152.05q15.4 15.95 15.4 37.04t-15.4 37.04L670.13-290.91q-15.39 15.95-37.26 15.74-21.87-.22-37.26-16.18-14.96-15.39-14.74-37.26.22-21.87 15.17-36.82L657.61-427Z" />
+                              </svg>
+                              Log Out
+                            </a>
               </div>
             </div>
           </div>
           <% } else { %>
-          <!-- Login and Register Buttons (Guest View) -->
-          <a
-            href="/login"
-            class="px-4 py-2 font-semibold text-black hover:text-blue-500"
-          >
-            Login
-          </a>
-          <a
-            href="/register"
-            class="rounded-lg bg-black px-4 py-2 font-semibold text-white hover:bg-blue-500"
-          >
-            Register
-          </a>
-          <% } %>
-        </div>
+            <!-- Login and Register Buttons (Guest View) -->
+            <a href="/login" class="px-4 py-2 font-semibold text-black hover:text-blue-500">
+              Login
+            </a>
+            <a href="/register" class="rounded-lg bg-black px-4 py-2 font-semibold text-white hover:bg-blue-500">
+              Register
+            </a>
+            <% } %>
       </div>
-    </header>
+    </div>
+  </header>
 
-    <!-- Navbar Section -->
-    <!-- make this separated from header to apply sticky effect -->
-    <%if (typeof categories != "undefined" && categories) { %>
-    <nav
-      class="sticky top-0 z-10 flex h-14 w-full items-center justify-center bg-white"
-    >
+  <!-- Navbar Section -->
+  <!-- make this separated from header to apply sticky effect -->
+  <%if (typeof categories !="undefined" && categories) { %>
+    <nav class="sticky top-0 z-10 flex h-14 w-full items-center justify-center bg-white">
       <style>
         .dropdown:hover,
         .dropdown.active {
@@ -283,124 +200,97 @@
 
           <!-- Dynamic Categories -->
           <% categories.forEach(category=> { %>
-          <li
-            class="dropdown <%= category === category.name ? 'active' : '' %> relative flex h-14 items-center"
-          >
-            <a
-              class="<%= category === category.name ? 'text-blue-500' : '' %> font-bold hover:text-blue-500"
-              href="/category/<%= category.slug %>"
-            >
-              <%= category.name %>
-            </a>
-            <% if (category.children && category.children.length> 0) { %>
-            <ul
-              class="dropdown-menu absolute left-0 mt-2 w-48 bg-white shadow-lg"
-            >
-              <% category.children.forEach(sub=> { %>
-              <li>
-                <a
-                  class="block px-4 py-2 font-bold hover:bg-gray-200 hover:text-blue-500"
-                  href="/category/<%= category.slug %>/<%= sub.slug %>"
-                >
-                  <%= sub.name %>
-                </a>
-              </li>
-              <% }) %>
-            </ul>
-            <% } %>
-          </li>
-          <% }) %>
+            <li class="dropdown <%= category === category.name ? 'active' : '' %> relative flex h-14 items-center">
+              <a class="<%= category === category.name ? 'text-blue-500' : '' %> font-bold hover:text-blue-500"
+                href="/category/<%= category.slug %>">
+                <%= category.name %>
+              </a>
+              <% if (category.children && category.children.length> 0) { %>
+                <ul class="dropdown-menu absolute left-0 mt-2 w-48 bg-white shadow-lg">
+                  <% category.children.forEach(sub=> { %>
+                    <li>
+                      <a class="block px-4 py-2 font-bold hover:bg-gray-200 hover:text-blue-500"
+                        href="/category/<%= category.slug %>/<%= sub.slug %>">
+                        <%= sub.name %>
+                      </a>
+                    </li>
+                    <% }) %>
+                </ul>
+                <% } %>
+            </li>
+            <% }) %>
         </ul>
       </div>
     </nav>
     <% } %> <%- include(content) %>
 
-    <footer
-      class="flex flex-col items-center justify-between gap-8 border-t-2 border-t-zinc-300 p-6 text-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] xl:px-20"
-    >
-      <!-- Original Footer Content -->
-      <div
-        class="container mx-auto mb-0 flex flex-row items-center justify-between"
-      >
-        <p class="text-sm font-semibold text-slate-500">PTUDW Project</p>
+        <footer
+          class="flex flex-col items-center justify-between gap-8 border-t-2 border-t-zinc-300 p-6 text-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] xl:px-20">
+          <!-- Original Footer Content -->
+          <div class="container mx-auto mb-0 flex flex-row items-center justify-between">
+            <p class="text-sm font-semibold text-slate-500">PTUDW Project</p>
 
-        <div class="flex flex-row gap-4 text-sm text-slate-700 underline">
-          <a href="/tos" class="hover:text-sky-500">Điều khoản dịch vụ</a>
-          <a href="/privacy" class="hover:text-sky-500">Chính sách bảo mật</a>
-          <a href="/contact" class="hover:text-sky-500"
-            >Liên hệ với chúng tôi</a
-          >
-        </div>
-      </div>
+            <div class="flex flex-row gap-4 text-sm text-slate-700 underline">
+              <a href="/tos" class="hover:text-sky-500">Điều khoản dịch vụ</a>
+              <a href="/privacy" class="hover:text-sky-500">Chính sách bảo mật</a>
+              <a href="/contact" class="hover:text-sky-500">Liên hệ với chúng tôi</a>
+            </div>
+          </div>
 
-      <!-- Separator Line -->
-      <div class="my-4 mt-0 w-screen border-t-2 border-t-gray-300"></div>
+          <!-- Separator Line -->
+          <div class="my-4 mt-0 w-screen border-t-2 border-t-gray-300"></div>
 
-      <!-- Additional Footer Section -->
-      <div
-        class="container mx-auto flex flex-row gap-8 text-sm text-gray-700 md:justify-between"
-      >
-        <!-- Left Section -->
-        <div class="w-1/4 text-left">
-          <p class="font-bold">Hotline</p>
-          <p>0988 666 999</p>
-          <p class="mt-4 font-bold">Liên hệ quảng cáo</p>
-          <p>0988 777 999</p>
-        </div>
+          <!-- Additional Footer Section -->
+          <div class="container mx-auto flex flex-row gap-8 text-sm text-gray-700 md:justify-between">
+            <!-- Left Section -->
+            <div class="w-1/4 text-left">
+              <p class="font-bold">Hotline</p>
+              <p>0988 666 999</p>
+              <p class="mt-4 font-bold">Liên hệ quảng cáo</p>
+              <p>0988 777 999</p>
+            </div>
 
-        <!-- Middle Section -->
-        <div class="w-1/4 text-left">
-          <p><strong>Tổng biên tập:</strong> Nguyễn Phúc An</p>
-          <p><strong>Phó tổng biên tập:</strong> Trịnh Anh Tài</p>
-          <p><strong>Phó tổng biên tập:</strong> Phạm Đình Khôi</p>
-          <p><strong>Phó tổng biên tập:</strong> Nguyễn Quang Doãn</p>
-          <p><strong>Phó tổng biên tập:</strong> Nguyễn Quốc Hưng ;P</p>
-          <p><strong>Tổng thư ký tòa soạn:</strong> Văng Khánh Tường</p>
-        </div>
+            <!-- Middle Section -->
+            <div class="w-1/4 text-left">
+              <p><strong>Tổng biên tập:</strong> Nguyễn Phúc An</p>
+              <p><strong>Phó tổng biên tập:</strong> Trịnh Anh Tài</p>
+              <p><strong>Phó tổng biên tập:</strong> Phạm Đình Khôi</p>
+              <p><strong>Phó tổng biên tập:</strong> Nguyễn Quang Doãn</p>
+              <p><strong>Phó tổng biên tập:</strong> Nguyễn Quốc Hưng ;P</p>
+              <p><strong>Tổng thư ký tòa soạn:</strong> Văng Khánh Tường</p>
+            </div>
 
-        <!-- Right Section -->
-        <div class="w-1/2 text-right">
-          <p>Giấy phép xuất bản số 123/GP - BTTTT cấp ngày 01.12.2024</p>
-          <p>© 2024-2024 Bản quyền thuộc về The Cipher.</p>
-          <p>
-            Cấm sao chép dưới mọi hình thức nếu không có sự chấp thuận bằng văn
-            bản.
-          </p>
-        </div>
-      </div>
-    </footer>
+            <!-- Right Section -->
+            <div class="w-1/2 text-right">
+              <p>Giấy phép xuất bản số 123/GP - BTTTT cấp ngày 01.12.2024</p>
+              <p>© 2024-2024 Bản quyền thuộc về The Cipher.</p>
+              <p>
+                Cấm sao chép dưới mọi hình thức nếu không có sự chấp thuận bằng văn
+                bản.
+              </p>
+            </div>
+          </div>
+        </footer>
 
-    <!-- Scroll-to-top Button -->
-    <button
-      id="scrollToTopBtn"
-      class="fixed bottom-6 right-6 z-50 hidden rounded-full bg-blue-500 p-3 text-white shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-6 w-6"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M5 15l7-7 7 7"
-        />
-      </svg>
-    </button>
-  </body>
+        <!-- Scroll-to-top Button -->
+        <button id="scrollToTopBtn"
+          class="fixed bottom-6 right-6 z-50 hidden rounded-full bg-blue-500 p-3 text-white shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+          </svg>
+        </button>
+</body>
+
 </html>
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     // Get the button
-    const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+    const scrollToTopBtn=document.getElementById("scrollToTopBtn");
 
     // Show or hide the button depending on the scroll position
     window.addEventListener("scroll", () => {
-      if (window.scrollY > 200) {
+      if (window.scrollY>200) {
         scrollToTopBtn.classList.remove("hidden");
       } else {
         scrollToTopBtn.classList.add("hidden");
@@ -414,8 +304,8 @@
         behavior: "smooth",
       });
     });
-    const dropdownBtn = document.getElementById("userDropdownBtn");
-    const dropdownMenu = document.getElementById("userDropdownMenu");
+    const dropdownBtn=document.getElementById("userDropdownBtn");
+    const dropdownMenu=document.getElementById("userDropdownMenu");
 
     dropdownBtn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -430,10 +320,10 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    const dropdownBtn = document.getElementById("userDropdownBtn");
-    const dropdownMenu = document.getElementById("userDropdownMenu");
-    const dropdownArrow = document.getElementById("dropdownArrow");
-    let isOpen = false;
+    const dropdownBtn=document.getElementById("userDropdownBtn");
+    const dropdownMenu=document.getElementById("userDropdownMenu");
+    const dropdownArrow=document.getElementById("dropdownArrow");
+    let isOpen=false;
 
     // Debug logs
     console.log("Dropdown elements:", {
@@ -444,28 +334,28 @@
 
     dropdownBtn.addEventListener("click", (e) => {
       e.stopPropagation(); // Prevent event bubbling
-      isOpen = !isOpen;
+      isOpen=!isOpen;
       console.log("Dropdown state:", isOpen); // Debug log
 
       if (isOpen) {
         dropdownMenu.classList.remove("hidden");
-        dropdownArrow.style.transform = "rotate(180deg)";
+        dropdownArrow.style.transform="rotate(180deg)";
       } else {
         dropdownMenu.classList.add("hidden");
-        dropdownArrow.style.transform = "rotate(0)";
+        dropdownArrow.style.transform="rotate(0)";
       }
     });
 
     // Close dropdown when clicking outside
     document.addEventListener("click", (e) => {
       if (
-        isOpen &&
-        !dropdownBtn.contains(e.target) &&
+        isOpen&&
+        !dropdownBtn.contains(e.target)&&
         !dropdownMenu.contains(e.target)
       ) {
         dropdownMenu.classList.add("hidden");
-        dropdownArrow.style.transform = "rotate(0)";
-        isOpen = false;
+        dropdownArrow.style.transform="rotate(0)";
+        isOpen=false;
       }
     });
   });

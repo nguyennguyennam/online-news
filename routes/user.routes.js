@@ -1,24 +1,22 @@
 import express from "express";
 import {
-  renderRegister,
-  renderLogin,
-  registerUserController,
-  loginUserController,
-  resetPasswordController,
-  loginWithGoogle,
-  GoogleCallbackController,
-  renderReset_pass,
-  verifyOtpController,
-  saveNewPasswordController,
-  renderOTP,
   fetchEmail,
+  GoogleCallbackController,
+  loginUserController,
+  loginWithGoogle,
+  registerUserController,
   render_NewPass,
+  renderLogin,
+  renderOTP,
+  renderRegister,
+  renderReset_pass,
+  resetPasswordController,
+  saveNewPasswordController,
+  verifyOtpController,
 } from "../controllers/userController.js";
 
-import { homeGetHandler } from "../controllers/home.controller.js";
 const router = express.Router();
 
-router.get("/home", homeGetHandler);
 router.post("/check-email", fetchEmail);
 router.get("/register", renderRegister);
 router.post("/register", registerUserController);
@@ -34,6 +32,6 @@ router.get("/google", loginWithGoogle);
 router.get("/auth/google/callback", GoogleCallbackController);
 router.get("/logout", (req, res) => {
   req.session.destroy();
-  res.redirect("/home"); // Chuyển về trang home sau khi đăng xuất
+  res.redirect("/"); // Chuyển về trang home sau khi đăng xuất
 });
 export default router;

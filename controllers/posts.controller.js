@@ -27,5 +27,6 @@ export const getPostsHandler = expressAsyncHandler(async (req, res) => {
     content: "../pages/post-list",
     userInfo: req.session?.userInfo,
     posts,
+    states: ["draft", "denied", "approved", "published"],
   });
 });

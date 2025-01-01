@@ -29,3 +29,11 @@ export async function delete_tags(delete_tags) {
     tag: delete_tags,
   });
 }
+
+export const getTagsArray = async (tags) => {
+  return await tagModel.find({
+    tag: {$in: tags},
+  },
+  {_id: 1})
+}
+

@@ -83,14 +83,14 @@
                 <div class="flex justify-center gap-4">
                 <button
                   id="cancel-btn"
-                  class="px-4 py-2 bg-gray-300 text-black rounded"
+                  class="rounded bg-gray-300 px-4 py-2 text-black"
                   onclick="closeModal()"
                 >
                   Cancel
                 </button>
                 <button
                   id="confirm-btn"
-                  class="px-4 py-2 bg-red-500 text-white rounded"
+                  class="rounded bg-red-500 px-4 py-2 text-white"
                 >
                   Confirm
                 </button>
@@ -98,33 +98,47 @@
             </div>
           </div>
         </div>
-      </summary>
-    </details>
-    <% }) %>
-  </div>
-  
-  <script>
-    function startEditing(entityId, entityType) {
+      </div>
+    </summary>
+  </details>
+  <% }) %>
+</div>
+
+<script>
+  function startEditing(entityId, entityType) {
     // Hide the text and edit button
-    document.getElementById(`${entityType}-name-${entityId}`).style.display = "none";
-    document.getElementById(`edit-btn-${entityType}-${entityId}`).style.display = "none";
-  
+    document.getElementById(`${entityType}-name-${entityId}`).style.display =
+      "none";
+    document.getElementById(
+      `edit-btn-${entityType}-${entityId}`,
+    ).style.display = "none";
+
     // Show the input form
-    document.getElementById(`edit-form-${entityType}-${entityId}`).classList.remove("hidden");
+    document
+      .getElementById(`edit-form-${entityType}-${entityId}`)
+      .classList.remove("hidden");
   }
-  
+
   function confirmEdit(entityId, entityType) {
     // Get the new value from the input field
-    const newValue = document.getElementById(`edit-input-${entityType}-${entityId}`).value;
-  
+    const newValue = document.getElementById(
+      `edit-input-${entityType}-${entityId}`,
+    ).value;
+
     // Update the text content
-    document.getElementById(`${entityType}-name-${entityId}`).textContent = newValue;
-  
+    document.getElementById(`${entityType}-name-${entityId}`).textContent =
+      newValue;
+
     // Reset visibility
-    document.getElementById(`${entityType}-name-${entityId}`).style.display = "inline-block";
-    document.getElementById(`edit-btn-${entityType}-${entityId}`).style.display = "flex";
-    document.getElementById(`edit-form-${entityType}-${entityId}`).classList.add("hidden");
-  
+    document.getElementById(`${entityType}-name-${entityId}`).style.display =
+      "inline-block";
+    document.getElementById(
+      `edit-btn-${entityType}-${entityId}`,
+    ).style.display = "flex";
+    document
+      .getElementById(`edit-form-${entityType}-${entityId}`)
+      .classList.add("hidden");
+
     // Optional: Send an update request to the server via fetch or AJAX
     // Example:
     // fetch(`/update-${entityType}/${entityId}`, {
@@ -133,38 +147,43 @@
     //   body: JSON.stringify({ name: newValue }),
     // });
   }
-  
+
   function cancelEdit(entityId, entityType) {
     // Reset visibility
-    document.getElementById(`${entityType}-name-${entityId}`).style.display = "inline-block";
-    document.getElementById(`edit-btn-${entityType}-${entityId}`).style.display = "flex";
-    document.getElementById(`edit-form-${entityType}-${entityId}`).classList.add("hidden");
+    document.getElementById(`${entityType}-name-${entityId}`).style.display =
+      "inline-block";
+    document.getElementById(
+      `edit-btn-${entityType}-${entityId}`,
+    ).style.display = "flex";
+    document
+      .getElementById(`edit-form-${entityType}-${entityId}`)
+      .classList.add("hidden");
   }
-  
+
   //Hàm dùng để xử lí nút delete
   function confirmDelete(tagsId) {
-      const modal = document.getElementById('delete-modal');
-      const confirmButton = document.getElementById('confirm-btn');
-  
-      // Hiển thị modal
-      modal.style.display = 'flex';
-  
-      // Gắn sự kiện xóa vào nút Confirm
-      confirmButton.onclick = () => {
-          fetch(`./delete/${tagsId}`, { method: 'DELETE' })
-              .then((response) => {
-                  if (response.ok) {
-                      lotagsion.reload(); // Reload trang sau khi xóa thành công
-                  } else {
-                      alert('Xóa thất bại!');
-                  }
-              })
-              .tagsch((error) => console.error('Error:', error));
-      };
+    const modal = document.getElementById("delete-modal");
+    const confirmButton = document.getElementById("confirm-btn");
+
+    // Hiển thị modal
+    modal.style.display = "flex";
+
+    // Gắn sự kiện xóa vào nút Confirm
+    confirmButton.onclick = () => {
+      fetch(`./delete/${tagsId}`, { method: "DELETE" })
+        .then((response) => {
+          if (response.ok) {
+            lotagsion.reload(); // Reload trang sau khi xóa thành công
+          } else {
+            alert("Xóa thất bại!");
+          }
+        })
+        .tagsch((error) => console.error("Error:", error));
+    };
   }
-  
+
   function closeModal() {
-      const modal = document.getElementById('delete-modal');
-      modal.style.display = 'none';
+    const modal = document.getElementById("delete-modal");
+    modal.style.display = "none";
   }
-  </script>
+</script>

@@ -90,12 +90,9 @@
     const form = document.querySelector("form");
     const emailInput = document.querySelector("#email");
     let canSubmit = true; // Biến kiểm soát submit
-    let isCheckingEmail = false; // Kiểm soát trạng thái kiểm tra email
 
-    // Kiểm tra email khi blur
     emailInput.addEventListener("blur", async function () {
       const email = emailInput.value.trim();
-      isCheckingEmail = true; // Đang kiểm tra email
       try {
         const response = await fetch("/check-email", {
           method: "POST",
@@ -105,7 +102,6 @@
           body: JSON.stringify({ email }),
         });
 
-        // Nhận dữ liệu từ API
         const data = await response.json();
         const existingError = document.querySelector("#email-error");
 
@@ -128,35 +124,23 @@
         }
       } catch (error) {
         console.error("Error checking email:", error);
-        canSubmit = false; // Không cho phép submit nếu xảy ra lỗi
-      } finally {
-        isCheckingEmail = false; // Kiểm tra email đã hoàn thành
+        canSubmit = false; 
       }
     });
 
     // Xử lý submit form
-    form.addEventListener("submit", function (event) {
-      const email_regex = /^\S+@\S+\.\S+$/;
-      const email_val = emailInput.value.trim();
+    form.addEventListener("submit", function () {
       const confirmPassword = document
         .querySelector("#confirmPassword")
         .value.trim();
       const pass = document.querySelector("#password").value.trim();
-      const fullName = document.querySelector("#fullName").value.trim();
-
-      // Nếu đang kiểm tra email hoặc canSubmit là false, ngăn chặn submit
       if (
-        isCheckingEmail ||
         !canSubmit ||
-        fullName === "" ||
-        pass !== confirmPassword ||
-        !email_regex.test(email_val)
-      ) {
+        pass !== confirmPassword) {
         event.preventDefault();
-        alert("Invalid input data. Please check your form.");
+        alert("Error: Passwords do not match or existing email.Please try again");
         return;
       }
-      alert("Form submitted successfully!");
     });
   });
 </script>

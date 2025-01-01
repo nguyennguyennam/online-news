@@ -1,8 +1,9 @@
 import express from "express";
 import {
   getAdminCategoriesHandler,
-  getAdminTagsHandler,
   getAdminHandler,
+  getAdminPostsHandler,
+  getAdminTagsHandler,
   getAdminUsersHandler,
   getAdminPostsHandler,
   update_cat_by_admin,
@@ -11,9 +12,9 @@ import {
 import { clearanceCheck } from "../controllers/middlewares.js";
 
 const adminRouter = express.Router();
-adminRouter.route("/categories").post(update_cat_by_admin)
 adminRouter
   .route("/categories")
+  .post(update_cat_by_admin)
   .get(clearanceCheck(4), getAdminCategoriesHandler);
 
 adminRouter
