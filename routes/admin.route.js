@@ -5,7 +5,8 @@ import {
   getAdminHandler,
   getAdminUsersHandler,
   getAdminPostsHandler,
-  update_cat_by_admin
+  update_cat_by_admin,
+  getAdminUsersEditHandler
 } from "../controllers/admin.controller.js";
 import { clearanceCheck } from "../controllers/middlewares.js";
 
