@@ -7,7 +7,7 @@
       <% homeData.featured.forEach(article=> { %>
       <a href="/post/<%= article.slug %>" class="block">
         <article
-          class="bg-white p-4 shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg"
+          class="flex flex-col justify-between bg-white p-4 shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg min-h-[350px]"
         >
           <!-- Article Image -->
           <div class="relative mb-4">
@@ -55,11 +55,11 @@
   <!-- Most Viewed Articles -->
   <section class="mb-8">
     <h2 class="mb-4 text-3xl font-bold">Most Viewed Articles</h2>
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 auto-rows-fr">
       <% homeData.mostViewed.forEach(article=> { %>
       <a href="/post/<%= article.slug %>" class="block">
         <article
-          class="bg-white p-4 shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg"
+          class="flex flex-col justify-between bg-white p-4 shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg min-h-[450px]"
         >
           <!-- Article Image -->
           <div class="relative mb-4">
@@ -112,11 +112,11 @@
   <!-- Latest Articles -->
   <section class="mb-8">
     <h2 class="mb-4 text-3xl font-bold">Latest Posts</h2>
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 auto-rows-fr">
       <% homeData.latest.forEach(article=> { %>
       <a href="/post/<%= article.slug %>" class="block">
         <article
-          class="bg-white p-4 shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg"
+          class="flex flex-col justify-between bg-white p-4 shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg min-h-[450px]"
         >
           <!-- Article Image -->
           <div class="relative mb-4">
@@ -164,12 +164,12 @@
   <section class="mb-8">
     <h2 class="mb-4 text-3xl font-bold">Top 10 Categories</h2>
     <div
-      class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
+      class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 auto-rows-fr"
     >
       <% homeData.latestEach.forEach(category=> { %>
       <a href="/post/<%= category.post.slug %>" class="block">
         <article
-          class="bg-white p-4 shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg"
+          class="flex flex-col justify-between bg-white p-4 shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg min-h-[250px]"
         >
           <div class="relative">
             <div class="absolute right-2 top-2">
