@@ -19,8 +19,8 @@ mainRouter.use("/post", postRouter);
 mainRouter.use("/tag", tagRouter);
 mainRouter.use("/profile", profileRouter);
 mainRouter.use("/admin", adminRouter);
-mainRouter.use("/edit", editorRouter);
-mainRouter.use("/editor", homeRouter);
+mainRouter.use("/edit", editRouter);
+mainRouter.use("/editorial", editorRouter);
 mainRouter.use("/", userRouter);
 mainRouter.use("/", homeRouter);
 

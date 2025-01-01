@@ -1,8 +1,8 @@
 import postModel from "../model/post.model.js";
 import editorModel from "../model/editor.model.js";
-import categoryModel from "../model/category.model";
-import tagModel from "../model/tag.model";
-import { promise } from "zod";
+import categoryModel from "../model/category.model.js";
+import tagModel from "../model/tag.model.js";
+import userModel from "../model/user.model.js";
 
 /**
  * Handles the approval or denial of a post.
@@ -35,13 +35,13 @@ export async function checkPost(
 
   if (status === "deny") {
     return await postModel.findByIdAndUpdate(
-      post_id, 
+      post_id,
       {
         editor: editor_id,
         state: status,
         reason_of_deny: reason, // Reason for denial
       },
-      { new: true }, 
+      { new: true },
     );
   } else if (status === "approved") {
     const now = new Date();
@@ -49,13 +49,13 @@ export async function checkPost(
       throw new Error("Publish date must be in the future.");
     }
     return await postModel.findByIdAndUpdate(
-      post_id, 
+      post_id,
       {
         editor: editor_id,
         state: status,
-        category: category, 
+        category: category,
         tags: tags, // Tags
-        publishedDate: datePublish, 
+        publishedDate: datePublish,
       },
       { new: true },
     );
@@ -65,11 +65,99 @@ export async function checkPost(
 /**
  * Fetch all posts in "Draft" state and their categories that are managed by the specified editor.
  */
- export const posts_fetched = async(id_editor) => {
-    const editor = await editorModel.findById(id_editor);
-    const categories = editor.authorizedCategories;
-    return await postModel.find(
-      {category: { $in: categories },
-       state: "draft"
-    })
-  };
+
+export const posts_fetched = async (id_editor) => {
+  // Step 1: Fetch user clearance from userModel
+  const user = await userModel.findOne({ _id: id_editor }, { clearance: 1 });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  let aggregationPipeline = [];
+  const basePipeline = [
+    {
+      $lookup: {
+        from: "categories",
+        localField: "category",
+        foreignField: "_id",
+        as: "category",
+      },
+    },
+    {
+      $unwind: "$category", // Ensure `category` is no longer an array
+    },
+    {
+      $lookup: {
+        from: "tags",
+        foreignField: "_id",
+        localField: "tags",
+        as: "tags",
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "writer",
+        foreignField: "_id",
+        as: "writer",
+      },
+    },
+    {
+      $unwind: "$writer", // Ensure `writer` is no longer an array
+    },
+    {
+      $match: { state: "draft" }, // Match draft posts
+    },
+    {
+      $project: {
+        _id: 1,
+        name: 1,
+        writtenDate: 1,
+        "category.name": 1,
+        "category._id": 1,
+        "tags.tag": 1,
+        "writer.fullName": 1,
+        abstract: 1,
+        thumbnail: 1,
+        premium: 1,
+      },
+    },
+  ];
+
+  if (user.clearance === 4) {
+    aggregationPipeline = basePipeline;
+    console.log("Admin access: Fetching all draft posts.");
+  } else if (user.clearance === 3) {
+    // Editor: Fetch authorized categories from editorModel
+    const editor = await editorModel.findOne(
+      { user: id_editor },
+      { authorizedCategories: 1 }
+    );
+
+    if (!editor) {
+      throw new Error("Editor not found");
+    }
+
+    aggregationPipeline = [
+      ...basePipeline,
+      {
+        $match: {
+          "category._id": { $in: editor.authorizedCategories },
+        },
+      },
+    ];
+
+    console.log("Editor access: Restricting posts to authorized categories.");
+    console.log("Authorized Categories:", editor.authorizedCategories);
+    console.log("Pipeline:", JSON.stringify(aggregationPipeline, null, 2));
+  } else {
+    throw new Error("Unauthorized access");
+  }
+
+  // Perform aggregation
+  const posts = await postModel.aggregate(aggregationPipeline);
+
+  console.log("Fetched Posts:", posts.tags); // Debug fetched posts
+  return posts;
+};

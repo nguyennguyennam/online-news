@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Draft Articles Review</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50">
+  <main class="py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="text-3xl font-bold mb-6 text-gray-800 border-b pb-2">Danh sách bài viết draft</h1>
+      <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Tiêu đề</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Tác giả</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Tóm tắt</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Chuyên mục</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Nhãn</th>
+              <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">Hành động</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% posts.forEach(post => { %>
+              <tr class="hover:bg-gray-100">
+                <td class="px-6 py-4 text-sm text-gray-700"><%= post.name %></td>
+                <td class="px-6 py-4 text-sm text-gray-700"><%= post.writer.fullName %></td>
+                <td class="px-6 py-4 text-sm text-gray-700"><%= post.abstract %></td>
+                <td class="px-6 py-4 text-sm text-gray-700"><%= post.category.name%></td>
+                <td class="px-6 py-4 text-sm text-gray-700"><%= post.tags.tag%></td>
+                <td class="px-6 py-4 text-center">
+                  <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg" onclick="openDetailModal('<%= post._id %>')">Chi tiết</button>
+                  <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg" onclick="openApproveModal('<%= post._id %>')">Duyệt</button>
+                  <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg" onclick="openRejectModal('<%= post._id %>')">Từ chối</button>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function openDetailModal(postId) {
+      // Make a fetch request to get post details
+      fetch(`/posts/${postId}`)
+        .then((response) => response.json())
+        .then((post) => {
+          const modal = document.getElementById('detail-modal');
+          const body = document.getElementById('detail-body');
+          body.innerHTML = `
+            <p><strong>Tiêu đề:</strong> ${post.title}</p>
+            <p><strong>Tác giả:</strong> ${post.author}</p>
+            <p><strong>Nội dung:</strong> ${post.content}</p>
+          `;
+          modal.classList.remove('hidden');
+        });
+    }
+
+    function openApproveModal(postId) {
+      document.getElementById('approve-modal').classList.remove('hidden');
+    }
+
+    function openRejectModal(postId) {
+      document.getElementById('reject-modal').classList.remove('hidden');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.add('hidden');
+    }
+  </script>
+</body>
+
+</html>

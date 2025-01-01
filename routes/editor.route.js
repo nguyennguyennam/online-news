@@ -1,14 +1,8 @@
 import express from "express";
-import {
-  getEditHandler,
-  getEditIdHandler,
-} from "../controllers/edit.controller.js";
-import {update_post} from "../controllers/post.controller.js";
-import { clearanceCheck } from "../controllers/middlewares.js";
-
+import { fetched_posts_handler } from "../controllers/editor.controller.js";
 const editorRouter = express.Router();
-editorRouter.route("/").get(getEditHandler);
-editorRouter.route("/:id").post(update_post);
-editorRouter.route("/:id").get(clearanceCheck(2), getEditIdHandler);
+
+editorRouter.get("/", fetched_posts_handler);
 
 export default editorRouter;
+
