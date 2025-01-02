@@ -11,12 +11,6 @@ const editorProfileSchema = new mongoose.Schema({
       ref: "Category",
     },
   ],
-  usableCategories: [
-    {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: "Category",
-    },
-  ],
 });
 
 export default mongoose.model("EditorProfile", editorProfileSchema, "editors");

@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import expressAsyncHandler from "express-async-handler";
 import { z } from "zod";
 import {
@@ -10,7 +11,12 @@ import {
 } from "../queries/categories.query.js";
 import { getAllAdminPosts } from "../queries/posts.query.js";
 import { get_all_tags } from "../queries/tag.query.js";
-import { getAllUsers, getAllUsersAdmin } from "../queries/users.query.js";
+import {
+  getAllUsers,
+  getAllUsersAdmin,
+  getUser,
+  getUserByEmail,
+} from "../queries/users.query.js";
 
 /**
  * GET /admin: Main admin tool page.
@@ -58,6 +64,12 @@ export const getAdminTagsHandler = expressAsyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * GET /admin/users: View all users.
+ *
+ * - Clearance Level: 4
+ * - Object Class: Safe
+ */
 export const getAdminUsersHandler = expressAsyncHandler(async (req, res) => {
   const users = await getAllUsersAdmin();
   res.render("layouts/main-layout", {
@@ -241,6 +253,61 @@ export const deleteCategoryHandler = expressAsyncHandler(async (req, res) => {
   }
 
   await deleteCategory(category._id);
+  res.status(200).json({});
+});
+
+/**
+ * PUT /admin/users: Edit a user's information.
+ *
+ * - Clearance Level: 4
+ * - Object Class: Euclid
+ * - Returns:
+ *   + 200 (Success)
+ *   + 400 (Bad Request)
+ *   + 404 (Not Found)
+ *   + 409 (Conflict)
+ */
+export const putUserHandler = expressAsyncHandler(async (req, res) => {
+  const schema = z.object({
+    id: z.string(),
+    fullName: z.string(),
+    email: z.string(),
+    password: z.string().optional(),
+    clearance: z.coerce.number().min(1).max(3),
+    dob: z.coerce.date(),
+    penName: z.string().optional(),
+    authCategories: z.string().optional(),
+  });
+  const body = schema.safeParse(req.body);
+  if (body.error) {
+    res.status(400).json({});
+    return;
+  }
+
+  const user = await getUser(body.data.id);
+  if (user == null) {
+    res.status(404).json({});
+    return;
+  }
+
+  if ((await getUserByEmail(body.data.email)).some((u) => u._id != user._id)) {
+    res.status(409).json({});
+    return;
+  }
+
+  user.fullName = body.data.fullName;
+  user.email = body.data.email;
+  user.clearance = body.data.clearance;
+  user.dob = body.data.dob;
+  user.penName = body.data.penName;
+
+  if (body.data.password)
+    user.password = bcrypt.hashSync(body.data.password, 12);
+
+  await user.save();
+  if (user.clearance == 3 && body.data.authCategories) {
+  }
+
   res.status(200).json({});
 });
 

@@ -14,6 +14,7 @@ export async function hasSubscription(userId) {
     user.subscription.getTime() > new Date().getTime()
   );
 }
+
 /**
  * Finds a user with the provided ID.
  *
@@ -22,6 +23,16 @@ export async function hasSubscription(userId) {
  */
 export async function getUser(id) {
   return await User.findById(id);
+}
+
+/**
+ * Finds users with the provided email.
+ *
+ * @param {string} email
+ * @returns {Promise<boolean>}
+ */
+export async function getUserByEmail(email) {
+  return await User.find({ email });
 }
 
 /**
@@ -77,5 +88,4 @@ export async function getAllUsers() {
       },
     },
   ]);
-  return await User.find({});
 }
