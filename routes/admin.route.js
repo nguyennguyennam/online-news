@@ -1,8 +1,11 @@
 import express from "express";
 import {
+  addTagHandler,
   adoptCategoryHandler,
   createCategoryHandler,
   deleteCategoryHandler,
+  deleteTagHandler,
+  editTagHandler,
   extendSubscriberHandler,
   getAdminCategoriesHandler,
   getAdminHandler,
@@ -11,7 +14,6 @@ import {
   getAdminUsersEditHandler,
   getAdminUsersHandler,
   updateCategoryHandler,
-  update_DeleteTagHandler,
 } from "../controllers/admin.controller.js";
 import { clearanceCheck } from "../controllers/middlewares.js";
 
@@ -28,7 +30,12 @@ adminRouter
   .route("/categories/adopt")
   .post(clearanceCheck(4), adoptCategoryHandler);
 
-adminRouter.route("/tags").get(clearanceCheck(4), getAdminTagsHandler);
+adminRouter
+  .route("/tags")
+  .get(clearanceCheck(4), getAdminTagsHandler)
+  .post(clearanceCheck(4), addTagHandler)
+  .put(clearanceCheck(4), editTagHandler)
+  .delete(clearanceCheck(4), deleteTagHandler);
 
 adminRouter.route("/users").get(clearanceCheck(4), getAdminUsersHandler);
 
@@ -36,9 +43,6 @@ adminRouter.route("/edit/:id").get(clearanceCheck(4), getAdminUsersEditHandler);
 
 adminRouter.route("/posts").get(clearanceCheck(4), getAdminPostsHandler);
 adminRouter.route("/").get(clearanceCheck(4), getAdminHandler);
-
-// Tags routes.
-adminRouter.route("/tags").post(update_DeleteTagHandler);
 
 //Users routes
 adminRouter.route("/users/:id").post(extendSubscriberHandler);

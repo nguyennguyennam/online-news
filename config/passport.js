@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import passport from "passport";
+import GoogleStrategy from "passport-google-oidc";
 import { Strategy as LocalStrategy } from "passport-local";
 import userModel from "../model/user.model.js";
 

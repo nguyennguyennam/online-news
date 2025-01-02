@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import expressAsyncHandler from "express-async-handler";
+import slugify from "slugify";
 import { z } from "zod";
 import { subscriber_extend } from "../queries/admin.query.js";
 import {
@@ -8,14 +9,14 @@ import {
   existsCategoryWithName,
   findCategoryById,
   getAllCategories,
-  insertCategories,
 } from "../queries/categories.query.js";
 import { getAllAdminPosts } from "../queries/posts.query.js";
 import {
-  add_Tags,
-  delete_tags,
-  edit_tags,
+  addTag,
+  deleteTag,
+  editTag,
   get_all_tags,
+  hasTag,
 } from "../queries/tag.query.js";
 import {
   getAllUsers,
@@ -315,24 +316,55 @@ export const putUserHandler = expressAsyncHandler(async (req, res) => {
   res.status(200).json({});
 });
 
-export const insert_tag = async (req, res) => {
-  const { tagId } = req.body;
-  await insertCategories(tagId);
-  res.redirect("/admin/tags");
-};
-
-export const update_DeleteTagHandler = async (req, res) => {
-  const { tag, _method, id } = req.body;
-  console.log(req.body);
-  if (_method === "PUT") {
-    await edit_tags(id, tag);
-  } else if (_method === "DELETE") {
-    await delete_tags(id);
-  } else if (_method === "POST") {
-    await add_Tags(tag);
+/**
+ * POST /admin/tags: Create a new tag.
+ *
+ * - Object Class: Euclid
+ * - Clearance Level: 4
+ */
+export const addTagHandler = expressAsyncHandler(async (req, res) => {
+  const { tag } = req.body;
+  const slugifed = slugify(tag, { lower: true, strict: true, trim: true });
+  if (await hasTag(slugifed)) {
+    res.status(409).json({});
+    return;
   }
-  res.redirect("/admin/tags");
-};
+
+  await addTag(slugifed);
+  res.status(201).json({});
+});
+
+/**
+ * PUT /admin/tags: Edits a tag.
+ *
+ * - Object Class: Euclid
+ * - Clearance Level: 4
+ */
+export const editTagHandler = expressAsyncHandler(async (req, res) => {
+  const { id, tag } = req.body;
+  const slug = slugify(tag, { lower: true, strict: true, trim: true });
+  if (await hasTag(slug)) {
+    res.status(409).json({});
+    return;
+  }
+
+  await editTag(id, tag);
+  res.status(200).json({});
+});
+
+/**
+ * DELETE /admin/tags: Delete a tag.
+ *
+ * - Object Class: Euclid
+ * - Clearance Level: 4
+ */
+export const deleteTagHandler = expressAsyncHandler(async (req, res) => {
+  const { tag } = req.body;
+  const result = await deleteTag(tag);
+
+  if (result == null) res.status(404).json({});
+  else res.status(200).json({});
+});
 
 export const extendSubscriberHandler = async (req, res) => {
   const { userId } = req.body;

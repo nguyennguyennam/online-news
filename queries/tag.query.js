@@ -16,17 +16,47 @@ export async function get_all_tags() {
   return await tagModel.find();
 }
 
-export async function add_Tags(new_tags) {
-  return await tagModel.insertMany({tag: new_tags});
+/**
+ * Checks if a tag is taken.
+ * @param {string} tag
+ * @returns {Promise<boolean>}
+ */
+export async function hasTag(tag) {
+  return (await tagModel.find({ tag })).length > 0;
 }
 
-export async function edit_tags(old_tags, new_tags) {
-  return await tagModel.findOneAndUpdate({ _id: old_tags }, {tag:new_tags}, {new: true});
+/**
+ * Creates a new tag.
+ *
+ * @param {string} tag
+ */
+export async function addTag(tag) {
+  return await tagModel.create({ tag });
 }
 
-export async function delete_tags(delete_tags) {
+/**
+ * Edits a tag with a new name.
+ *
+ * @param {string} tagId
+ * @param {string} newName
+ * @returns
+ */
+export async function editTag(tagId, newName) {
+  return await tagModel.findOneAndUpdate(
+    { _id: tagId },
+    { tag: newName },
+    { new: true },
+  );
+}
+
+/**
+ * Delete a tag.
+ *
+ * @param {string} tagId
+ */
+export async function deleteTag(tagId) {
   return await tagModel.findOneAndDelete({
-    _id: delete_tags,
+    _id: tagId,
   });
 }
 
