@@ -15,7 +15,7 @@ import {
   addTag,
   deleteTag,
   editTag,
-  get_all_tags,
+  getAllTags,
   hasTag,
 } from "../queries/tag.query.js";
 import {
@@ -59,7 +59,7 @@ export const getAdminCategoriesHandler = expressAsyncHandler(
 );
 
 export const getAdminTagsHandler = expressAsyncHandler(async (req, res) => {
-  const tags = await get_all_tags();
+  const tags = await getAllTags();
   res.render("layouts/main-layout", {
     title: "All Tags",
     description: "Administrative tools for viewing all current available tags",

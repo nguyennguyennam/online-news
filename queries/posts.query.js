@@ -133,17 +133,8 @@ export async function getPostById(id) {
 
 /**
  * Retrieves all posts, given available params.
- *
- * @param {{ userId: string?, page: number, cat: string?, tag: string?, query: string? }} param0
  */
-export async function getAllPosts({
-  userId,
-  page,
-  cat,
-  tag,
-  query,
-  postsPerPage,
-}) {
+export async function getAllPosts({ userId, page, query, postsPerPage }) {
   const aggregate = Post.aggregate();
 
   if (query) {
@@ -151,7 +142,9 @@ export async function getAllPosts({
       index: "default",
       text: {
         query: query,
-        path: ["name", "abstract", "content"],
+        path: {
+          wildcard: "*",
+        },
         fuzzy: {
           maxEdits: 2,
           prefixLength: 0,
@@ -177,9 +170,18 @@ export async function getAllPosts({
       as: "tags",
     })
     .match({ state: "published" })
-    .match(cat ? { "category.name": cat } : {})
-    .match(tag ? { "tags.tag": { $in: [tag] } } : {});
-  return await aggregate.skip((page - 1) * postsPerPage).limit(postsPerPage);
+    .facet({
+      count: [{ $count: "count" }],
+      results: [
+        {
+          $skip: (page - 1) * postsPerPage,
+        },
+        {
+          $limit: postsPerPage,
+        },
+      ],
+    });
+  return await aggregate;
 }
 
 /**
