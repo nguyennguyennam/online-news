@@ -1,25 +1,558 @@
-<div class="mx-auto flex w-full max-w-screen-lg flex-col gap-4">
+<div class="mx-auto my-8 flex w-full max-w-screen-lg flex-col gap-4">
   <h1 class="text-2xl font-semibold">Manage Categories</h1>
+
+  <!-- The dialog box to show that something has gone wrong -->
+  <div
+    id="error-dialog"
+    class="fixed inset-0 hidden size-full items-center justify-center bg-black/50 p-6"
+  >
+    <dialog class="flex flex-col gap-4 bg-white p-6 text-center shadow-md">
+      <h2 class="text-xl font-semibold text-red-600">Uh oh!</h2>
+      <p id="error-text">An error has occurred while handling the request.</p>
+      <button
+        id="error-close"
+        onclick="closeErrorDialog()"
+        class="flex items-center justify-center rounded-md bg-red-500 px-4 py-2 font-semibold"
+      >
+        OK
+      </button>
+    </dialog>
+  </div>
+
+  <!-- Script for opening/closing error dialogs -->
+  <script defer>
+    function openErrorDialog(text) {
+      const el = document.getElementById("error-dialog");
+      el.classList.replace("hidden", "flex");
+
+      const txtContent =
+        text || "An error has occurred while handling the request";
+      document.getElementById("error-text").textContent = txtContent;
+    }
+
+    function closeErrorDialog() {
+      const el = document.getElementById("error-dialog");
+      el.classList.replace("flex", "hidden");
+    }
+  </script>
+
+  <!-- The dialog box to show that something is being done. -->
+  <div
+    id="processing-dialog"
+    class="fixed inset-0 hidden size-full items-center justify-center bg-black/50 p-6"
+  >
+    <dialog class="flex bg-white p-6 shadow-md">
+      <h2 class="text-xl font-semibold">Processing...</h2>
+    </dialog>
+  </div>
+
+  <!-- Script for opening/closing processing dialog box -->
+  <script defer>
+    function openProcessingDialog() {
+      const el = document.getElementById("processing-dialog");
+      el.classList.replace("hidden", "flex");
+    }
+
+    function closeProcessingDialog() {
+      const el = document.getElementById("processing-dialog");
+      el.classList.replace("flex", "hidden");
+    }
+  </script>
+
+  <!-- The form to edit the name of a category. -->
+  <div
+    id="edit-form"
+    class="fixed inset-0 hidden size-full items-center justify-center bg-black/50 p-6"
+  >
+    <dialog
+      class="flex w-full max-w-screen-sm flex-col gap-4 rounded-xl bg-white p-6 shadow-md"
+    >
+      <h2 class="text-lg font-bold">Editing Category</h2>
+
+      <label class="flex flex-col gap-2 text-sm font-semibold">
+        Name
+
+        <input
+          id="edit-field"
+          type="text"
+          name="category"
+          class="h-12 rounded-md border-[1px] border-black px-4 text-base font-normal"
+        />
+
+        <span id="edit-error" class="text-right text-red-600"></span>
+      </label>
+
+      <div class="flex flex-row flex-wrap items-center justify-center gap-2">
+        <button
+          id="edit-close"
+          class="flex items-center justify-center rounded-md bg-red-600 px-4 py-2 font-semibold text-white"
+        >
+          Nevermind
+        </button>
+
+        <button
+          id="edit-confirm"
+          class="flex items-center justify-center rounded-md bg-sky-600 px-4 py-2 font-semibold text-white"
+        >
+          Confirm
+        </button>
+      </div>
+    </dialog>
+  </div>
+
+  <!-- Script for handling the edit form. Keep it here so it's easier to link bruh what the hell -->
+  <script defer>
+    let editingId = undefined;
+
+    function openEditForm(editingCategory, currentName) {
+      const form = document.getElementById("edit-form");
+      form.classList.replace("hidden", "flex");
+
+      if (editingCategory) editingId = editingCategory;
+      if (currentName)
+        document.getElementById("edit-field").value = currentName;
+
+      document.getElementById("edit-error").textContent = "";
+    }
+
+    function closeEditForm() {
+      const form = document.getElementById("edit-form");
+      form.classList.replace("flex", "hidden");
+    }
+
+    document.getElementById("edit-close").onclick = closeEditForm;
+    document.getElementById("edit-confirm").onclick = async () => {
+      closeEditForm();
+      openProcessingDialog();
+
+      // Fetch and update instead.
+      const res = await fetch("/admin/categories", {
+        method: "PUT",
+        body: JSON.stringify({
+          id: editingId,
+          name: document.getElementById("edit-field").value,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      const body = await res.json();
+      const err = document.getElementById("edit-error");
+      closeProcessingDialog();
+
+      switch (res.status) {
+        case 200:
+          window.location.reload();
+          break;
+        case 409:
+          openEditForm();
+          err.textContent = "That name is already taken";
+          break;
+        case 404:
+        case 400:
+          openErrorDialog();
+          break;
+      }
+    };
+  </script>
+
+  <!-- The form to confirm deletion of a category -->
+  <div
+    id="delete-form"
+    class="fixed inset-0 hidden size-full items-center justify-center bg-black/50 p-6"
+  >
+    <dialog
+      class="flex w-full max-w-screen-sm flex-col gap-4 rounded-xl bg-white p-6 shadow-md"
+    >
+      <h2 class="text-lg font-bold">Deletion Confirmation</h2>
+
+      <p class="font-normal">
+        Are you sure you want to delete category
+        <strong id="delete-name"></strong>?
+      </p>
+
+      <p class="text-red-500">
+        Deleting a parent category will cause all of its children to become
+        parents, and ALL posts under that category will be deleted.
+      </p>
+
+      <div class="flex flex-row flex-wrap items-center justify-center gap-2">
+        <button
+          id="delete-close"
+          class="flex items-center justify-center rounded-md bg-red-600 px-4 py-2 font-semibold text-white"
+        >
+          Nevermind
+        </button>
+
+        <button
+          id="delete-confirm"
+          class="flex items-center justify-center rounded-md bg-sky-600 px-4 py-2 font-semibold text-white"
+        >
+          Yes, Delete
+        </button>
+      </div>
+    </dialog>
+  </div>
+
+  <!-- Script for handling the delete-form, of course it's here. -->
+  <script defer>
+    let deletingId;
+    let deletingName;
+
+    function openDeleteForm(id, name) {
+      if (id) {
+        deletingId = id;
+      }
+
+      if (name) {
+        deletingName = name;
+        document.getElementById("delete-name").textContent = name;
+      }
+
+      const form = document.getElementById("delete-form");
+      form.classList.replace("hidden", "flex");
+    }
+
+    function closeDeleteForm() {
+      const form = document.getElementById("delete-form");
+      form.classList.replace("flex", "hidden");
+    }
+
+    document.getElementById("delete-close").onclick = closeDeleteForm;
+    document.getElementById("delete-confirm").onclick = async () => {
+      closeDeleteForm();
+      openProcessingDialog();
+
+      // Fetch and update instead.
+      const res = await fetch("/admin/categories", {
+        method: "DELETE",
+        body: JSON.stringify({
+          id: deletingId,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      const body = await res.json();
+      closeProcessingDialog();
+
+      switch (res.status) {
+        case 200:
+          window.location.reload();
+          break;
+        case 400:
+          openErrorDialog();
+          break;
+        case 404:
+          openErrorDialog("That category doesn't exist to delete");
+          break;
+      }
+    };
+  </script>
+
+  <!-- The form to create a new category. -->
+  <div
+    id="create-form"
+    class="fixed inset-0 hidden size-full items-center justify-center bg-black/50 p-6"
+  >
+    <dialog
+      class="flex w-full max-w-screen-sm flex-col gap-4 rounded-xl bg-white p-6 shadow-md"
+    >
+      <h2 class="text-lg font-bold">Creating a new category</h2>
+
+      <label class="flex flex-col gap-2 text-sm font-semibold">
+        Name
+
+        <input
+          id="create-field"
+          type="text"
+          name="category"
+          class="h-12 rounded-md border-[1px] border-black px-4 text-base font-normal"
+        />
+
+        <span id="create-error" class="text-right text-red-600"></span>
+      </label>
+
+      <div class="flex flex-row flex-wrap items-center justify-center gap-2">
+        <button
+          id="create-close"
+          class="flex items-center justify-center rounded-md bg-red-600 px-4 py-2 font-semibold text-white"
+        >
+          Nevermind
+        </button>
+
+        <button
+          id="create-confirm"
+          class="flex items-center justify-center rounded-md bg-sky-600 px-4 py-2 font-semibold text-white"
+        >
+          Create
+        </button>
+      </div>
+    </dialog>
+  </div>
+
+  <!-- Scriptlet for opening a create a new parent category dialog. -->
+  <script defer>
+    let creatingForParent;
+
+    function openCreateDialog(parent, error) {
+      creatingForParent = parent;
+      const el = document.getElementById("create-form");
+      el.classList.replace("hidden", "flex");
+
+      const errorTxt = error || "";
+      document.getElementById("create-error").textContent = errorTxt;
+    }
+
+    function closeCreateDialog() {
+      const el = document.getElementById("create-form");
+      el.classList.replace("flex", "hidden");
+    }
+
+    document.getElementById("create-close").onclick = closeCreateDialog;
+    document.getElementById("create-confirm").onclick = async () => {
+      closeCreateDialog();
+      openProcessingDialog();
+
+      // Fetch and update instead.
+      const res = await fetch("/admin/categories", {
+        method: "POST",
+        body: JSON.stringify({
+          name: document.getElementById("create-field").value,
+          parent: creatingForParent,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      const body = await res.json();
+      closeProcessingDialog();
+
+      switch (res.status) {
+        case 201:
+          window.location.reload();
+          break;
+        case 400:
+          openErrorDialog();
+          break;
+        case 409:
+          openCreateDialog(
+            creatingForParent,
+            "That category's name is already taken",
+          );
+          break;
+      }
+    };
+  </script>
+
+  <!-- Adopt form, basically make a category become a child of another -->
+  <div
+    id="adopt-form"
+    class="fixed inset-0 hidden size-full items-center justify-center bg-black/50 p-6"
+  >
+    <dialog
+      class="flex w-full max-w-screen-sm flex-col gap-4 rounded-xl bg-white p-6 shadow-md"
+    >
+      <h2 class="text-lg font-bold">Adopting a category</h2>
+
+      <label class="flex flex-col gap-2 text-sm font-semibold">
+        <p>What should be the parent for <strong id="adoptee-name"></strong></p>
+
+        <select
+          id="adopter-select"
+          class="h-12 appearance-none rounded-md border-[1px] border-black px-4 text-base font-normal hover:bg-zinc-200"
+        ></select>
+      </label>
+
+      <div class="flex flex-row flex-wrap items-center justify-center gap-2">
+        <button
+          id="adopt-close"
+          class="flex items-center justify-center rounded-md bg-red-600 px-4 py-2 font-semibold text-white"
+        >
+          Nevermind
+        </button>
+
+        <button
+          id="adopt-confirm"
+          class="flex items-center justify-center rounded-md bg-sky-600 px-4 py-2 font-semibold text-white"
+        >
+          Adopt
+        </button>
+      </div>
+    </dialog>
+  </div>
+
+  <!-- Scriptlet tag for handling the adopt form -->
+  <script defer>
+    let adopteeId;
+    const categories = JSON.parse(`<%- JSON.stringify(adminCategories) %>`);
+
+    function openAdoptDialog(id, name) {
+      adopteeId = id;
+      const el = document.getElementById("adopt-form");
+      el.classList.replace("hidden", "flex");
+      document.getElementById("adoptee-name").textContent = name;
+
+      const select = document.getElementById("adopter-select");
+      select.innerHTML = "";
+      for (const cat of categories) {
+        if (cat._id == adopteeId) continue;
+        select.innerHTML += `
+        <option value=${cat._id}>${cat.name}</option>
+        `;
+      }
+    }
+
+    function closeAdoptDialog() {
+      const el = document.getElementById("adopt-form");
+      el.classList.replace("flex", "hidden");
+    }
+
+    document.getElementById("adopt-close").onclick = closeAdoptDialog;
+    document.getElementById("adopt-confirm").onclick = async () => {
+      closeAdoptDialog();
+      openProcessingDialog();
+
+      const res = await fetch("/admin/categories/adopt", {
+        method: "POST",
+        body: JSON.stringify({
+          id: adopteeId,
+          parent: document.getElementById("adopter-select").value,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      const body = await res.json();
+      closeProcessingDialog();
+
+      switch (res.status) {
+        case 200:
+          window.location.reload();
+          break;
+        case 400:
+          openErrorDialog();
+          break;
+        case 404:
+          openErrorDialog("That category doesn't exist");
+          break;
+      }
+    };
+  </script>
+
+  <!-- Parentize form, basically make a sub-category become a parent -->
+  <div
+    id="parentize-form"
+    class="fixed inset-0 hidden size-full items-center justify-center bg-black/50 p-6"
+  >
+    <dialog
+      class="flex w-full max-w-screen-sm flex-col gap-4 rounded-xl bg-white p-6 shadow-md"
+    >
+      <h2 class="text-lg font-bold">Parentizing a category</h2>
+
+      <p>
+        This means <strong id="parentize-name"></strong> will become a parent
+        with no sub-categories.
+      </p>
+
+      <div class="flex flex-row flex-wrap items-center justify-center gap-2">
+        <button
+          id="parentize-close"
+          class="flex items-center justify-center rounded-md bg-red-600 px-4 py-2 font-semibold text-white"
+        >
+          Nevermind
+        </button>
+
+        <button
+          id="parentize-confirm"
+          class="flex items-center justify-center rounded-md bg-sky-600 px-4 py-2 font-semibold text-white"
+        >
+          Parentize
+        </button>
+      </div>
+    </dialog>
+  </div>
+
+  <!-- Scriptlet tag for handling the parentizing form -->
+  <script defer>
+    let parentizeId;
+
+    function openParentizeDialog(id, name) {
+      parentizeId = id;
+      const el = document.getElementById("parentize-form");
+      el.classList.replace("hidden", "flex");
+      document.getElementById("parentize-name").textContent = name;
+    }
+
+    function closeParentizeDialog() {
+      const el = document.getElementById("parentize-form");
+      el.classList.replace("flex", "hidden");
+    }
+
+    document.getElementById("parentize-close").onclick = closeParentizeDialog;
+    document.getElementById("parentize-confirm").onclick = async () => {
+      closeParentizeDialog();
+      openProcessingDialog();
+
+      const res = await fetch("/admin/categories/adopt", {
+        method: "POST",
+        body: JSON.stringify({
+          id: parentizeId,
+          parent: null,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      const body = await res.json();
+      closeProcessingDialog();
+
+      switch (res.status) {
+        case 200:
+          window.location.reload();
+          break;
+        case 400:
+          openErrorDialog();
+          break;
+        case 404:
+          openErrorDialog("That category doesn't exist");
+          break;
+      }
+    };
+  </script>
+
+  <%# The buttons to add a new empty category in the first place %>
+  <button
+    class="w-fit self-end rounded-sm bg-emerald-600 px-4 py-2 font-semibold text-white"
+    onclick="openCreateDialog()"
+  >
+    Create Category
+  </button>
 
   <% adminCategories.forEach(cat => { %>
   <details cat-id="<%= cat._id %>" class="rounded-lg border-2 border-zinc-400">
     <summary
-      class="flex w-full items-center justify-between px-4 py-2 marker:m-0 marker:appearance-none marker:p-0"
+      class="flex w-full list-none items-center justify-between px-4 py-2 duration-200 marker:m-0 marker:hidden marker:appearance-none marker:p-0 hover:bg-zinc-100"
     >
       <h2 id="cat-name-<%= cat._id %>" class="inline-block font-semibold">
         <%= cat.name %>
       </h2>
       <div class="flex flex-row items-center gap-px">
         <button
-          id="edit-btn-cat-<%= cat._id %>"
           class="flex items-center justify-center p-2 duration-200 hover:bg-zinc-200"
-          onclick="startEditing('<%= cat._id %>', 'cat')"
+          onclick="openEditForm('<%= cat._id %>', '<%= cat.name %>')"
+          aria-label="Edit category <%= cat.name %>"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 -960 960 960"
             class="size-6"
-            aria-label="Edit"
+            aria-hidden="true"
           >
             <path
               d="M206.22-206.78h57.56l352.57-352.57-56.44-57-353.69 353.7v55.87Zm-52.44 106q-22.08 0-37.54-15.46t-15.46-37.54v-109.44q0-21.08 7.98-40.39 7.98-19.3 22.94-34.26l495.95-495.52q13.13-12.7 29.33-19.26 16.19-6.57 33.89-6.57 17.13 0 33.83 6.57 16.69 6.56 29.95 19.69l79.31 78.61q13.13 12.7 19.48 29.68 6.34 16.97 6.34 34.24 0 17.69-6.34 34.17-6.35 16.48-19.48 29.61L339-131.7q-14.96 14.96-34.26 22.94-19.3 7.98-40.39 7.98H153.78Zm593.78-589.65L691-747.56l56.56 57.13ZM587.91-587.91l-28-28.44 56.44 57-28.44-28.56Z"
@@ -27,36 +560,16 @@
           </svg>
         </button>
 
-        <div id="edit-form-cat-<%= cat._id %>" class="hidden">
-          <input
-            type="text"
-            id="edit-input-cat-<%= cat._id %>"
-            class="border p-2"
-            value="<%= cat.name %>"
-          />
-          <button
-            onclick="confirmEdit('<%= cat._id %>','cat')"
-            class="rounded bg-blue-500 p-2 text-white"
-          >
-            Confirm
-          </button>
-          <button
-            onclick="cancelEdit('<%= cat._id %>','cat')"
-            class="rounded bg-gray-300 p-2 text-black"
-          >
-            Cancel
-          </button>
-
         <button
-          id="add-btn-cat-<%= cat._id %>"
           class="flex items-center justify-center p-2 duration-200 hover:bg-zinc-200"
-          onclick="showAddInputForm('<%= cat._id %>')"
+          onclick="openCreateDialog('<%= cat._id %>')"
+          aria-label="Add subcategory to category <%= cat.name %>"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 -960 960 960"
             class="size-6"
-            aria-label="Add"
+            aria-hidden="true"
           >
             <path
               d="M427-427H233.78q-22.08 0-37.54-15.46-15.46-15.45-15.46-37.54t15.46-37.54Q211.7-533 233.78-533H427v-193.22q0-22.08 15.46-37.54 15.45-15.46 37.54-15.46t37.54 15.46Q533-748.3 533-726.22V-533h193.22q22.08 0 37.54 15.46 15.46 15.45 15.46 37.54t-15.46 37.54Q748.3-427 726.22-427H533v193.22q0 22.08-15.46 37.54-15.45 15.46-37.54 15.46t-37.54-15.46Q427-211.7 427-233.78V-427Z"
@@ -64,52 +577,41 @@
           </svg>
         </button>
 
-        <button id="add-btn-cat-<%= cat._id %>"
-          class="flex items-center justify-center p-2 duration-200 hover:bg-zinc-200 "
-          onclick="showAddInputForm('<%= cat._id %>')">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="size-6" aria-label="Add">
+        <button
+          class="flex items-center justify-center p-2 duration-200 hover:bg-zinc-200"
+          onclick="openDeleteForm('<%= cat._id %>', '<%= cat.name %>')"
+          aria-label="Delete category <%= cat.name %>"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 -960 960 960"
+            aria-hidden="true"
+            class="size-6"
+          >
             <path
-              d="M427-427H233.78q-22.08 0-37.54-15.46-15.46-15.45-15.46-37.54t15.46-37.54Q211.7-533 233.78-533H427v-193.22q0-22.08 15.46-37.54 15.45-15.46 37.54-15.46t37.54 15.46Q533-748.3 533-726.22V-533h193.22q22.08 0 37.54 15.46 15.46 15.45 15.46 37.54t-15.46 37.54Q748.3-427 726.22-427H533v193.22q0 22.08-15.46 37.54-15.45 15.46-37.54 15.46t-37.54-15.46Q427-211.7 427-233.78V-427Z" />
+              d="M273.78-100.78q-44.3 0-75.15-30.85-30.85-30.85-30.85-75.15v-507q-22.09 0-37.54-15.46-15.46-15.46-15.46-37.54 0-22.09 15.46-37.55 15.45-15.45 37.54-15.45H347q0-22.09 15.46-37.55 15.45-15.45 37.54-15.45h158.87q22.09 0 37.54 15.45 15.46 15.46 15.46 37.55h180.35q22.09 0 37.54 15.45 15.46 15.46 15.46 37.55 0 22.08-15.46 37.54-15.45 15.46-37.54 15.46v507q0 44.3-30.85 75.15-30.85 30.85-75.15 30.85H273.78Zm412.44-613H273.78v507h412.44v-507ZM396.61-280.57q19.26 0 32.74-13.47 13.48-13.48 13.48-32.74v-267.57q0-19.26-13.48-32.74t-32.74-13.48q-19.26 0-33.02 13.48-13.76 13.48-13.76 32.74v267.57q0 19.26 13.76 32.74 13.76 13.47 33.02 13.47Zm167.35 0q19.26 0 32.74-13.47 13.47-13.48 13.47-32.74v-267.57q0-19.26-13.47-32.74-13.48-13.48-32.74-13.48t-33.03 13.48q-13.76 13.48-13.76 32.74v267.57q0 19.26 13.76 32.74 13.77 13.47 33.03 13.47ZM273.78-713.78v507-507Z"
+            />
           </svg>
         </button>
 
-        <div
-          id="delete-modal"
-          style="
-            display: none !important;
-            position: fixed;
-            inset: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-          "
-          class="fixed inset-0 flex hidden items-center justify-center bg-black bg-opacity-50"
+        <% if (!cat.children || cat.children.length == 0) { %>
+        <button
+          class="flex items-center justify-center p-2 duration-200 hover:bg-zinc-200"
+          onclick="openAdoptDialog('<%= cat._id %>', '<%= cat.name %>')"
+          aria-label="Adopt category <%= cat.name %>"
         >
-          <div class="model-content">
-            <div class="rounded-lg bg-white p-6 text-center shadow-lg">
-              <p class="mb-4 text-lg font-semibold">
-                Bạn chắc chắn muốn xóa category này chứ?
-              </p>
-              <div class="flex justify-center gap-4">
-                <button
-                  id="cancel-btn"
-                  class="rounded bg-gray-300 px-4 py-2 text-black"
-                  onclick="closeModal()"
-                >
-                  Cancel
-                </button>
-                <button
-                  id="confirm-btn"
-                  class="rounded bg-red-500 px-4 py-2 text-white"
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 -960 960 960"
+            class="size-6"
+            aria-hidden="true"
+          >
+            <path
+              d="M280-260.78q-90.98 0-155.1-64.11Q60.78-389 60.78-479.96q0-90.95 64.12-155.11 64.12-64.15 155.1-64.15h98.52q22.09 0 37.54 15.46 15.46 15.46 15.46 37.54 0 22.09-15.46 37.55-15.45 15.45-37.54 15.45H280q-47.17 0-80.2 33.02-33.02 33.03-33.02 80.2t33.02 80.2q33.03 33.02 80.2 33.02h98.52q22.09 0 37.54 15.45 15.46 15.46 15.46 37.55 0 22.08-15.46 37.54-15.45 15.46-37.54 15.46H280Zm71.52-174.7q-18.92 0-31.72-12.8Q307-461.08 307-480q0-18.92 12.8-31.72 12.8-12.8 31.72-12.8h256.96q18.92 0 31.72 12.8Q653-498.92 653-480q0 18.92-12.8 31.72-12.8 12.8-31.72 12.8H351.52Zm229.96 174.7q-22.09 0-37.54-15.46-15.46-15.46-15.46-37.54 0-22.09 15.46-37.55 15.45-15.45 37.54-15.45H680q47.17 0 80.2-33.02 33.02-33.03 33.02-80.2t-33.02-80.2q-33.03-33.02-80.2-33.02h-98.52q-22.09 0-37.54-15.45-15.46-15.46-15.46-37.55 0-22.08 15.46-37.54 15.45-15.46 37.54-15.46H680q90.98 0 155.1 64.11 64.12 64.11 64.12 155.07 0 90.95-64.12 155.11-64.12 64.15-155.1 64.15h-98.52Z"
+            />
+          </svg>
+        </button>
+        <% } %>
       </div>
     </summary>
 
@@ -119,206 +621,63 @@
     <ul class="flex w-full flex-col gap-2 p-4">
       <% cat.children.forEach(sub => { %>
       <li class="flex flex-row items-center justify-between">
-        <h3 id="sub-name-<%= sub._id %>" class="inline-block font-semibold">
-          <%= sub.name %>
-        </h3>
+        <h3 class="inline-block font-semibold"><%= sub.name %></h3>
         <div class="flex flex-row items-center gap-2">
           <button
-            id="edit-btn-sub-<%= sub._id %>"
             class="p-2 duration-200 hover:bg-zinc-200"
-            onclick="startEditing('<%= sub._id %>', 'sub')"
+            onclick="openEditForm('<%= sub._id %>', '<%= sub.name %>')"
+            aria-label="Edit name for subcategory <%= sub.name %>"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 -960 960 960"
               class="size-6"
-              aria-label="Edit"
+              aria-hidden="true"
             >
               <path
-                d="M273.78-100.78q-44.3 0-75.15-30.85-30.85-30.85-30.85-75.15v-507q-22.09 0-37.54-15.46-15.46-15.46-15.46-37.54 0-22.09 15.46-37.55 15.45-15.45 37.54-15.45H347q0-22.09 15.46-37.55 15.45-15.45 37.54-15.45h158.87q22.09 0 37.54 15.45 15.46 15.46 15.46 37.55h180.35q22.09 0 37.54 15.45 15.46 15.46 15.46 37.55 0 22.08-15.46 37.54-15.45 15.46-37.54 15.46v507q0 44.3-30.85 75.15-30.85 30.85-75.15 30.85H273.78Zm412.44-613H273.78v507h412.44v-507ZM396.61-280.57q19.26 0 32.74-13.47 13.48-13.48 13.48-32.74v-267.57q0-19.26-13.48-32.74t-32.74-13.48q-19.26 0-33.02 13.48-13.76 13.48-13.76 32.74v267.57q0 19.26 13.76 32.74 13.76 13.47 33.02 13.47Zm167.35 0q19.26 0 32.74-13.47 13.47-13.48 13.47-32.74v-267.57q0-19.26-13.47-32.74-13.48-13.48-32.74-13.48t-33.03 13.48q-13.76 13.48-13.76 32.74v267.57q0 19.26 13.76 32.74 13.77 13.47 33.03 13.47ZM273.78-713.78v507-507Z" />
+                d="M206.22-206.78h57.56l352.57-352.57-56.44-57-353.69 353.7v55.87Zm-52.44 106q-22.08 0-37.54-15.46t-15.46-37.54v-109.44q0-21.08 7.98-40.39 7.98-19.3 22.94-34.26l495.95-495.52q13.13-12.7 29.33-19.26 16.19-6.57 33.89-6.57 17.13 0 33.83 6.57 16.69 6.56 29.95 19.69l79.31 78.61q13.13 12.7 19.48 29.68 6.34 16.97 6.34 34.24 0 17.69-6.34 34.17-6.35 16.48-19.48 29.61L339-131.7q-14.96 14.96-34.26 22.94-19.3 7.98-40.39 7.98H153.78Zm593.78-589.65L691-747.56l56.56 57.13ZM587.91-587.91l-28-28.44 56.44 57-28.44-28.56Z"
+              />
             </svg>
           </button>
-          <div id="edit-form-sub-<%= sub._id %>" class="hidden">
-            <input
-              type="text"
-              id="edit-input-sub-<%= sub._id %>"
-              class="border p-2"
-              value="<%= sub.name %>"
-            />
-            <button
-              onclick="confirmEdit('<%= sub._id %>', 'sub')"
-              class="rounded bg-blue-500 p-2 text-white"
-            >
-              Confirm
-            </button>
-            <button
-              onclick="cancelEdit('<%= sub._id %>', 'sub')"
-              class="rounded bg-gray-300 p-2 text-black"
-            >
-              Cancel
-            </button>
-          </div>
 
-          <a
-            href="./delete/<%= cat._id %>"
+          <button
             class="flex items-center justify-center p-2 duration-200 hover:bg-zinc-200"
+            onclick="openDeleteForm('<%= sub._id %>', '<%= sub.name %>')"
+            aria-label="Delete category <%= cat.name %>"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 -960 960 960"
+              aria-hidden="true"
               class="size-6"
-              aria-label="Delete"
             >
               <path
                 d="M273.78-100.78q-44.3 0-75.15-30.85-30.85-30.85-30.85-75.15v-507q-22.09 0-37.54-15.46-15.46-15.46-15.46-37.54 0-22.09 15.46-37.55 15.45-15.45 37.54-15.45H347q0-22.09 15.46-37.55 15.45-15.45 37.54-15.45h158.87q22.09 0 37.54 15.45 15.46 15.46 15.46 37.55h180.35q22.09 0 37.54 15.45 15.46 15.46 15.46 37.55 0 22.08-15.46 37.54-15.45 15.46-37.54 15.46v507q0 44.3-30.85 75.15-30.85 30.85-75.15 30.85H273.78Zm412.44-613H273.78v507h412.44v-507ZM396.61-280.57q19.26 0 32.74-13.47 13.48-13.48 13.48-32.74v-267.57q0-19.26-13.48-32.74t-32.74-13.48q-19.26 0-33.02 13.48-13.76 13.48-13.76 32.74v267.57q0 19.26 13.76 32.74 13.76 13.47 33.02 13.47Zm167.35 0q19.26 0 32.74-13.47 13.47-13.48 13.47-32.74v-267.57q0-19.26-13.47-32.74-13.48-13.48-32.74-13.48t-33.03 13.48q-13.76 13.48-13.76 32.74v267.57q0 19.26 13.76 32.74 13.77 13.47 33.03 13.47ZM273.78-713.78v507-507Z"
               />
             </svg>
-          </a>
+          </button>
+
+          <button
+            class="flex items-center justify-center p-2 duration-200 hover:bg-zinc-200"
+            onclick="openParentizeDialog('<%= sub._id %>', '<%= sub.name %>')"
+            aria-label="Parentize category <%= cat.name %>"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 -960 960 960"
+              class="size-6"
+              aria-hidden="true"
+            >
+              <path
+                d="m635.17-438.26-85.13-86.26h44.87q22.09 0 37.55 15.45 15.45 15.46 15.45 37.55 0 10-3.43 18.28-3.44 8.28-9.31 14.98ZM810.96-87.39q-12.7 12.69-31.11 12.69-18.42 0-31.11-12.69L80.61-754.96q-12.7-12.69-12.7-31.1 0-18.42 12.7-31.11 12.69-12.7 31.11-12.7 18.41 0 31.11 12.7l668.13 668.13q12.69 12.69 12.69 30.82 0 18.13-12.69 30.83ZM279.43-260.78q-90.91 0-155.06-64.15Q60.22-389.09 60.22-480q0-70.13 40.02-126.67 40.02-56.55 106.02-79.77l93.22 93.22h-20.05q-47.17 0-80.19 33.02-33.02 33.03-33.02 80.2t33.02 80.2q33.02 33.02 80.19 33.02h98.53q22.08 0 37.54 15.45 15.46 15.46 15.46 37.55 0 22.08-15.46 37.54t-37.54 15.46h-98.53Zm77.18-174.7q-18.7 0-31.61-12.91T312.09-480q0-18.7 12.91-31.61t31.61-12.91h18.22l88.04 89.04H356.61ZM738.3-320.65q-12.95-17.39-10.17-38.48 2.78-21.09 20.17-34.04 20.74-15.87 33.11-38.33 12.37-22.46 12.37-48.5 0-47.17-32.74-80.2-32.74-33.02-79.91-33.02H576.39q-22.09 0-37.54-15.45-15.46-15.46-15.46-37.55 0-22.08 15.46-37.54 15.45-15.46 37.54-15.46h104.18q90.91 0 155.06 64.15 64.15 64.16 64.15 155.07 0 50.7-24.47 95.17-24.48 44.48-64.48 74.18-17.39 12.95-38.48 10.17-21.09-2.78-34.05-20.17Z"
+              />
+            </svg>
+          </button>
         </div>
       </li>
       <% }) %>
     </ul>
     <% } %>
-    <div id="add-form-cat-<%= cat._id %>" class="hidden p-4">
-      <input
-        type="text"
-        id="add-input-cat-<%= cat._id %>"
-        class="w-full border p-2"
-        placeholder="Enter new sub-category"
-      />
-      <div class="mt-2 flex gap-2">
-        <button
-          onclick="confirmAdd('<%= cat._id %>')"
-          class="rounded bg-blue-500 p-2 text-white"
-        >
-          Confirm
-        </button>
-        <button
-          onclick="cancelAdd('<%= cat._id %>')"
-          class="rounded bg-gray-300 p-2 text-black"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
   </details>
   <% }) %>
 </div>
-
-<script>
-  function startEditing(entityId, entityType) {
-    // Hide the text and edit button
-    document.getElementById(`${entityType}-name-${entityId}`).style.display =
-      "none";
-    document.getElementById(
-      `edit-btn-${entityType}-${entityId}`,
-    ).style.display = "none";
-
-    // Show the input form
-    document
-      .getElementById(`edit-form-${entityType}-${entityId}`)
-      .classList.remove("hidden");
-  }
-
-  function confirmEdit(entityId, entityType) {
-    // Get the new value from the input field
-    const newValue = document.getElementById(
-      `edit-input-${entityType}-${entityId}`,
-    ).value;
-
-    // Update the text content
-    document.getElementById(`${entityType}-name-${entityId}`).textContent =
-      newValue;
-
-    // Reset visibility
-    document.getElementById(`${entityType}-name-${entityId}`).style.display =
-      "inline-block";
-    document.getElementById(
-      `edit-btn-${entityType}-${entityId}`,
-    ).style.display = "flex";
-    document
-      .getElementById(`edit-form-${entityType}-${entityId}`)
-      .classList.add("hidden");
-
-    // Optional: Send an update request to the server via fetch or AJAX
-    // Example:
-    // fetch(`/update-${entityType}/${entityId}`, {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ name: newValue }),
-    // });
-  }
-
-  function cancelEdit(entityId, entityType) {
-    // Reset visibility
-    document.getElementById(`${entityType}-name-${entityId}`).style.display =
-      "inline-block";
-    document.getElementById(
-      `edit-btn-${entityType}-${entityId}`,
-    ).style.display = "flex";
-    document
-      .getElementById(`edit-form-${entityType}-${entityId}`)
-      .classList.add("hidden");
-  }
-
-  //Hàm xử lí categories
-  function showAddInputForm(catId) {
-    const details = document.querySelector(`details[cat-id="${catId}"]`);
-    const form = document.getElementById(`add-form-cat-${catId}`);
-
-    if (details && !details.open) {
-      details.open = true; // Mở tag <details>
-    }
-
-    form.classList.remove("hidden"); // Hiển thị form
-  }
-
-  function confirmAdd(catId) {
-    const input = document.getElementById(`add-input-cat-${catId}`);
-    const newValue = input.value.trim();
-
-    if (newValue) {
-      alert(`New sub-category "${newValue}" added for category ID: ${catId}`);
-      // Logic gửi dữ liệu đến server ở đây (AJAX hoặc fetch API)
-    } else {
-      alert("Please enter a valid sub-category name.");
-    }
-
-    cancelAdd(catId); // Ẩn form sau khi xử lý
-  }
-
-  function cancelAdd(catId) {
-    const form = document.getElementById(`add-form-cat-${catId}`);
-    const input = document.getElementById(`add-input-cat-${catId}`);
-
-    form.classList.add("hidden"); // Ẩn form
-    input.value = ""; // Reset input
-  }
-
-  //Hàm dùng để xử lí nút delete
-  function confirmDelete(catId) {
-    const modal = document.getElementById("delete-modal");
-    const confirmButton = document.getElementById("confirm-btn");
-
-    // Hiển thị modal
-    modal.style.display = "flex";
-
-    // Gắn sự kiện xóa vào nút Confirm
-    confirmButton.onclick = () => {
-      fetch(`./delete/${catId}`, { method: "DELETE" })
-        .then((response) => {
-          if (response.ok) {
-            location.reload(); // Reload trang sau khi xóa thành công
-          } else {
-            alert("Xóa thất bại!");
-          }
-        })
-        .catch((error) => console.error("Error:", error));
-    };
-  }
-
-  function closeModal() {
-    const modal = document.getElementById("delete-modal");
-    modal.style.display = "none";
-  }
-</script>

@@ -160,4 +160,4 @@ export const posts_fetched = async (id_editor) => {
 
   console.log("Fetched Posts:", posts.tags); // Debug fetched posts
   return posts;
-};
+}

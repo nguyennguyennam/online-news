@@ -17,16 +17,16 @@ export async function get_all_tags() {
 }
 
 export async function add_Tags(new_tags) {
-  return await tagModel.create(new_tags);
+  return await tagModel.insertMany({tag: new_tags});
 }
 
 export async function edit_tags(old_tags, new_tags) {
-  return await tagModel.findOneAndUpdate({ tag: old_tags }, new_tags);
+  return await tagModel.findOneAndUpdate({ _id: old_tags }, {tag:new_tags}, {new: true});
 }
 
 export async function delete_tags(delete_tags) {
   return await tagModel.findOneAndDelete({
-    tag: delete_tags,
+    _id: delete_tags,
   });
 }
 

@@ -1,6 +1,6 @@
-import editorModel from "../model/editor.model";
-import userModel from "../model/user.model";
-import categoryModel from "../model/category.model";
+import editorModel from "../model/editor.model.js";
+import userModel from "../model/user.model.js";
+import categoryModel from "../model/category.model.js";
 // Manage users
 
 /**
@@ -18,22 +18,21 @@ export async function get_Users() {
       $group: {
         _id: "$clearance", // Group by clearance level
         users: {
-          $push: "$$ROOT",  // Include all fields of the user document
+          $push: "$$ROOT", // Include all fields of the user document
         },
       },
     },
     // Rename _id to clearance and exclude _id in the final result
     {
       $project: {
-        _id: 0,         // Exclude _id field
+        _id: 0, // Exclude _id field
         clearance: "$_id", // Rename _id to clearance
-        users: 1,        // Include the users array in the result
+        users: 1, // Include the users array in the result
       },
     },
   ]);
   return result;
 }
-
 
 /**
  * Updates the editor's authorized categories by the given category name.
@@ -49,17 +48,16 @@ export async function update_cat_by_Editors(id_editor, cat_name) {
   // Find the category by its name
   const categories = await categoryModel.find(
     { name: cat_name },
-    { _id: 1 }  // Only return the _id field
+    { _id: 1 }, // Only return the _id field
   );
-  
+
   // Update the editor's authorizedCategories with the category IDs
   return await editorModel.findByIdAndUpdate(
     id_editor,
-    { authorizedCategories: categories.map(cat => cat._id) }, // Map category documents to their IDs
-    { new: true }  // Return the updated editor document
+    { authorizedCategories: categories.map((cat) => cat._id) }, // Map category documents to their IDs
+    { new: true }, // Return the updated editor document
   );
 }
-
 
 /**
  * Finds users with a clearance of 1 whose subscription has expired for more than 7 days.
@@ -70,25 +68,24 @@ export async function update_cat_by_Editors(id_editor, cat_name) {
  * @returns {Array} A list of users who meet the criteria.
  */
 export async function expire_subs() {
-  const current_date = Date.now();  // Get current date in milliseconds
-  const seven_days_ago = current_date - (7 * 24 * 60 * 60 * 1000); // Calculate the timestamp for 7 days ago
-  
+  const current_date = Date.now(); // Get current date in milliseconds
+  const seven_days_ago = current_date - 7 * 24 * 60 * 60 * 1000; // Calculate the timestamp for 7 days ago
+
   // Find users whose subscription expired before today and more than 7 days ago
   return await userModel.find({
-    clearance: 1,  // Filter users with clearance level 1
-    subscription: { 
-      $lt: current_date,  // Subscription expired before today
+    clearance: 1, // Filter users with clearance level 1
+    subscription: {
+      $lt: current_date, // Subscription expired before today
     },
     $and: [
       {
         subscription: {
-          $lt: seven_days_ago,  // Subscription expired more than 7 days ago
-        }
-      }
-    ]
+          $lt: seven_days_ago, // Subscription expired more than 7 days ago
+        },
+      },
+    ],
   });
 }
-
 
 /**
  * Extends the subscription of a subscriber by updating the subscription date to the current date.
@@ -100,27 +97,26 @@ export async function expire_subs() {
  * @returns {Object} The updated subscriber document.
  */
 export async function subscriber_extend(id_subs) {
-  const current_date = Date.now();  // Get current date in milliseconds
-  
+  const current_date = Date.now(); // Get current date in milliseconds
+
   // Update the subscription field to the current date
   return await userModel.findByIdAndUpdate(
     id_subs,
     {
-      subscription: current_date,  // Set the subscription date to current date
+      subscription: current_date + 7*24*60*60*1000, // Set the subscription date to current date
     },
-    { new: true }  // Return the updated subscriber document
+    { new: true }, // Return the updated subscriber document
   );
 }
-
 
 /**
  Fetch all of the editors and categories existing in the database 
  */
 
- export const fetchEditorsAndCategories = async () => {
+export const fetchEditorsAndCategories = async () => {
   const [editors, categories] = await Promise.all([
     editorModel.find(),
     categoryModel.find(),
   ]);
   return [editors, categories];
-}
+};

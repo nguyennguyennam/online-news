@@ -131,7 +131,7 @@ export const getPostsByChildCatController = expressAsyncHandler(
       categories,
       articles,
       path: req.path,
-      category: category,
+      category,
       userInfo: req.session?.userInfo,
       content: "../pages/category-grid",
     });

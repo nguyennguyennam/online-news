@@ -1,9 +1,17 @@
 import expressAsyncHandler from "express-async-handler";
-import { getAllCategories, updateCat, delete_Cat, insertCategories } from "../queries/categories.query.js";
+import { z } from "zod";
+import {
+  createCategory,
+  deleteCategory,
+  existsCategoryWithName,
+  findCategoryById,
+  getAllCategories,
+  insertCategories
+} from "../queries/categories.query.js";
 import { getAllAdminPosts } from "../queries/posts.query.js";
-import { get_all_tags } from "../queries/tag.query.js";
+import { get_all_tags, edit_tags, delete_tags, add_Tags } from "../queries/tag.query.js";
 import { getAllUsers, getAllUsersAdmin } from "../queries/users.query.js";
-
+import {subscriber_extend} from "../queries/admin.query.js";
 /**
  * GET /admin: Main admin tool page.
  *
@@ -83,28 +91,202 @@ export const getAdminPostsHandler = expressAsyncHandler(async (req, res) => {
   });
 });
 
-export const update_cat_by_admin = async (req, res) => {
-    const { categoryId } = req.body;
-    // Extract categoryId and name from req.body
-    const update_cat = updateCat(categoryId);
-    res.redirect("/admin/categories");
-} 
+/**
+ * POST /admin/categories: Posts a new category.
+ *
+ * AJAX ROUTE.
+ *
+ * - Clearance Level: 4
+ * - Object Class: Euclid
+ * - Special Containment Procedures:
+ *   + Accepts { name: string, parent?: string }
+ * - Returns:
+ *   + 201 (Created): success
+ *   + 400 (Bad Request): invalid body
+ *   + 409 (Conflict): name is taken
+ */
+export const createCategoryHandler = expressAsyncHandler(async (req, res) => {
+  const schema = z.object({
+    name: z.string(),
+    parent: z.string().optional(),
+  });
+  const body = schema.safeParse(req.body);
+  if (body.error) {
+    res.status(400).json({ message: "Invalid body" });
+    return;
+  }
 
-export const delete_cat = async (req, res) => {
-    const {categoryId} = req.body;
-    await delete_Cat(categoryId);
-    res.redirect("/admin/categories");
-}
+  if (await existsCategoryWithName(body.data.name)) {
+    res.status(409).json({ message: "Name taken" });
+    return;
+  }
+
+  const parentCat = await findCategoryById(body.data.parent);
+  await createCategory(body.data.name, parentCat?.name);
+  res.status(201).json({});
+});
+
+/**
+ * PUT /admin/categories: Updates a category's name.
+ *
+ * AJAX ROUTE.
+ *
+ * - Clearance Level: 4
+ * - Object Class: Euclid
+ * - Special Containment Procedures:
+ *   + Accepts { id: string, name: string }
+ * - Returns:
+ *   + 200 (Success)
+ *   + 409 (Conflict), name taken
+ *   + 404 (Not Found), id not found
+ *   + 400 (Bad Request), request was bad
+ */
+export const updateCategoryHandler = expressAsyncHandler(async (req, res) => {
+  const schema = z.object({
+    id: z.string(),
+    name: z.string(),
+  });
+  const body = schema.safeParse(req.body);
+
+  if (body.error) {
+    res.status(400).json({ message: "Request body was bad" });
+    return;
+  }
+
+  const category = await findCategoryById(body.data.id);
+  if (category == null) {
+    res.status(404).json({ message: "Category does not exist" });
+    return;
+  }
+
+  if (await existsCategoryWithName(body.data.name)) {
+    res.status(409).json({ message: "That category already exists" });
+    return;
+  }
+
+  category.name = body.data.name;
+  await category.save();
+  res.status(200).json({});
+});
+
+/**
+ * POST /admin/categories/adopt: Adopts a category.
+ *
+ * AJAX route.
+ *
+ * - Clearance Level: 4
+ * - Object Class: Euclid
+ * - Special Containment Procedures:
+ *   + Accepts { id: string, parent: string }
+ * - Returns:
+ *   + 200 (success)
+ *   + 400 (Bad Request)
+ *   + 404 (Not Found)
+ */
+export const adoptCategoryHandler = expressAsyncHandler(async (req, res) => {
+  const schema = z.object({
+    id: z.string(),
+    parent: z.union([z.string(), z.null()]),
+  });
+  const body = schema.safeParse(req.body);
+  if (body.error) {
+    res.status(400).json({ message: "Request body was bad" });
+    return;
+  }
+
+  const category = await findCategoryById(body.data.parent);
+  const currentCat = await findCategoryById(body.data.id);
+  if (currentCat == null) {
+    res.status(404).json({ message: "Category does not exist" });
+    return;
+  }
+
+  currentCat.parent = category?._id;
+  await currentCat.save();
+  res.status(200).json({});
+});
+
+/**
+ * DELETE /admin/categories: Deletes a category.
+ *
+ * AJAX ROUTE.
+ *
+ * - Clearance Level: 4
+ * - Object Class: Keter
+ * - Special Containment Procedures:
+ *   + Accepts { id: string }
+ *   + If the deleted category is a parent, all of its children now become parents.
+ *   + All posts under that category will be deleted.
+ * - Returns:
+ *   + 200 (Success)
+ *   + 400 (Bad Request), request was bad
+ *   + 404 (Not Found), can't find the category to delete
+ */
+export const deleteCategoryHandler = expressAsyncHandler(async (req, res) => {
+  const schema = z.object({
+    id: z.string(),
+  });
+  const body = schema.safeParse(req.body);
+  if (body.error) {
+    res.status(400).json({ message: "Bad request" });
+    return;
+  }
+
+  const category = await findCategoryById(body.data.id);
+  if (category == null) {
+    res.status(404).json({ message: "Category not found" });
+    return;
+  }
+
+  await deleteCategory(category._id);
+  res.status(200).json({});
+});
+
+// export const update_cat_by_admin = async (req, res) => {
+//     const { categoryId } = req.body;
+//     // Extract categoryId and name from req.body
+//     const update_cat = updateCat(categoryId);
+//     res.redirect("/admin/categories");
+// } 
+
+// export const delete_cat = async (req, res) => {
+//     const {categoryId} = req.body;
+//     await delete_Cat(categoryId);
+//     res.redirect("/admin/categories");
+// }
 
 
-export const insert_sub_cat = async (req, res) => {
-    const {sub_categoryId, parent_categoryId} = req.body;
-    await insertCategories(sub_categoryId, parent_categoryId);
-    res.redirect("/admin/categories");
-}
+// export const insert_sub_cat = async (req, res) => {
+//     const {sub_categoryId, parent_categoryId} = req.body;
+//     await insertCategories(sub_categoryId, parent_categoryId);
+//     res.redirect("/admin/categories");
+// }
 
 export const insert_tag = async (req, res) => {
     const {tagId} = req.body;
     await insertCategories(tagId);
     res.redirect("/admin/tags");
+}
+
+export const update_DeleteTagHandler = async (req, res) => {
+  const {tag, _method, id} = req.body;
+  console.log(req.body);
+  if (_method === "PUT") {
+    await edit_tags(id, tag);
+  }
+  else if (_method === "DELETE") {
+    await delete_tags(id);
+  }
+  else if (_method === "POST") {
+    await add_Tags(tag);
+  }
+  res.redirect("/admin/tags");
+}
+
+
+export const extendSubscriberHandler = async (req, res) => {
+  const {userId} = req.body;
+  console.log(req.body);
+  await subscriber_extend(userId);
+  res.redirect("/admin/users");
 }
