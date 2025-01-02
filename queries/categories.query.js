@@ -17,14 +17,19 @@ import { deletePostsUnderCategory } from "./posts.query.js";
  * @returns All categories array
  */
 export async function getAllCategories() {
-  return await Category.aggregate()
-    .lookup({
-      from: "categories",
-      localField: "_id",
-      foreignField: "parent",
-      as: "children",
-    })
-    .match({ parent: null });
+  return (
+    await Category.aggregate()
+      .lookup({
+        from: "categories",
+        localField: "_id",
+        foreignField: "parent",
+        as: "children",
+      })
+      .match({ parent: null })
+  ).map((cat) => ({
+    ...cat,
+    slug: slugify(cat.name, { lower: true, strict: true, trim: true }),
+  }));
 }
 
 /**

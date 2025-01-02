@@ -63,7 +63,6 @@ export async function checkPost(
 /**
  * Fetch all posts in "Draft" state and their categories that are managed by the specified editor.
  */
-
 export const posts_fetched = async (id_editor) => {
   // Step 1: Fetch user clearance from userModel
   const user = await userModel.findOne({ _id: id_editor }, { clearance: 1 });

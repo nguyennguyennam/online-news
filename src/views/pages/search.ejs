@@ -4,11 +4,11 @@
   </h1>
   <div class="search-results">
     <!-- Articles -->
-    <% if (posts.length===0) { %>
+    <% if (posts.length === 0) { %>
     <p class="text-gray-600">No articles found in this category.</p>
     <% } else { %>
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-      <% posts.forEach(article=> { %>
+      <% posts.forEach(article => { %>
       <article
         class="bg-white p-4 shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg"
       >
@@ -59,7 +59,7 @@
 
           <!-- Tags -->
           <div class="flex flex-wrap gap-2">
-            <% article.tags.forEach(tag=> { %>
+            <% article.tags.forEach(tag => { %>
             <a
               href="/tag/<%= tag.tag %>"
               class="rounded-full bg-gray-100 px-2 py-1 text-sm transition-colors duration-200 hover:bg-blue-500 hover:text-white"
@@ -79,6 +79,36 @@
         </div>
       </article>
       <% }) %>
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-8 flex items-center justify-center space-x-4">
+      <% if (currentPage >= 1) { %>
+      <a
+        href="?query=<%= searchQuery %>&page=<%= currentPage - 1 %>"
+        class="rounded bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300"
+      >
+        Previous
+      </a>
+      <% } %>
+
+      <% for (let i = 1; i <= totalPages; i++) { %>
+      <a
+        href="?query=<%= searchQuery %>&page=<%= i %>"
+        class="rounded px-4 py-2 text-sm <% if (i === currentPage) { %> bg-blue-500 text-white <% } else { %> bg-gray-200 text-gray-800 hover:bg-gray-300 <% } %>"
+      >
+        <%= i %>
+      </a>
+      <% } %>
+
+      <% if (currentPage < totalPages) { %>
+      <a
+        href="?query=<%= searchQuery %>&page=<%= currentPage + 1 %>"
+        class="rounded bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300"
+      >
+        Next
+      </a>
+      <% } %>
     </div>
     <% } %>
   </div>

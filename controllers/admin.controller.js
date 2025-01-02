@@ -2,13 +2,11 @@ import expressAsyncHandler from "express-async-handler";
 import { z } from "zod";
 import {
   createCategory,
-  delete_Cat,
   deleteCategory,
   existsCategoryWithName,
   findCategoryById,
   getAllCategories,
   insertCategories,
-  updateCat,
 } from "../queries/categories.query.js";
 import { getAllAdminPosts } from "../queries/posts.query.js";
 import { get_all_tags } from "../queries/tag.query.js";
@@ -245,25 +243,6 @@ export const deleteCategoryHandler = expressAsyncHandler(async (req, res) => {
   await deleteCategory(category._id);
   res.status(200).json({});
 });
-
-export const update_cat_by_admin = async (req, res) => {
-  const { categoryId } = req.body;
-  // Extract categoryId and name from req.body
-  const update_cat = updateCat(categoryId);
-  res.redirect("/admin/categories");
-};
-
-export const delete_cat = async (req, res) => {
-  const { categoryId } = req.body;
-  await delete_Cat(categoryId);
-  res.redirect("/admin/categories");
-};
-
-export const insert_sub_cat = async (req, res) => {
-  const { sub_categoryId, parent_categoryId } = req.body;
-  await insertCategories(sub_categoryId, parent_categoryId);
-  res.redirect("/admin/categories");
-};
 
 export const insert_tag = async (req, res) => {
   const { tagId } = req.body;

@@ -136,7 +136,14 @@ export async function getPostById(id) {
  *
  * @param {{ userId: string?, page: number, cat: string?, tag: string?, query: string? }} param0
  */
-export async function getAllPosts({ userId, page, cat, tag, query }) {
+export async function getAllPosts({
+  userId,
+  page,
+  cat,
+  tag,
+  query,
+  postsPerPage,
+}) {
   const aggregate = Post.aggregate();
 
   if (query) {
@@ -172,7 +179,7 @@ export async function getAllPosts({ userId, page, cat, tag, query }) {
     .match({ state: "published" })
     .match(cat ? { "category.name": cat } : {})
     .match(tag ? { "tags.tag": { $in: [tag] } } : {});
-  return await aggregate.skip((page - 1) * 5).limit(5);
+  return await aggregate.skip((page - 1) * postsPerPage).limit(postsPerPage);
 }
 
 /**
@@ -330,8 +337,6 @@ export async function getPostsBy(writerId) {
       as: "tags",
     })
     .sort({ writtenDate: -1 });
-
-  return Post.find({ _id: writerId });
 }
 
 /**

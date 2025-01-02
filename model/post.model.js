@@ -84,5 +84,7 @@ const postSchema = new mongoose.Schema({
   deniedReason: String,
 });
 
+// postSchema.index({ name: "text", abstract: "text", content: "text" });
+
 const Post = mongoose.model("Post", postSchema, "posts");
 export default Post;
