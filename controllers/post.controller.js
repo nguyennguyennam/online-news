@@ -235,7 +235,6 @@ export const getPostIdHandler = expressAsyncHandler(async (req, res) => {
   });
 });
 
-
 /**
  * POST: Update a post with new information.
  *
@@ -247,13 +246,14 @@ export const getPostIdHandler = expressAsyncHandler(async (req, res) => {
  * @param {string} req.body.category - The ID of the updated category for the post.
  * @param {string} req.body.tags - A comma-separated string of tags to update the post with.
  * @param {string} req.body.postType - The type of the post ("premium" or "standard").
- * 
+ *
  * @param {Object} res - The HTTP response object for sending back a result.
  *
  * @returns {void} Redirects to the "/posts" page upon successful update.
  */
 export const update_post = async (req, res) => {
-  const { post_id, title, abstract, content, category, tags, postType } = req.body;
+  const { post_id, title, abstract, content, category, tags, postType } =
+    req.body;
   let premium = false;
   if (postType === "premium") {
     premium = true;
@@ -263,6 +263,14 @@ export const update_post = async (req, res) => {
   const tagsArray = tags.split(",").map((tag) => tag.trim());
   const tagDocuments = await getTagsArray(tagsArray);
   const tag_id = tagDocuments.map((doc) => doc._id);
-  await modified_post(post_id, title, abstract, content, category, tag_id, premium);
+  await modified_post(
+    post_id,
+    title,
+    abstract,
+    content,
+    category,
+    tag_id,
+    premium,
+  );
   res.redirect("/posts");
-}
+};

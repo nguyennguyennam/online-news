@@ -3,7 +3,7 @@ import {
   getEditHandler,
   getEditIdHandler,
 } from "../controllers/edit.controller.js";
-import {update_post} from "../controllers/post.controller.js";
+import { update_post } from "../controllers/post.controller.js";
 import { clearanceCheck } from "../controllers/middlewares.js";
 const editRouter = express.Router();
 editRouter.route("/").get(getEditHandler);

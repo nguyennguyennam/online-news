@@ -14,6 +14,7 @@ export async function hasSubscription(userId) {
     user.subscription.getTime() > new Date().getTime()
   );
 }
+
 /**
  * Finds a user with the provided ID.
  *
@@ -22,6 +23,16 @@ export async function hasSubscription(userId) {
  */
 export async function getUser(id) {
   return await User.findById(id);
+}
+
+/**
+ * Finds users with the provided email.
+ *
+ * @param {string} email
+ * @returns {Promise<boolean>}
+ */
+export async function getUserByEmail(email) {
+  return await User.find({ email });
 }
 
 /**
@@ -53,9 +64,8 @@ export async function getClearanceLevel(userId) {
   return user ? user.clearance : 0;
 }
 
-
 export async function getAllUsersAdmin() {
-  return await User.find({})
+  return await User.find({});
 }
 /**
  * Retrieves the clearance level of a user and group them by their clearance.
@@ -78,5 +88,4 @@ export async function getAllUsers() {
       },
     },
   ]);
-  return await User.find({});
 }

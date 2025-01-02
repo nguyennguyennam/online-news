@@ -1,7 +1,7 @@
-import passport from "passport";
-import { Strategy as LocalStrategy } from "passport-local";
-import { OAuth2Strategy as GoogleStrategy } from "passport-google-oauth";
 import bcrypt from "bcryptjs";
+import passport from "passport";
+import GoogleStrategy from "passport-google-oidc";
+import { Strategy as LocalStrategy } from "passport-local";
 import userModel from "../model/user.model.js";
 
 const GMAIL_ID = process.env.GMAIL_ID;
@@ -30,7 +30,6 @@ passport.use(
     },
   ),
 );
-
 
 // Google Strategy (New addition)
 passport.use(

@@ -1,7 +1,5 @@
-import postModel from "../model/post.model.js";
 import editorModel from "../model/editor.model.js";
-import categoryModel from "../model/category.model.js";
-import tagModel from "../model/tag.model.js";
+import postModel from "../model/post.model.js";
 import userModel from "../model/user.model.js";
 
 /**
@@ -65,7 +63,6 @@ export async function checkPost(
 /**
  * Fetch all posts in "Draft" state and their categories that are managed by the specified editor.
  */
-
 export const posts_fetched = async (id_editor) => {
   // Step 1: Fetch user clearance from userModel
   const user = await userModel.findOne({ _id: id_editor }, { clearance: 1 });
@@ -132,7 +129,7 @@ export const posts_fetched = async (id_editor) => {
     // Editor: Fetch authorized categories from editorModel
     const editor = await editorModel.findOne(
       { user: id_editor },
-      { authorizedCategories: 1 }
+      { authorizedCategories: 1 },
     );
 
     if (!editor) {
@@ -160,4 +157,4 @@ export const posts_fetched = async (id_editor) => {
 
   console.log("Fetched Posts:", posts.tags); // Debug fetched posts
   return posts;
-}
+};

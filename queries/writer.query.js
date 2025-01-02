@@ -91,7 +91,15 @@ export async function savePost(
 //   };
 // }
 
-export async function modified_post(post_id, title, abstract, content, category, tags, premium) {
+export async function modified_post(
+  post_id,
+  title,
+  abstract,
+  content,
+  category,
+  tags,
+  premium,
+) {
   return await postModel.findByIdAndUpdate(
     post_id,
     {
@@ -102,6 +110,6 @@ export async function modified_post(post_id, title, abstract, content, category,
       tags: tags,
       premium: premium,
     },
-    {new: true}
+    { new: true },
   );
 }

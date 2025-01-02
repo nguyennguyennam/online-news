@@ -1,120 +1,200 @@
 <div class="mx-auto flex w-full max-w-screen-lg flex-col gap-4">
+  <%- include('../components/error-dialog.ejs') %> <%-
+  include('../components/processing-dialog.ejs') %>
+
+  <a href="/admin" class="my-4 text-blue-500 underline">Back</a>
+
   <h1 class="text-2xl font-semibold">Manage Tags</h1>
 
+  <script defer>
+    async function postTag() {
+      const val = document.getElementById("add-tag-field").value;
+      if (!val) {
+        openErrorDialog("Tag name can't be empty!");
+        return;
+      }
+
+      openProcessingDialog();
+      const res = await fetch("/admin/tags", {
+        method: "POST",
+        body: JSON.stringify({ tag: val }),
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      closeProcessingDialog();
+
+      switch (res.status) {
+        case 409:
+          openErrorDialog("Tag name is already taken!");
+          return;
+        case 201:
+          window.location.reload();
+          break;
+      }
+    }
+
+    async function deleteTag(tagId) {
+      openProcessingDialog();
+      const res = await fetch("/admin/tags", {
+        method: "DELETE",
+        body: JSON.stringify({ tag: tagId }),
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      closeProcessingDialog();
+
+      switch (res.status) {
+        case 200:
+          window.location.reload();
+          return;
+        case 404:
+          openErrorDialog("That tag doesn't exist");
+      }
+    }
+
+    let editingId, editingName;
+
+    async function editTag() {
+      closeEditDialog();
+      openProcessingDialog();
+      const res = await fetch("/admin/tags", {
+        method: "PUT",
+        body: JSON.stringify({
+          id: editingId,
+          tag: document.getElementById("edit-field").value,
+        }),
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      closeProcessingDialog();
+
+      switch (res.status) {
+        case 200:
+          window.location.reload();
+          break;
+        case 409:
+          openErrorDialog("That tag name is already taken");
+          break;
+      }
+    }
+
+    function openEditDialog(tagId, tagName) {
+      editingId = tagId;
+      editingName = tagName;
+      document
+        .getElementById("edit-dialog")
+        .classList.replace("hidden", "flex");
+      document.getElementById("edit-field").value = editingName;
+    }
+
+    function closeEditDialog() {
+      document
+        .getElementById("edit-dialog")
+        .classList.replace("flex", "hidden");
+    }
+  </script>
+
+  <div
+    class="fixed inset-0 hidden size-full items-center justify-center bg-black/50 p-6"
+    id="edit-dialog"
+  >
+    <dialog
+      class="flex w-full max-w-screen-sm flex-col gap-4 rounded-xl bg-white p-6 shadow-lg"
+    >
+      <h2 class="text-lg font-semibold">Edit Tag</h2>
+
+      <label class="flex flex-col gap-2">
+        <span class="text-sm font-semibold">Tag</span>
+        <input
+          type="text"
+          id="edit-field"
+          class="flex h-12 w-full items-center rounded border-[1px] border-black px-4"
+          required
+        />
+      </label>
+
+      <div class="flex items-center justify-center gap-2">
+        <button
+          onclick="closeEditDialog()"
+          class="rounded bg-red-700 px-4 py-2 text-white"
+        >
+          Nevermind
+        </button>
+        <button
+          onclick="editTag()"
+          class="rounded bg-sky-700 px-4 py-2 text-white"
+        >
+          Confirm
+        </button>
+      </div>
+    </dialog>
+  </div>
+
+  <div class="flex flex-row flex-wrap gap-2 bg-zinc-100 p-6">
+    <% adminTags.forEach(tag => { %>
+    <div
+      class="flex flex-row items-center justify-between gap-2 rounded-full bg-sky-400 px-4 py-2 font-semibold"
+    >
+      <span><%= tag.tag %></span>
+
+      <div class="flex flex-row items-center gap-1">
+        <button
+          aria-label="Edit tag <%= tag.tag %>"
+          onclick="openEditDialog('<%= tag._id %>', '<%= tag.tag %>')"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 -960 960 960"
+            class="size-3"
+          >
+            <path
+              d="M206.22-206.78h57.56l352.57-352.57-56.44-57-353.69 353.7v55.87Zm-52.44 106q-22.08 0-37.54-15.46t-15.46-37.54v-109.44q0-21.08 7.98-40.39 7.98-19.3 22.94-34.26l495.95-495.52q13.13-12.7 29.33-19.26 16.19-6.57 33.89-6.57 17.13 0 33.83 6.57 16.69 6.56 29.95 19.69l79.31 78.61q13.13 12.7 19.48 29.68 6.34 16.97 6.34 34.24 0 17.69-6.34 34.17-6.35 16.48-19.48 29.61L339-131.7q-14.96 14.96-34.26 22.94-19.3 7.98-40.39 7.98H153.78Zm593.78-589.65L691-747.56l56.56 57.13ZM587.91-587.91l-28-28.44 56.44 57-28.44-28.56Z"
+            />
+          </svg>
+        </button>
+
+        <button
+          aria-label="Delete tag <%= tag.tag %>"
+          onclick="deleteTag('<%= tag._id %>')"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 -960 960 960"
+            class="size-3"
+          >
+            <path
+              d="M480-405.91 293.04-218.96Q278.09-204 256-204t-37.04-14.96Q204-233.91 204-256t14.96-37.04L405.91-480 218.96-666.96Q204-681.91 204-704t14.96-37.04Q233.91-756 256-756t37.04 14.96L480-554.09l186.96-186.95Q681.91-756 704-756t37.04 14.96Q756-726.09 756-704t-14.96 37.04L554.09-480l186.95 186.96Q756-278.09 756-256t-14.96 37.04Q726.09-204 704-204t-37.04-14.96L480-405.91Z"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+
   <!-- Insert Form -->
-  <form action="/admin/tags" method="POST" class="mb-4">
-    <input type="hidden" name="_method" value="POST"/>
-    <div class="flex items-center gap-2">
+  <div class="mb-4">
+    <div class="flex flex-wrap items-center gap-2">
       <input
         type="text"
         name="tag"
-        class="border p-2 flex-1"
+        class="flex-1 border p-2"
         placeholder="Enter new tag"
         required
+        id="add-tag-field"
       />
-      <button type="submit" class="p-2 bg-green-500 text-white rounded">Add Tag</button>
-    </div>
-  </form>
-
-  <% adminTags.forEach((tags) => { %>
-    <details tags-id="<%= tags._id %>" class="rounded-lg border-2 border-zinc-400">
-      <summary
-        class="flex w-full items-center justify-between px-4 py-2 marker:m-0 marker:appearance-none marker:p-0"
+      <button
+        onclick="postTag()"
+        class="rounded bg-green-700 px-4 py-2 text-white"
       >
-        <h2 id="tags-name-<%= tags._id %>" class="font-semibold inline-block"><%= tags.tag %></h2>
-        <div class="flex flex-row items-center gap-px">
-          <!-- Edit Button -->
-          <button
-            id="edit-btn-tags-<%= tags._id %>"
-            class="flex items-center justify-center p-2 duration-200 hover:bg-zinc-200"
-            onclick="startEditing('<%= tags._id %>', 'tags')"
-            title="Edit"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 -960 960 960"
-              class="size-6"
-              aria-label="Edit"
-            >
-              <path
-                d="M206.22-206.78h57.56l352.57-352.57-56.44-57-353.69 353.7v55.87Zm-52.44 106q-22.08 0-37.54-15.46t-15.46-37.54v-109.44q0-21.08 7.98-40.39 7.98-19.3 22.94-34.26l495.95-495.52q13.13-12.7 29.33-19.26 16.19-6.57 33.89-6.57 17.13 0 33.83 6.57 16.69 6.56 29.95 19.69l79.31 78.61q13.13 12.7 19.48 29.68 6.34 16.97 6.34 34.24 0 17.69-6.34 34.17-6.35 16.48-19.48 29.61L339-131.7q-14.96 14.96-34.26 22.94-19.3 7.98-40.39 7.98H153.78Zm593.78-589.65L691-747.56l56.56 57.13ZM587.91-587.91l-28-28.44 56.44 57-28.44-28.56Z"
-              />
-            </svg>
-          </button>
-
-          <!-- Edit Form -->
-          <form
-            id="edit-form-tags-<%= tags._id %>"
-            class="hidden"
-            action="/admin/tags"
-            method="POST"
-          >
-            <input type="hidden" name="_method" value="PUT" />
-            <input type="hidden" name="id" value="<%= tags._id %>" />
-            <input
-              type="text"
-              name="tag"
-              id="edit-input-tags-<%= tags._id %>"
-              class="border p-2"
-              value="<%= tags.tag %>"
-            />
-            <button
-              type="submit"
-              class="p-2 bg-blue-500 text-white rounded"
-            >
-              Confirm
-            </button>
-            <button
-              type="button"
-              onclick="cancelEdit('<%= tags._id %>', 'tags')"
-              class="p-2 bg-gray-300 text-black rounded"
-            >
-              Cancel
-            </button>
-          </form>
-
-          <!-- Delete Form -->
-          <form
-            action="/admin/tags"
-            method="POST"
-            class="inline-block"
-            onsubmit="return confirm('Are you sure you want to delete this tag?');"
-          >
-            <input type="hidden" name="_method" value="DELETE" />
-            <input type="hidden" name="id" value="<%= tags._id %>" />
-            <button
-              type="submit"
-              class="flex items-center justify-center p-2 duration-200 hover:bg-zinc-200"
-              title="Delete"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 -960 960 960"
-                class="size-6"
-                aria-label="Delete"
-              >
-                <path
-                  d="M273.78-100.78q-44.3 0-75.15-30.85-30.85-30.85-30.85-75.15v-507q-22.09 0-37.54-15.46-15.46-15.46-15.46-37.54 0-22.09 15.46-37.55 15.45-15.45 37.54-15.45H347q0-22.09 15.46-37.55 15.45-15.45 37.54-15.45h158.87q22.09 0 37.54 15.45 15.46 15.46 15.46 37.55h180.35q22.09 0 37.54 15.45 15.46 15.46 15.46 37.55 0 22.08-15.46 37.54-15.45 15.46-37.54 15.46v507q0 44.3-30.85 75.15-30.85 30.85-75.15 30.85H273.78Zm412.44-613H273.78v507h412.44v-507ZM396.61-280.57q19.26 0 32.74-13.47 13.48-13.48 13.48-32.74v-267.57q0-19.26-13.48-32.74t-32.74-13.48q-19.26 0-33.02 13.48-13.76 13.48-13.76 32.74v267.57q0 19.26 13.76 32.74 13.76 13.47 33.02 13.47Zm167.35 0q19.26 0 32.74-13.47 13.47-13.48 13.47-32.74v-267.57q0-19.26-13.47-32.74-13.48-13.48-32.74-13.48t-33.03 13.48q-13.76 13.48-13.76 32.74v267.57q0 19.26 13.76 32.74 13.77 13.47 33.03 13.47ZM273.78-713.78v507-507Z"
-                />
-              </svg>
-            </button>
-          </form>
-        </div>
-      </summary>
-    </details>
-  <% }); %>
+        Add
+      </button>
+    </div>
+  </div>
 </div>
-
-<script>
-  function startEditing(entityId, entityType) {
-    document.getElementById(`${entityType}-name-${entityId}`).style.display = "none";
-    document.getElementById(`edit-btn-${entityType}-${entityId}`).style.display = "none";
-    document.getElementById(`edit-form-${entityType}-${entityId}`).classList.remove("hidden");
-  }
-
-  function cancelEdit(entityId, entityType) {
-    document.getElementById(`${entityType}-name-${entityId}`).style.display = "inline-block";
-    document.getElementById(`edit-btn-${entityType}-${entityId}`).style.display = "flex";
-    document.getElementById(`edit-form-${entityType}-${entityId}`).classList.add("hidden");
-  }
-</script>

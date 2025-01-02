@@ -5,7 +5,7 @@ import {
   getPostHandler,
   getPostIdHandler,
   postImageHandler,
-  postPostHandler, 
+  postPostHandler,
 } from "../controllers/post.controller.js";
 
 const router = express.Router();

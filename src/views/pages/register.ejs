@@ -98,16 +98,17 @@
     });
 
     // Xử lý submit form
-    form.addEventListener('submit', async function (event) {
-      const password = document.querySelector('#password').value.trim();
-      const confirmPassword = document.querySelector('#confirmPassword').value.trim();
 
-      // Prevent form submission to perform validations
-      event.preventDefault();
-
-      // Check if passwords match
-      if (password !== confirmPassword) {
-        alert('Error: Passwords do not match.');
+    form.addEventListener("submit", function () {
+      const confirmPassword = document
+        .querySelector("#confirmPassword")
+        .value.trim();
+      const pass = document.querySelector("#password").value.trim();
+      if (!canSubmit || pass !== confirmPassword) {
+        event.preventDefault();
+        alert(
+          "Error: Passwords do not match or existing email.Please try again",
+        );
         return;
       }
 

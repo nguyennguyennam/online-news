@@ -5,4 +5,3 @@ const editorRouter = express.Router();
 editorRouter.get("/", fetched_posts_handler);
 
 export default editorRouter;
-

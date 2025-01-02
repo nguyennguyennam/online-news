@@ -1,17 +1,28 @@
+import bcrypt from "bcryptjs";
 import expressAsyncHandler from "express-async-handler";
+import slugify from "slugify";
 import { z } from "zod";
+import { subscriber_extend } from "../queries/admin.query.js";
 import {
   createCategory,
   deleteCategory,
   existsCategoryWithName,
   findCategoryById,
   getAllCategories,
-  insertCategories
 } from "../queries/categories.query.js";
 import { getAllAdminPosts } from "../queries/posts.query.js";
-import { get_all_tags, edit_tags, delete_tags, add_Tags } from "../queries/tag.query.js";
-import { getAllUsers, getAllUsersAdmin } from "../queries/users.query.js";
-import {subscriber_extend} from "../queries/admin.query.js";
+import {
+  addTag,
+  deleteTag,
+  editTag,
+  get_all_tags,
+  hasTag,
+} from "../queries/tag.query.js";
+import {
+  getAllUsers,
+  getAllUsersAdmin,
+  getUserByEmail,
+} from "../queries/users.query.js";
 /**
  * GET /admin: Main admin tool page.
  *
@@ -58,6 +69,12 @@ export const getAdminTagsHandler = expressAsyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * GET /admin/users: View all users.
+ *
+ * - Clearance Level: 4
+ * - Object Class: Safe
+ */
 export const getAdminUsersHandler = expressAsyncHandler(async (req, res) => {
   const users = await getAllUsersAdmin();
   res.render("layouts/main-layout", {
@@ -69,16 +86,18 @@ export const getAdminUsersHandler = expressAsyncHandler(async (req, res) => {
   });
 });
 
-export const getAdminUsersEditHandler = expressAsyncHandler(async (req, res) => {
-  const users = await getAllUsers();
-  res.render("layouts/main-layout", {
-    title: "All Users",
-    description: "Administrative tools for editing users",
-    content: "../pages/admin-edit-user",
-    AdminEditUsers: users,
-    userInfo: req.session?.userInfo,
-  });
-});
+export const getAdminUsersEditHandler = expressAsyncHandler(
+  async (req, res) => {
+    const users = await getAllUsers();
+    res.render("layouts/main-layout", {
+      title: "All Users",
+      description: "Administrative tools for editing users",
+      content: "../pages/admin-edit-user",
+      AdminEditUsers: users,
+      userInfo: req.session?.userInfo,
+    });
+  },
+);
 
 export const getAdminPostsHandler = expressAsyncHandler(async (req, res) => {
   const posts = await getAllAdminPosts();
@@ -242,51 +261,114 @@ export const deleteCategoryHandler = expressAsyncHandler(async (req, res) => {
   res.status(200).json({});
 });
 
-// export const update_cat_by_admin = async (req, res) => {
-//     const { categoryId } = req.body;
-//     // Extract categoryId and name from req.body
-//     const update_cat = updateCat(categoryId);
-//     res.redirect("/admin/categories");
-// } 
-
-// export const delete_cat = async (req, res) => {
-//     const {categoryId} = req.body;
-//     await delete_Cat(categoryId);
-//     res.redirect("/admin/categories");
-// }
-
-
-// export const insert_sub_cat = async (req, res) => {
-//     const {sub_categoryId, parent_categoryId} = req.body;
-//     await insertCategories(sub_categoryId, parent_categoryId);
-//     res.redirect("/admin/categories");
-// }
-
-export const insert_tag = async (req, res) => {
-    const {tagId} = req.body;
-    await insertCategories(tagId);
-    res.redirect("/admin/tags");
-}
-
-export const update_DeleteTagHandler = async (req, res) => {
-  const {tag, _method, id} = req.body;
-  console.log(req.body);
-  if (_method === "PUT") {
-    await edit_tags(id, tag);
+/**
+ * PUT /admin/users: Edit a user's information.
+ *
+ * - Clearance Level: 4
+ * - Object Class: Euclid
+ * - Returns:
+ *   + 200 (Success)
+ *   + 400 (Bad Request)
+ *   + 404 (Not Found)
+ *   + 409 (Conflict)
+ */
+export const putUserHandler = expressAsyncHandler(async (req, res) => {
+  const schema = z.object({
+    id: z.string(),
+    fullName: z.string(),
+    email: z.string(),
+    password: z.string().optional(),
+    clearance: z.coerce.number().min(1).max(3),
+    dob: z.coerce.date(),
+    penName: z.string().optional(),
+    authCategories: z.string().optional(),
+  });
+  const body = schema.safeParse(req.body);
+  if (body.error) {
+    res.status(400).json({});
+    return;
   }
-  else if (_method === "DELETE") {
-    await delete_tags(id);
-  }
-  else if (_method === "POST") {
-    await add_Tags(tag);
-  }
-  res.redirect("/admin/tags");
-}
 
+  const user = await getUser(body.data.id);
+  if (user == null) {
+    res.status(404).json({});
+    return;
+  }
+
+  if ((await getUserByEmail(body.data.email)).some((u) => u._id != user._id)) {
+    res.status(409).json({});
+    return;
+  }
+
+  user.fullName = body.data.fullName;
+  user.email = body.data.email;
+  user.clearance = body.data.clearance;
+  user.dob = body.data.dob;
+  user.penName = body.data.penName;
+
+  if (body.data.password)
+    user.password = bcrypt.hashSync(body.data.password, 12);
+
+  await user.save();
+  if (user.clearance == 3 && body.data.authCategories) {
+  }
+
+  res.status(200).json({});
+});
+
+/**
+ * POST /admin/tags: Create a new tag.
+ *
+ * - Object Class: Euclid
+ * - Clearance Level: 4
+ */
+export const addTagHandler = expressAsyncHandler(async (req, res) => {
+  const { tag } = req.body;
+  const slugifed = slugify(tag, { lower: true, strict: true, trim: true });
+  if (await hasTag(slugifed)) {
+    res.status(409).json({});
+    return;
+  }
+
+  await addTag(slugifed);
+  res.status(201).json({});
+});
+
+/**
+ * PUT /admin/tags: Edits a tag.
+ *
+ * - Object Class: Euclid
+ * - Clearance Level: 4
+ */
+export const editTagHandler = expressAsyncHandler(async (req, res) => {
+  const { id, tag } = req.body;
+  const slug = slugify(tag, { lower: true, strict: true, trim: true });
+  if (await hasTag(slug)) {
+    res.status(409).json({});
+    return;
+  }
+
+  await editTag(id, tag);
+  res.status(200).json({});
+});
+
+/**
+ * DELETE /admin/tags: Delete a tag.
+ *
+ * - Object Class: Euclid
+ * - Clearance Level: 4
+ */
+export const deleteTagHandler = expressAsyncHandler(async (req, res) => {
+  const { tag } = req.body;
+  const result = await deleteTag(tag);
+
+  if (result == null) res.status(404).json({});
+  else res.status(200).json({});
+});
 
 export const extendSubscriberHandler = async (req, res) => {
-  const {userId} = req.body;
+  const { userId } = req.body;
   console.log(req.body);
   await subscriber_extend(userId);
   res.redirect("/admin/users");
-}
+};

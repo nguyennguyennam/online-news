@@ -2,6 +2,7 @@ import expressAsyncHandler from "express-async-handler";
 import { z } from "zod";
 import { getAllCategories } from "../queries/categories.query.js";
 import { getAllPosts } from "../queries/posts.query.js";
+import Post from "../model/post.model.js";
 
 /**
  * GET /search: Retrieves all posts.
@@ -32,10 +33,27 @@ export const searchGetHandler = expressAsyncHandler(async (req, res) => {
     return;
   }
 
-  // How to get the UserId?
+  const postsPerPage = 9; // Số bài viết mỗi trang
 
-  const result = await getAllPosts({ ...query.data });
+  // Đếm tổng số bài viết thỏa mãn điều kiện
+  const totalPosts = await Post.countDocuments({
+    state: "published",
+    ...(query.data.cat ? { "category.name": query.data.cat } : {}),
+    ...(query.data.tag ? { tags: { $elemMatch: { tag: query.data.tag } } } : {}),
+    ...(query.data.query ? { $text: { $search: query.data.query } } : {}),
+  });
+
+  const totalPages = Math.ceil(totalPosts / postsPerPage);
+
+  // How to get the UserId?
+  const page = query.data.page || 1; 
+  const result = await getAllPosts({ ...query.data, page: page, postsPerPage: postsPerPage });
   const categories = await getAllCategories();
+  // console.log({
+  //   query: query.data.query,
+  //   posts: result,
+  //   totalPosts: totalPosts,
+  // });
   res.render("layouts/main-layout", {
     title: "All posts",
     description:
@@ -44,5 +62,8 @@ export const searchGetHandler = expressAsyncHandler(async (req, res) => {
     searchQuery: query.data.query,
     posts: result,
     categories,
+    currentPage: page,
+    totalPosts,
+    totalPages,
   });
 });

@@ -1,63 +1,9 @@
 <div class="mx-auto my-8 flex w-full max-w-screen-lg flex-col gap-4">
+  <a href="/admin" class="my-4 text-blue-500 underline">Back</a>
   <h1 class="text-2xl font-semibold">Manage Categories</h1>
 
-  <!-- The dialog box to show that something has gone wrong -->
-  <div
-    id="error-dialog"
-    class="fixed inset-0 hidden size-full items-center justify-center bg-black/50 p-6"
-  >
-    <dialog class="flex flex-col gap-4 bg-white p-6 text-center shadow-md">
-      <h2 class="text-xl font-semibold text-red-600">Uh oh!</h2>
-      <p id="error-text">An error has occurred while handling the request.</p>
-      <button
-        id="error-close"
-        onclick="closeErrorDialog()"
-        class="flex items-center justify-center rounded-md bg-red-500 px-4 py-2 font-semibold"
-      >
-        OK
-      </button>
-    </dialog>
-  </div>
-
-  <!-- Script for opening/closing error dialogs -->
-  <script defer>
-    function openErrorDialog(text) {
-      const el = document.getElementById("error-dialog");
-      el.classList.replace("hidden", "flex");
-
-      const txtContent =
-        text || "An error has occurred while handling the request";
-      document.getElementById("error-text").textContent = txtContent;
-    }
-
-    function closeErrorDialog() {
-      const el = document.getElementById("error-dialog");
-      el.classList.replace("flex", "hidden");
-    }
-  </script>
-
-  <!-- The dialog box to show that something is being done. -->
-  <div
-    id="processing-dialog"
-    class="fixed inset-0 hidden size-full items-center justify-center bg-black/50 p-6"
-  >
-    <dialog class="flex bg-white p-6 shadow-md">
-      <h2 class="text-xl font-semibold">Processing...</h2>
-    </dialog>
-  </div>
-
-  <!-- Script for opening/closing processing dialog box -->
-  <script defer>
-    function openProcessingDialog() {
-      const el = document.getElementById("processing-dialog");
-      el.classList.replace("hidden", "flex");
-    }
-
-    function closeProcessingDialog() {
-      const el = document.getElementById("processing-dialog");
-      el.classList.replace("flex", "hidden");
-    }
-  </script>
+  <%- include('../components/error-dialog.ejs') %> <%-
+  include('../components/processing-dialog.ejs') %>
 
   <!-- The form to edit the name of a category. -->
   <div
@@ -537,7 +483,7 @@
   <% adminCategories.forEach(cat => { %>
   <details cat-id="<%= cat._id %>" class="rounded-lg border-2 border-zinc-400">
     <summary
-      class="flex w-full list-none items-center justify-between px-4 py-2 duration-200 marker:m-0 marker:hidden marker:appearance-none marker:p-0 hover:bg-zinc-100"
+      class="no-marker flex w-full list-none items-center justify-between px-4 py-2 duration-200 marker:m-0 marker:hidden marker:appearance-none marker:p-0 hover:bg-zinc-100"
     >
       <h2 id="cat-name-<%= cat._id %>" class="inline-block font-semibold">
         <%= cat.name %>

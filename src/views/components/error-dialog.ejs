@@ -1,0 +1,34 @@
+<!-- The dialog box to show that something has gone wrong -->
+<div
+  id="error-dialog"
+  class="fixed inset-0 hidden size-full items-center justify-center bg-black/50 p-6"
+>
+  <dialog class="flex flex-col gap-4 bg-white p-6 text-center shadow-md">
+    <h2 class="text-xl font-semibold text-red-600">Uh oh!</h2>
+    <p id="error-text">An error has occurred while handling the request.</p>
+    <button
+      id="error-close"
+      onclick="closeErrorDialog()"
+      class="flex items-center justify-center rounded-md bg-red-500 px-4 py-2 font-semibold"
+    >
+      OK
+    </button>
+  </dialog>
+</div>
+
+<!-- Script for opening/closing error dialogs -->
+<script defer>
+  function openErrorDialog(text) {
+    const el = document.getElementById("error-dialog");
+    el.classList.replace("hidden", "flex");
+
+    const txtContent =
+      text || "An error has occurred while handling the request";
+    document.getElementById("error-text").textContent = txtContent;
+  }
+
+  function closeErrorDialog() {
+    const el = document.getElementById("error-dialog");
+    el.classList.replace("flex", "hidden");
+  }
+</script>
