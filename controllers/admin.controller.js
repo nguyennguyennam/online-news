@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import expressAsyncHandler from "express-async-handler";
 import { z } from "zod";
+import { subscriber_extend } from "../queries/admin.query.js";
 import {
   createCategory,
   deleteCategory,
@@ -10,14 +11,17 @@ import {
   insertCategories,
 } from "../queries/categories.query.js";
 import { getAllAdminPosts } from "../queries/posts.query.js";
-import { get_all_tags } from "../queries/tag.query.js";
+import {
+  add_Tags,
+  delete_tags,
+  edit_tags,
+  get_all_tags,
+} from "../queries/tag.query.js";
 import {
   getAllUsers,
   getAllUsersAdmin,
-  getUser,
   getUserByEmail,
 } from "../queries/users.query.js";
-
 /**
  * GET /admin: Main admin tool page.
  *
@@ -315,4 +319,24 @@ export const insert_tag = async (req, res) => {
   const { tagId } = req.body;
   await insertCategories(tagId);
   res.redirect("/admin/tags");
+};
+
+export const update_DeleteTagHandler = async (req, res) => {
+  const { tag, _method, id } = req.body;
+  console.log(req.body);
+  if (_method === "PUT") {
+    await edit_tags(id, tag);
+  } else if (_method === "DELETE") {
+    await delete_tags(id);
+  } else if (_method === "POST") {
+    await add_Tags(tag);
+  }
+  res.redirect("/admin/tags");
+};
+
+export const extendSubscriberHandler = async (req, res) => {
+  const { userId } = req.body;
+  console.log(req.body);
+  await subscriber_extend(userId);
+  res.redirect("/admin/users");
 };

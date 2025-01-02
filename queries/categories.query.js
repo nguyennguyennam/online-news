@@ -124,7 +124,6 @@ export async function deleteCategory(id) {
 
   // Cascade 1, all children no longer points to this.
   await Category.updateMany({ parent: deleting._id }, { parent: null });
-
   // Cascade 2. drop all posts.
   await deletePostsUnderCategory(deleting._id);
 }

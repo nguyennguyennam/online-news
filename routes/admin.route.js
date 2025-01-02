@@ -3,6 +3,7 @@ import {
   adoptCategoryHandler,
   createCategoryHandler,
   deleteCategoryHandler,
+  extendSubscriberHandler,
   getAdminCategoriesHandler,
   getAdminHandler,
   getAdminPostsHandler,
@@ -10,8 +11,9 @@ import {
   getAdminUsersEditHandler,
   getAdminUsersHandler,
   updateCategoryHandler,
-} from "../controllers/admin.controller";
-import { clearanceCheck } from "../controllers/middlewares";
+  update_DeleteTagHandler,
+} from "../controllers/admin.controller.js";
+import { clearanceCheck } from "../controllers/middlewares.js";
 
 const adminRouter = express.Router();
 
@@ -34,4 +36,10 @@ adminRouter.route("/edit/:id").get(clearanceCheck(4), getAdminUsersEditHandler);
 
 adminRouter.route("/posts").get(clearanceCheck(4), getAdminPostsHandler);
 adminRouter.route("/").get(clearanceCheck(4), getAdminHandler);
+
+// Tags routes.
+adminRouter.route("/tags").post(update_DeleteTagHandler);
+
+//Users routes
+adminRouter.route("/users/:id").post(extendSubscriberHandler);
 export default adminRouter;

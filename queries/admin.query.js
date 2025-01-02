@@ -1,6 +1,6 @@
-import editorModel from "../model/editor.model";
-import userModel from "../model/user.model";
-import categoryModel from "../model/category.model";
+import editorModel from "../model/editor.model.js";
+import userModel from "../model/user.model.js";
+import categoryModel from "../model/category.model.js";
 // Manage users
 
 /**
@@ -103,7 +103,7 @@ export async function subscriber_extend(id_subs) {
   return await userModel.findByIdAndUpdate(
     id_subs,
     {
-      subscription: current_date, // Set the subscription date to current date
+      subscription: current_date + 7*24*60*60*1000, // Set the subscription date to current date
     },
     { new: true }, // Return the updated subscriber document
   );
