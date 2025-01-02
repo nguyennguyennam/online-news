@@ -1,0 +1,62 @@
+<main class="container mx-auto w-2/3 px-4 py-8 sm:w-2/3 md:w-2/3 lg:w-2/3 xl:w-2/3">
+    <!-- Category -->
+    <nav aria-label="Breadcrumb" class="ml-6 flex font-bold text-blue-500">
+      <% if (post.category.parent) { %>
+      <ol class="flex space-x-2">
+        <li>
+          <a href="/category/<%= post.category.parent.slug %>" class="text-blue-600 hover:text-blue-800">
+            <%= post.category.parent.name %>
+          </a>
+        </li>
+        <li>
+          <span class="mx-2">&nbsp;&gt; </span>
+          <a href="/category/<%= post.category.slug %>" class="text-blue-600 hover:text-blue-800">
+            <%= post.category.name %>
+          </a>
+        </li>
+      </ol>
+      <% } else { %>
+      <a href="/category/<%= post.category.slug %>" class="text-blue-600 hover:text-blue-800">
+        <%= post.category.name %>
+      </a>
+      <% } %>
+    </nav>
+  
+    <!-- Article Content -->
+    <article class="rounded-lg bg-white p-6 shadow-md">
+      <!-- Article Title -->
+      <h1 class="mb-4 text-3xl font-bold"><%= post.name %></h1>
+  
+      <!-- Author Information and Publish Date -->
+      <div class="mb-6 flex items-center text-gray-600">
+        <img src="https://placehold.co/40x40/EEE/31343C" alt="Author's Avatar" class="mr-3 h-10 w-10 rounded-full" />
+        <div>
+          <p class="text-sm font-medium">
+            <%= post.writer.penName || post.writer.fullName %>
+          </p>
+          <p class="text-xs">
+            Published Date: <%= new Date(post.publishedDate).toLocaleString("vi-VN") %>
+          </p>
+        </div>
+      </div>
+  
+      <!-- Main Image -->
+      <img src="<%= post.thumbnail.large %>" alt="Article Image" class="mx-auto mb-6 w-3/4 rounded object-cover" />
+  
+      <!-- Article Body -->
+      <div class="prose prose-lg text-gray-800"><%- post.content %></div>
+  
+      <!-- Tags Section -->
+      <div class="mt-6">
+        <div class="flex flex-wrap items-center gap-3">
+          <h3 class="text-xl font-semibold">Tags:</h3>
+          <% post.tags.forEach(tag => { %>
+          <a href="/tag/<%= tag.tag %>" class="rounded-full px-3 py-1 text-sm text-blue-800 transition-colors duration-300 hover:text-blue-600">
+            #<%= tag.tag %>
+          </a>
+          <% }) %>
+        </div>
+      </div>
+    </article>  
+  </main>
+  

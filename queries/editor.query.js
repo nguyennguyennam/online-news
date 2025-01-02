@@ -1,7 +1,9 @@
 import editorModel from "../model/editor.model.js";
 import postModel from "../model/post.model.js";
 import userModel from "../model/user.model.js";
-
+import categoryModel from "../model/category.model.js";
+import mongoose from "mongoose";
+import tagModel from "../model/tag.model.js";
 /**
  * Handles the approval or denial of a post.
  *
@@ -27,17 +29,17 @@ export async function checkPost(
   tags,
   datePublish,
 ) {
-  if (!["deny", "approved"].includes(status)) {
+  if (!["denied", "approved"].includes(status)) {
     throw new Error("Invalid status. Allowed values: 'deny', 'approved'.");
   }
 
-  if (status === "deny") {
+  if (status === "denied") {
     return await postModel.findByIdAndUpdate(
       post_id,
       {
         editor: editor_id,
         state: status,
-        reason_of_deny: reason, // Reason for denial
+        deniedReason: reason, // Reason for denial
       },
       { new: true },
     );
@@ -46,13 +48,14 @@ export async function checkPost(
     if (new Date(datePublish) < now) {
       throw new Error("Publish date must be in the future.");
     }
+    const tagId = await tagModel.find({ tag: { $in: tags } }, { _id: 1 });
     return await postModel.findByIdAndUpdate(
       post_id,
       {
         editor: editor_id,
         state: status,
         category: category,
-        tags: tags, // Tags
+        tags: tagId, // Tags
         publishedDate: datePublish,
       },
       { new: true },
@@ -158,3 +161,22 @@ export const posts_fetched = async (id_editor) => {
   console.log("Fetched Posts:", posts.tags); // Debug fetched posts
   return posts;
 };
+
+
+/**
+ * Fetch all categories managed by the specified editor.
+ */
+
+export const CategoriesEditorHandler = async (id_editor) => {
+  console.log("Fetching categories for editor:", id_editor); // Deb
+  const categories_id = await editorModel.findOne({
+    user: id_editor,
+  }, { authorizedCategories: 1 });
+
+  const categories = await categoryModel.find({
+    _id: { $in: categories_id.authorizedCategories },
+  });
+  console.log("Authorized Categories:", categories); // Debug authorized categories
+return categories;
+} 
+
