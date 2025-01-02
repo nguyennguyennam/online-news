@@ -60,7 +60,6 @@ export async function render_NewPass(req, res) {
 export async function registerUserController(req, res) {
   const { fullName, dob, password, email, role } = req.body;
   console.log("Received data:", req.body); // Log dữ liệu nhận được từ form
-
   try {
     const hashedPassword = await bcrypt.hash(password, 8);
     await saved_user(fullName, dob, hashedPassword, email, role);
@@ -240,3 +239,5 @@ export async function saveNewPasswordController(req, res) {
     res.status(500).render("404", { message: "Failed to reset password." });
   }
 }
+
+

@@ -1,89 +1,58 @@
-<main
-  class="flex h-fit min-h-screen flex-col items-center justify-center gap-12 p-6"
->
-  <h1 class="text-center text-3xl font-bold">Create an Account</h1>
-  <form
-    action="/register"
-    method="POST"
-    class="flex w-full flex-col gap-8 rounded-md md:w-2/3 lg:w-1/2 xl:w-1/3"
-  >
-    <!-- Full Name -->
-    <div class="flex w-full flex-col">
-      <label for="fullName" class="text-sm font-semibold">Full Name</label>
-      <input
-        type="text"
-        id="fullName"
-        name="fullName"
-        required
-        class="h-12 w-full rounded-sm border-2 border-zinc-500 px-4 py-2 outline-none duration-200 focus:border-black"
-      />
-    </div>
-    <!-- Date of Birth -->
-    <div class="flex w-full flex-col">
-      <label for="dob" class="text-sm font-semibold">Date of Birth</label>
-      <input
-        type="date"
-        id="dob"
-        name="dob"
-        required
-        class="h-12 w-full rounded-sm border-2 border-zinc-500 px-4 py-2 outline-none duration-200 focus:border-black"
-      />
-    </div>
-    <!-- Email -->
-    <div class="flex w-full flex-col">
-      <label for="email" class="text-sm font-semibold">Email</label>
-      <input
-        type="email"
-        id="email"
-        name="email"
-        required
-        class="h-12 w-full rounded-sm border-2 border-zinc-500 px-4 py-2 outline-none duration-200 focus:border-black"
-      />
-    </div>
-    <!-- Password -->
-    <div class="flex w-full flex-col">
-      <label for="password" class="text-sm font-semibold">Password</label>
-      <input
-        type="password"
-        id="password"
-        name="password"
-        required
-        class="h-12 w-full rounded-sm border-2 border-zinc-500 px-4 py-2 outline-none duration-200 focus:border-black"
-      />
-    </div>
-    <!-- Confirm Password -->
-    <div class="flex w-full flex-col">
-      <label for="confirmPassword" class="text-sm font-semibold"
-        >Confirm Password</label
-      >
-      <input
-        type="password"
-        id="confirmPassword"
-        name="confirmPassword"
-        required
-        class="h-12 w-full rounded-sm border-2 border-zinc-500 px-4 py-2 outline-none duration-200 focus:border-black"
-      />
-    </div>
+<body>
+  <main class="flex h-fit min-h-screen flex-col items-center justify-center gap-12 p-6">
+    <h1 class="text-center text-3xl font-bold">Create an Account</h1>
+    <form action="/register" method="POST" class="flex w-full flex-col gap-8 rounded-md md:w-2/3 lg:w-1/2 xl:w-1/3">
+      <!-- Full Name -->
+      <div class="flex w-full flex-col">
+        <label for="fullName" class="text-sm font-semibold">Full Name</label>
+        <input type="text" id="fullName" name="fullName" required
+          class="h-12 w-full rounded-sm border-2 border-zinc-500 px-4 py-2 outline-none duration-200 focus:border-black" />
+      </div>
+      <!-- Date of Birth -->
+      <div class="flex w-full flex-col">
+        <label for="dob" class="text-sm font-semibold">Date of Birth</label>
+        <input type="date" id="dob" name="dob" required
+          class="h-12 w-full rounded-sm border-2 border-zinc-500 px-4 py-2 outline-none duration-200 focus:border-black" />
+      </div>
+      <!-- Email -->
+      <div class="flex w-full flex-col">
+        <label for="email" class="text-sm font-semibold">Email</label>
+        <input type="email" id="email" name="email" required
+          class="h-12 w-full rounded-sm border-2 border-zinc-500 px-4 py-2 outline-none duration-200 focus:border-black" />
+      </div>
+      <!-- Password -->
+      <div class="flex w-full flex-col">
+        <label for="password" class="text-sm font-semibold">Password</label>
+        <input type="password" id="password" name="password" required
+          class="h-12 w-full rounded-sm border-2 border-zinc-500 px-4 py-2 outline-none duration-200 focus:border-black" />
+      </div>
+      <!-- Confirm Password -->
+      <div class="flex w-full flex-col">
+        <label for="confirmPassword" class="text-sm font-semibold">Confirm Password</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" required
+          class="h-12 w-full rounded-sm border-2 border-zinc-500 px-4 py-2 outline-none duration-200 focus:border-black" />
+      </div>
 
-    <!-- Submit Button -->
-    <button
-      type="submit"
-      class="flex h-12 items-center justify-center border-2 border-black bg-black font-bold uppercase tracking-tight text-white duration-200 hover:bg-white hover:text-black"
-    >
-      Register
-    </button>
-    <p class="self-end">
-      I already have an account.&nbsp;<a
-        href="/login"
-        class="text-zinc-500 underline"
-        >Login</a
-      >.
-    </p>
-  </form>
-  <div
-    class="-mt-4 flex w-full flex-col items-center gap-6 md:w-2/3 lg:w-1/2 xl:w-1/3"
-  ></div>
-</main>
+      <!-- CAPTCHA -->
+      <div class="flex w-full flex-col items-center">
+        <div class="g-recaptcha" data-sitekey="6LfS-KsqAAAAAGqrIEG6qDj0bYhoq_9tgizRJXyR"></div>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit"
+        class="flex h-12 items-center justify-center border-2 border-black bg-black font-bold uppercase tracking-tight text-white duration-200 hover:bg-white hover:text-black">
+        Register
+      </button>
+      <p class="self-end">
+        I already have an account.&nbsp;<a href="/login" class="text-zinc-500 underline">Login</a>.
+      </p>
+    </form>
+    <div class="-mt-4 flex w-full flex-col items-center gap-6 md:w-2/3 lg:w-1/2 xl:w-1/3"></div>
+  </main>
+  <script src="https://www.google.com/recaptcha/api.js?render=6LfS-KsqAAAAAGqrIEG6qDj0bYhoq_9tgizRJXyR"></script>
+</body>
+
+<!-- Include Google reCAPTCHA Script -->
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
@@ -124,22 +93,56 @@
         }
       } catch (error) {
         console.error("Error checking email:", error);
-        canSubmit = false; 
+        canSubmit = false;
       }
     });
 
     // Xử lý submit form
-    form.addEventListener("submit", function () {
-      const confirmPassword = document
-        .querySelector("#confirmPassword")
-        .value.trim();
-      const pass = document.querySelector("#password").value.trim();
-      if (
-        !canSubmit ||
-        pass !== confirmPassword) {
-        event.preventDefault();
-        alert("Error: Passwords do not match or existing email.Please try again");
+    form.addEventListener('submit', async function (event) {
+      const password = document.querySelector('#password').value.trim();
+      const confirmPassword = document.querySelector('#confirmPassword').value.trim();
+
+      // Prevent form submission to perform validations
+      event.preventDefault();
+
+      // Check if passwords match
+      if (password !== confirmPassword) {
+        alert('Error: Passwords do not match.');
         return;
+      }
+
+      // Check if email is valid
+      if (!canSubmit) {
+        alert('Error: Email has been used.');
+        return;
+      }
+
+      // Execute reCAPTCHA and verify
+      const recaptchaResponse = grecaptcha.getResponse();
+      if (!recaptchaResponse) {
+        event.preventDefault();
+        alert("Vui lòng xác nhận reCAPTCHA.");
+        return;
+      }
+
+      try {
+        const captchaValidation = await fetch("/validate-captcha", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ recaptchaResponse }),
+        });
+
+        const captchaResult = await captchaValidation.json();
+        if (!captchaResult.success) {
+          event.preventDefault();
+          alert("Xác thực reCAPTCHA thất bại. Vui lòng thử lại.");
+        }
+      } catch (error) {
+        event.preventDefault();
+        console.error("Lỗi khi xác thực reCAPTCHA:", error);
+        alert("Đã xảy ra lỗi trong quá trình xác thực reCAPTCHA. Vui lòng thử lại.");
       }
     });
   });
