@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import expressAsyncHandler from "express-async-handler";
 import slugify from "slugify";
 import { z } from "zod";
-import { subscriber_extend } from "../queries/admin.query.js";
+import { extendSubscription } from "../queries/admin.query.js";
 import {
   createCategory,
   deleteCategory,
@@ -10,6 +10,10 @@ import {
   findCategoryById,
   getAllCategories,
 } from "../queries/categories.query.js";
+import {
+  getAuthorizedCategories,
+  getOrCreateEditorProfile,
+} from "../queries/editor.query.js";
 import { getAllAdminPosts } from "../queries/posts.query.js";
 import {
   addTag,
@@ -19,8 +23,11 @@ import {
   hasTag,
 } from "../queries/tag.query.js";
 import {
+  createUser,
+  deleteUser,
   getAllUsers,
   getAllUsersAdmin,
+  getUser,
   getUserByEmail,
 } from "../queries/users.query.js";
 /**
@@ -366,9 +373,185 @@ export const deleteTagHandler = expressAsyncHandler(async (req, res) => {
   else res.status(200).json({});
 });
 
-export const extendSubscriberHandler = async (req, res) => {
-  const { userId } = req.body;
-  console.log(req.body);
-  await subscriber_extend(userId);
-  res.redirect("/admin/users");
-};
+/**
+ * POST /admin/users: Add a new user.
+ *
+ * - Object Class: Euclid
+ * - Clearance Level: 4
+ */
+export const createUserHandler = expressAsyncHandler(async (req, res) => {
+  const schema = z.object({
+    fullName: z.string(),
+    email: z.string().email(),
+    password: z.string(),
+    clearance: z.coerce.number().min(1).max(3),
+    dob: z.coerce.date(),
+  });
+  const body = schema.safeParse(req.body);
+  if (body.error) {
+    res.status(400).json({});
+    return;
+  }
+
+  if ((await getUserByEmail(body.data.email)).length > 0) {
+    res.status(409).json({});
+    return;
+  }
+
+  await createUser(body.data);
+  res.status(201).json({});
+});
+
+/**
+ * PUT /admin/users: Edit a user's data
+ *
+ * - Clearance Level: 4
+ * - Object Class: Euclid
+ */
+export const editUserHandler = expressAsyncHandler(async (req, res) => {
+  const schema = z.object({
+    id: z.string(),
+    fullName: z.string(),
+    email: z.string().email(),
+    clearance: z.coerce.number().min(1).max(3),
+    dob: z.coerce.date(),
+  });
+  const body = schema.safeParse(req.body);
+  if (body.error) {
+    res.status(400).json({});
+    return;
+  }
+
+  const sameEmails = await getUserByEmail(body.data.email);
+  if (sameEmails.length > 0 && sameEmails[0]._id != body.data.id) {
+    res.status(409).json({});
+    return;
+  }
+
+  const user = await getUser(body.data.id);
+  if (user == null) {
+    res.status(404).json({});
+    return;
+  }
+
+  if (user.clearance == 4) {
+    res.status(401).json({});
+    return;
+  }
+
+  user.fullName = body.data.fullName;
+  user.email = body.data.email;
+  user.clearance = body.data.clearance;
+  user.dob = body.data.dob;
+  await user.save();
+  res.status(200).json({});
+});
+
+/**
+ * GET /admin/users/grant: Receives the editor's granted categories.
+ *
+ * If there is an ?all, this retrieves all categories instead, for Ajax routing.
+ *
+ * - Clearance Level: 4
+ * - Object Class: Safe
+ */
+export const getEditorGrantsHandler = expressAsyncHandler(async (req, res) => {
+  const { id, all } = req.query;
+
+  if (all) {
+    res.status(200).json(await getAllCategories());
+    return;
+  }
+
+  const user = await getUser(id);
+  if (user.clearance <= 2) {
+    res.status(403).json({});
+    return;
+  }
+
+  await getOrCreateEditorProfile(id);
+  const authCats = await getAuthorizedCategories(id);
+  res.status(200).json({ categories: authCats[0].authorizedCategories });
+});
+
+/**
+ * POST /admin/users/grant: Grant editors access to authorize some categories.
+ *
+ * - Clearance Level: 4
+ * - Object Class: Euclid
+ */
+export const grantEditorHandler = expressAsyncHandler(async (req, res) => {
+  const { id, category } = req.body;
+  const user = await getUser(id);
+  const cat = await findCategoryById(category);
+  if (user == null || cat == null) {
+    res.status(404).json({});
+    return;
+  }
+
+  if (user.clearance <= 2) {
+    res.status(403).json({});
+    return;
+  }
+
+  const editorProfile = await getOrCreateEditorProfile(id);
+  const current = new Set(editorProfile.authorizedCategories);
+  current.add(cat._id);
+  editorProfile.authorizedCategories = [...current];
+  await editorProfile.save();
+  res.status(200).json({});
+});
+
+/**
+ * DELETE /admin/users/grant: Remove an editor's access to a category.
+ *
+ * - Clearance Level: 4
+ * - Object Class: Euclid
+ */
+export const deleteEditorGrantHandler = expressAsyncHandler(
+  async (req, res) => {
+    const { id, category } = req.body;
+    const user = await getUser(id);
+    const cat = await findCategoryById(category);
+    if (user == null || cat == null) {
+      res.status(404).json({});
+      return;
+    }
+
+    if (user.clearance <= 2) {
+      res.status(403).json({});
+      return;
+    }
+
+    const editorProfile = await getOrCreateEditorProfile(id);
+    const current = new Set(editorProfile.authorizedCategories);
+    current.delete(cat._id);
+    editorProfile.authorizedCategories = [...current];
+    await editorProfile.save();
+    res.status(200).json({});
+  },
+);
+
+/**
+ * DELETE /admin/users: Delete a user.
+ *
+ * - Object Class: Keter
+ * - Clearance Level: 4
+ */
+export const deleteUserHandler = expressAsyncHandler(async (req, res) => {
+  const { id } = req.body;
+  const user = await deleteUser(id);
+  res.status(200).json({});
+});
+
+/**
+ * POST /admin/users/extend: Extend a user's subscription.
+ *
+ * - Object Class: Euclid
+ * - Clearance Level: 4
+ */
+export const extendSubscriberHandler = expressAsyncHandler(async (req, res) => {
+  const { id } = req.body;
+  await extendSubscription(id);
+  res.status(200).json({});
+});

@@ -342,6 +342,15 @@ export async function getPostsBy(writerId) {
 }
 
 /**
+ * Deletes all posts written by an ID.
+ *
+ * @param {string} id
+ */
+export async function deletePostsBy(id) {
+  return await Post.deleteMany({ writer: id });
+}
+
+/**
  * Adds one view to the post.
  *
  * @param {string} postId

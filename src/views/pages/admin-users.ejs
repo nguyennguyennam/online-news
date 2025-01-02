@@ -1,368 +1,619 @@
-<div class="mx-auto flex w-full max-w-screen-lg flex-col gap-4">
+<div class="mx-auto flex w-full max-w-screen-lg flex-col gap-4 p-6">
+  <a href="/admin" class="my-4 text-sky-500 underline">Back</a>
+
   <h1 class="text-2xl font-semibold">Manage Users</h1>
 
   <%- include('../components/error-dialog.ejs') %> <%-
   include('../components/processing-dialog.ejs') %>
 
-  <!-- Scriptlet tag for handling users list and maybe pagination? -->
-  <script defer>
-    const users = JSON.parse(`<%- JSON.stringify(adminUsers) %>`);
-  </script>
+  <!-- Dialog for deleting a user. -->
+  <div
+    class="fixed inset-0 z-50 hidden size-full items-center justify-center bg-black/50 p-6"
+    id="delete-dialog"
+  >
+    <div class="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-lg">
+      <h2 class="text-lg font-bold text-red-600">Are you sure about this?</h2>
 
-  <% adminUsers.sort((a, b)=> a.clearance - b.clearance);
-    const roles = {
-    1: "Subscriber",
-    2: "Writer",
-    3: "Editor",
-    4: "Admin"
-    };
-    %>
-    <% adminUsers.forEach(user=> { %>
-      <details user-id="<%= user._id %>" class="rounded-lg border-2 border-zinc-400">
-        <summary
-          class="flex w-full items-center justify-between px-4 py-2 marker:m-0 marker:appearance-none marker:p-0">
-          <div class="user-item border-b border-gray-300 py-4">
-            <p><strong>Full Name:</strong>
-              <%= user.fullName %>
-            </p>
-            <p><strong>Email:</strong>
-              <%= user.email %>
-            </p>
-            <p><strong>Role:</strong>
-              <%= roles[user.clearance] || "Unknown" %>
-            </p>
-            <% if (user.clearance===1) { %>
-              <p><strong>Subscription:</strong>
-                <%= user.subscription %>
-              </p>
-              }
-              <%}%>
-                <% if (user.clearance===2) { %>
-                  <p><strong>Pen Name:</strong>
-                    <%= user.penName %>
-                  </p>
-                  <%}%>
-          </div>
-          <div class="flex flex-row items-center gap-px">
-            <a href="edit/<%= user._id %>" class="flex items-center justify-center p-2 duration-200 hover:bg-zinc-200" title="Edit">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="size-6" aria-label="Edit">
-                <path
-                  d="M206.22-206.78h57.56l352.57-352.57-56.44-57-353.69 353.7v55.87Zm-52.44 106q-22.08 0-37.54-15.46t-15.46-37.54v-109.44q0-21.08 7.98-40.39 7.98-19.3 22.94-34.26l495.95-495.52q13.13-12.7 29.33-19.26 16.19-6.57 33.89-6.57 17.13 0 33.83 6.57 16.69 6.56 29.95 19.69l79.31 78.61q13.13 12.7 19.48 29.68 6.34 16.97 6.34 34.24 0 17.69-6.34 34.17-6.35 16.48-19.48 29.61L339-131.7q-14.96 14.96-34.26 22.94-19.3 7.98-40.39 7.98H153.78Zm593.78-589.65L691-747.56l56.56 57.13ZM587.91-587.91l-28-28.44 56.44 57-28.44-28.56Z" />
-              </svg>
-            </a>
+      <p class="text-balance">
+        Deleting this user means all of their written posts will be deleted
+        also.
+      </p>
 
-            <div id="edit-form-user-<%= user._id %>" class="hidden">
-              <input type="text" id="edit-input-user-<%= user._id %>" class="border p-2" value="<%= user.name %>" />
-              <button onclick="confirmEdit('<%= user._id %>','user')" class="p-2 bg-blue-500 text-white rounded">
-                Confirm
-              </button>
-              <button onclick="cancelEdit('<%= user._id %>','user')" class="p-2 bg-gray-300 text-black rounded">
-                Cancel
-              </button>
-            </div>
-            <% if (user.clearance===1) { %>
-              <button 
-              id="add-btn-user-<%= user._id %>"
-                class="flex items-center justify-center p-2 duration-200 hover:bg-zinc-200 "
-                onclick="showAddInputForm('<%= user._id %>')" title="Add subscription">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="size-6" aria-label="Add">
-                  <path
-                    d="M427-427H233.78q-22.08 0-37.54-15.46-15.46-15.45-15.46-37.54t15.46-37.54Q211.7-533 233.78-533H427v-193.22q0-22.08 15.46-37.54 15.45-15.46 37.54-15.46t37.54 15.46Q533-748.3 533-726.22V-533h193.22q22.08 0 37.54 15.46 15.46 15.45 15.46 37.54t-15.46 37.54Q748.3-427 726.22-427H533v193.22q0 22.08-15.46 37.54-15.45 15.46-37.54 15.46t-37.54-15.46Q427-211.7 427-233.78V-427Z" />
-                </svg>
-              </button>
-              <% } %>
-                <button class="flex items-center justify-center p-2 duration-200 hover:bg-zinc-200"
-                  onclick="confirmDelete('<%= user._id %>')" title="Delete">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="size-6" aria-label="Delete">
-                    <path
-                      d="M273.78-100.78q-44.3 0-75.15-30.85-30.85-30.85-30.85-75.15v-507q-22.09 0-37.54-15.46-15.46-15.46-15.46-37.54 0-22.09 15.46-37.55 15.45-15.45 37.54-15.45H347q0-22.09 15.46-37.55 15.45-15.45 37.54-15.45h158.87q22.09 0 37.54 15.45 15.46 15.46 15.46 37.55h180.35q22.09 0 37.54 15.45 15.46 15.46 15.46 37.55 0 22.08-15.46 37.54-15.45 15.46-37.54 15.46v507q0 44.3-30.85 75.15-30.85 30.85-75.15 30.85H273.78Zm412.44-613H273.78v507h412.44v-507ZM396.61-280.57q19.26 0 32.74-13.47 13.48-13.48 13.48-32.74v-267.57q0-19.26-13.48-32.74t-32.74-13.48q-19.26 0-33.02 13.48-13.76 13.48-13.76 32.74v267.57q0 19.26 13.76 32.74 13.76 13.47 33.02 13.47Zm167.35 0q19.26 0 32.74-13.47 13.47-13.48 13.47-32.74v-267.57q0-19.26-13.47-32.74-13.48-13.48-32.74-13.48t-33.03 13.48q-13.76 13.48-13.76 32.74v267.57q0 19.26 13.76 32.74 13.77 13.47 33.03 13.47ZM273.78-713.78v507-507Z" />
-                  </svg>
-                </button>
-
-                <div id="delete-modal" style="
-              display: none !important; 
-              position: fixed; 
-              inset: 0; 
-              background-color: rgba(0, 0, 0, 0.5); 
-              z-index: 1000; 
-              display: flex; 
-              justify-content: center; 
-              align-items: center;"
-                  class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                  <div class="model-content">
-                    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
-                      <p class="mb-4 text-lg font-semibold">Bạn chắc chắn muốn xóa user này chứ?</p>
-                      <div class="flex justify-center gap-4">
-                        <button id="cancel-btn" class="px-4 py-2 bg-gray-300 text-black rounded" onclick="closeModal()">
-                          Cancel
-                        </button>
-                        <button id="confirm-btn" class="px-4 py-2 bg-red-500 text-white rounded">
-                          Confirm
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-        </summary>
-
-        <div id="add-form-user-<%= user._id %>" class="hidden p-4">
-          <input type="text" id="add-input-user-<%= user._id %>" class="border p-2 w-full"
-            placeholder="Enter new sub-useregory" />
-          <div class="flex gap-2 mt-2">
-            <button onclick="confirmAdd('<%= user._id %>')" class="p-2 bg-blue-500 text-white rounded">
-              Confirm
-            </button>
-            <button onclick="cancelAdd('<%= user._id %>')" class="p-2 bg-gray-300 text-black rounded">
-              Cancel
-            </button>
-          </div>
-        </div>
-      </details>
-      <% }) %>
-        <button id="adduseregoryBtn" class="px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600">
-          Add User
+      <div class="flex flex-row items-center gap-2 font-semibold">
+        <button
+          class="rounded bg-red-500 px-4 py-2 text-white"
+          onclick="closeDeleteDialog()"
+        >
+          Nevermind
         </button>
 
-        <!-- Modal -->
-        <div id="modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden" style="
-              display: none !important; 
-              position: fixed; 
-              inset: 0; 
-              background-color: rgba(0, 0, 0, 0.5); 
-              z-index: 1000; 
-              display: flex; 
-              justify-content: center; 
-              align-items: center;">
-          <div class="bg-white w-96 rounded-lg shadow-lg p-6">
-            <h2 class="text-lg font-bold mb-4">Add user</h2>
+        <button
+          class="rounded bg-sky-700 px-4 py-2 text-white"
+          onclick="deleteUser()"
+        >
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
 
-            <!-- user Name -->
-            <div class="mb-4">
-              <label for="userName" class="block text-sm font-medium text-gray-700">User Name</label>
-              <input type="text" id="userName" placeholder="Enter User name"
-                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-            </div>
+  <!-- Script for handling the deletion dialog -->
+  <script defer>
+    let deletingId;
 
-            <!-- user Email -->
-            <div class="mb-4">
-              <label for="userEmail" class="block text-sm font-medium text-gray-700">User Email</label>
-              <input type="text" id="userEmail" placeholder="Enter User email"
-                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-            </div>
+    function openDeleteDialog(id) {
+      deletingId = id;
+      const el = document.getElementById("delete-dialog");
+      el.classList.replace("hidden", "flex");
+    }
 
-            <!-- user clearance -->
-            <div class="mb-4">
-              <label for="subuseregoryCount" class="block text-sm font-medium text-gray-700">Enter User
-                clearance</label>
-              <select id="subuseregoryCount"
-                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                <option value="0">Select</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="3">4</option>
-              </select>
-            </div>
+    function closeDeleteDialog() {
+      const el = document.getElementById("delete-dialog");
+      el.classList.replace("flex", "hidden");
+    }
 
-            <!-- Actions -->
-            <div class="mt-6 flex justify-end space-x-4">
-              <button id="cancelBtn" class="px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600">
-                Cancel
-              </button>
-              <button id="confirmBtn" class="px-4 py-2 bg-green-500 text-white rounded shadow hover:bg-green-600">
-                Confirm
-              </button>
-            </div>
-          </div>
+    async function deleteUser() {
+      closeDeleteDialog();
+      openProcessingDialog();
+      const res = await fetch("/admin/users", {
+        method: "DELETE",
+        body: JSON.stringify({ id: deletingId }),
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
+      closeProcessingDialog();
+      window.location.reload();
+    }
+  </script>
+
+  <!-- Dialog for creating a user. -->
+  <div
+    id="create-dialog"
+    class="fixed inset-0 z-50 hidden size-full items-center justify-center bg-black/50 p-6"
+  >
+    <div
+      class="flex w-full max-w-screen-sm flex-col gap-4 rounded-xl bg-white p-6 shadow-lg"
+    >
+      <h2 class="text-xl font-bold">Create a User</h2>
+
+      <label class="flex flex-col gap-2 text-sm font-semibold">
+        Full Name
+
+        <input
+          type="text"
+          id="create-name-field"
+          class="flex h-12 w-full items-center rounded border-[1px] border-black px-4"
+        />
+      </label>
+
+      <label class="flex flex-col gap-2 text-sm font-semibold">
+        Email
+
+        <input
+          type="email"
+          id="create-email-field"
+          class="flex h-12 w-full items-center rounded border-[1px] border-black px-4"
+        />
+      </label>
+
+      <label class="flex flex-col gap-2 text-sm font-semibold">
+        Password
+
+        <input
+          type="password"
+          id="create-password-field"
+          class="flex h-12 w-full items-center rounded border-[1px] border-black px-4"
+        />
+      </label>
+
+      <label class="flex flex-col gap-2 text-sm font-semibold">
+        Date of Birth
+
+        <input
+          type="date"
+          id="create-dob-field"
+          class="flex h-12 w-full items-center rounded border-[1px] border-black px-4"
+        />
+      </label>
+
+      <label class="flex flex-col gap-2 text-sm font-semibold">
+        Clearance Level
+
+        <select
+          id="create-clearance-field"
+          class="flex h-12 w-full appearance-none items-center border-[1px] border-black px-4 hover:bg-zinc-200"
+        >
+          <option value="1" selected>Level 1 (User)</option>
+          <option value="2">Level 2 (Writer)</option>
+          <option value="3">Level 3 (Editor)</option>
+        </select>
+      </label>
+
+      <span class="self-end text-red-600" id="create-error"></span>
+
+      <div class="mt-4 flex flex-row items-center gap-2 self-end">
+        <button
+          class="rounded bg-red-500 px-4 py-2 font-semibold text-white"
+          onclick="closeCreateDialog()"
+        >
+          Cancel
+        </button>
+
+        <button
+          class="rounded bg-sky-700 px-4 py-2 font-semibold text-white"
+          onclick="createUser()"
+        >
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script for opening the creation dialog -->
+  <script defer>
+    function openCreateDialog(error) {
+      const el = document.getElementById("create-dialog");
+      el.classList.replace("hidden", "flex");
+
+      const txt = error || "";
+      document.getElementById("create-error").textContent = txt;
+    }
+
+    function closeCreateDialog() {
+      const el = document.getElementById("create-dialog");
+      el.classList.replace("flex", "hidden");
+    }
+
+    async function createUser() {
+      closeCreateDialog();
+      openProcessingDialog();
+
+      const res = await fetch("/admin/users", {
+        method: "POST",
+        body: JSON.stringify({
+          fullName: document.getElementById("create-name-field").value,
+          password: document.getElementById("create-password-field").value,
+          email: document.getElementById("create-email-field").value,
+          clearance: document.getElementById("create-clearance-field").value,
+          dob: document.getElementById("create-dob-field").value,
+        }),
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+      closeProcessingDialog();
+
+      switch (res.status) {
+        case 400:
+          openCreateDialog("Some fields are invalid");
+          break;
+        case 409:
+          openCreateDialog("That email is already taken");
+          break;
+        case 201:
+          window.location.reload();
+      }
+    }
+  </script>
+
+  <!-- Dialog for editing a user -->
+  <div
+    class="fixed inset-0 z-50 hidden size-full items-center justify-center bg-black/50 p-6"
+    id="edit-dialog"
+  >
+    <div
+      class="flex max-h-screen w-full max-w-screen-sm flex-col gap-8 overflow-scroll rounded-xl bg-white p-6 shadow-lg"
+    >
+      <h2 class="text-xl font-bold">Editing a User</h2>
+
+      <div class="flex flex-col gap-4">
+        <h3 class="text-lg font-semibold">General Information</h3>
+        <label class="flex flex-col gap-2 text-sm font-semibold">
+          Full Name
+
+          <input
+            type="text"
+            id="edit-name-field"
+            class="flex h-12 w-full items-center rounded border-[1px] border-black px-4"
+          />
+        </label>
+
+        <label class="flex flex-col gap-2 text-sm font-semibold">
+          Email
+
+          <input
+            type="email"
+            id="edit-email-field"
+            class="flex h-12 w-full items-center rounded border-[1px] border-black px-4"
+          />
+        </label>
+
+        <label class="flex flex-col gap-2 text-sm font-semibold">
+          Date of Birth
+
+          <input
+            type="date"
+            id="edit-dob-field"
+            class="flex h-12 w-full items-center rounded border-[1px] border-black px-4"
+          />
+        </label>
+
+        <label class="flex flex-col gap-2 text-sm font-semibold">
+          Clearance Level
+
+          <select
+            id="edit-clearance-field"
+            class="flex h-12 w-full appearance-none items-center border-[1px] border-black px-4 hover:bg-zinc-200"
+          >
+            <option value="1" selected>Level 1 (User)</option>
+            <option value="2">Level 2 (Writer)</option>
+            <option value="3">Level 3 (Editor)</option>
+          </select>
+        </label>
+
+        <span id="edit-error" class="text-right text-red-600"></span>
+
+        <button
+          class="rounded bg-sky-700 px-4 py-2 text-white"
+          onclick="editUser()"
+        >
+          Confirm
+        </button>
+      </div>
+      <hr class="my-4 border-zinc-300" />
+      <div class="flex flex-col gap-4" id="edit-editor-section">
+        <h3 class="text-lg font-semibold">Editor Settings</h3>
+
+        <div
+          id="edit-authorized"
+          class="flex flex-row flex-wrap gap-2 rounded-lg bg-zinc-200 p-4 shadow-inner"
+        ></div>
+
+        <div
+          class="flex items-center justify-center gap-2"
+          id="edit-select-part"
+        >
+          <select
+            id="edit-auth-select"
+            class="flex h-12 w-full appearance-none items-center rounded border-[1px] border-black px-4"
+          ></select>
+          <button
+            class="h-12 min-w-fit shrink-0 bg-green-600 px-4 text-white"
+            onclick="grantCategory()"
+          >
+            Authorize this
+          </button>
         </div>
+      </div>
 
-        <script>
-          function startEditing(entityId, entityType) {
-            // Hide the text and edit button
-            document.getElementById(`${entityType}-name-${entityId}`).style.display = "none";
-            document.getElementById(`edit-btn-${entityType}-${entityId}`).style.display = "none";
+      <button
+        class="my-4 w-fit self-end rounded bg-red-500 px-4 py-2 text-white"
+        onclick="closeEditDialog()"
+      >
+        Nevermind
+      </button>
+    </div>
+  </div>
 
-            // Show the input form
-            document.getElementById(`edit-form-${entityType}-${entityId}`).classList.remove("hidden");
-          }
+  <script defer>
+    let editingId;
+    let authorizedCategories = [];
+    let allCategories = [];
 
-          function confirmEdit(entityId, entityType) {
-            // Get the new value from the input field
-            const newValue = document.getElementById(`edit-input-${entityType}-${entityId}`).value;
+    async function prefetchCategories() {
+      openProcessingDialog();
+      const res = await fetch("/admin/users/grant?all=true", {
+        credentials: "include",
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      const body = await res.json();
+      closeProcessingDialog();
+      allCategories = body;
+    }
 
-            // Update the text content
-            document.getElementById(`${entityType}-name-${entityId}`).textContent = newValue;
+    async function prefetchGrants() {
+      openProcessingDialog();
+      const res = await fetch("/admin/users/grant?id=" + editingId, {
+        credentials: "include",
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      closeProcessingDialog();
 
-            // Reset visibility
-            document.getElementById(`${entityType}-name-${entityId}`).style.display = "inline-block";
-            document.getElementById(`edit-btn-${entityType}-${entityId}`).style.display = "flex";
-            document.getElementById(`edit-form-${entityType}-${entityId}`).classList.add("hidden");
-          }
+      if (res.status != 200) return;
+      const body = await res.json();
+      authorizedCategories = body.categories;
 
-          function cancelEdit(entityId, entityType) {
-            // Reset visibility
-            document.getElementById(`${entityType}-name-${entityId}`).style.display = "inline-block";
-            document.getElementById(`edit-btn-${entityType}-${entityId}`).style.display = "flex";
-            document.getElementById(`edit-form-${entityType}-${entityId}`).classList.add("hidden");
-          }
+      // Fill in container elements
+      const authDiv = document.getElementById("edit-authorized");
+      authDiv.innerHTML = "";
+      for (const authCat of authorizedCategories) {
+        authDiv.innerHTML += `
+        <div class="flex flex-row px-2 py-1 gap-2 items-center rounded-full bg-sky-400">
+          <span class="font-semibold">${authCat.name}</span>
+          <button onclick="ungrantCategory(${authCat._id})" aria-label="Un-grant category">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="size-3"><path d="M480-405.91 293.04-218.96Q278.09-204 256-204t-37.04-14.96Q204-233.91 204-256t14.96-37.04L405.91-480 218.96-666.96Q204-681.91 204-704t14.96-37.04Q233.91-756 256-756t37.04 14.96L480-554.09l186.96-186.95Q681.91-756 704-756t37.04 14.96Q756-726.09 756-704t-14.96 37.04L554.09-480l186.95 186.96Q756-278.09 756-256t-14.96 37.04Q726.09-204 704-204t-37.04-14.96L480-405.91Z"/></svg>
+          </button>
+        </div>
+        `;
+      }
 
+      // Fill in select elements
+      const selectDiv = document.getElementById("edit-auth-select");
+      selectDiv.innerHTML = "";
+      let selected = false;
+      for (const cat of allCategories) {
+        // Skip already authorized categories.
+        if (authorizedCategories.some((authCat) => authCat._id == cat._id)) {
+          continue;
+        }
 
-          //Hàm xử lí useregories
-          function showAddInputForm(userId) {
-            const details = document.querySelector(`details[user-id="${userId}"]`);
-            const form = document.getElementById(`add-form-user-${userId}`);
+        selectDiv.innerHTML += `
+          <option value="${cat._id}">${cat.name} (${cat.children.length} ${cat.children.length == 1 ? "child" : "children"})</option>
+        `;
 
-            if (details && !details.open) {
-              details.open = true; // Mở tag <details>
-            }
+        if (!selected) {
+          selectDiv.value = cat._id;
+          selected = true;
+        }
+      }
 
-            form.classList.remove('hidden'); // Hiển thị form
-          }
+      // Hide this section if there's nothing
+      if (selectDiv.innerHTML == "") {
+        const part = document.getElementById("edit-select-part");
+        part.classList.replace("flex", "hidden");
+      } else {
+        const part = document.getElementById("edit-select-part");
+        part.classList.replace("hidden", "flex");
+      }
+    }
 
-          function confirmAdd(userId) {
-            const input = document.getElementById(`add-input-user-${userId}`);
-            const newValue = input.value.trim();
+    async function openEditDialog({ id, fullName, email, clearance, dob }) {
+      editingId = id;
+      if (clearance >= 3) {
+        await prefetchGrants();
+        const editor = document.getElementById("edit-editor-section");
+        editor.classList.replace("hidden", "flex");
+      } else {
+        const editor = document.getElementById("edit-editor-section");
+        editor.classList.replace("flex", "hidden");
+      }
 
-            if (newValue) {
-              alert(`New sub-useregory "${newValue}" added for useregory ID: ${userId}`);
-              // Logic gửi dữ liệu đến server ở đây (AJAX hoặc fetch API)
-            } else {
-              alert('Please enter a valid sub-useregory name.');
-            }
+      document.getElementById("edit-name-field").value = fullName;
+      document.getElementById("edit-email-field").value = email;
+      document.getElementById("edit-clearance-field").value = clearance;
 
-            cancelAdd(userId); // Ẩn form sau khi xử lý
-          }
+      if (dob) {
+        const date = new Date(dob);
+        console.log(dob, date);
+        const day = ("0" + date.getDate()).slice(-2);
+        const month = ("0" + (date.getMonth() + 1)).slice(-2);
+        const inputValue = date.getFullYear() + "-" + month + "-" + day;
+        document.getElementById("edit-dob-field").value = inputValue;
+      }
 
-          function cancelAdd(userId) {
-            const form = document.getElementById(`add-form-user-${userId}`);
-            const input = document.getElementById(`add-input-user-${userId}`);
+      openEditDialogOnly();
+    }
 
-            form.classList.add('hidden'); // Ẩn form
-            input.value = ''; // Reset input
-          }
+    function setEditDialogError(error) {
+      document.getElementById("edit-error").textContent = error;
+    }
 
-          //Hàm dùng để xử lí nút delete
-          function confirmDelete(userId) {
-            const modal = document.getElementById('delete-modal');
-            const confirmButton = document.getElementById('confirm-btn');
+    function openEditDialogOnly() {
+      const el = document.getElementById("edit-dialog");
+      el.classList.replace("hidden", "flex");
+    }
 
-            // Hiển thị modal
-            modal.style.display = 'flex';
+    function closeEditDialog() {
+      const el = document.getElementById("edit-dialog");
+      el.classList.replace("flex", "hidden");
+    }
 
-            // Gắn sự kiện xóa vào nút Confirm
-            confirmButton.onclick = () => {
-              fetch(`./delete/${userId}`, { method: 'DELETE' })
-                .then((response) => {
-                  if (response.ok) {
-                    louserion.reload(); // Reload trang sau khi xóa thành công
-                  } else {
-                    alert('Xóa thất bại!');
-                  }
-                })
-                .catch((error) => console.error('Error:', error));
-            };
-          }
+    async function grantCategory() {
+      closeEditDialog();
+      const el = document.getElementById("edit-auth-select");
+      console.log(el.value);
+      if (!el.value) return;
 
-          function closeModal() {
-            const modal = document.getElementById('delete-modal');
-            modal.style.display = 'none';
-          }
+      openProcessingDialog();
+      const res = await fetch("/admin/users/grant", {
+        method: "POST",
+        body: JSON.stringify({
+          id: editingId,
+          category: el.value,
+        }),
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
+      closeProcessingDialog();
 
-          //Hàm sử lí nút add useregory
-          // DOM Elements
-          const adduseregoryBtn = document.getElementById("adduseregoryBtn");
-          const modal = document.getElementById("modal");
-          const cancelBtn = document.getElementById("cancelBtn");
-          const confirmBtn = document.getElementById("confirmBtn");
-          const subuseregoryCount = document.getElementById("subuseregoryCount");
-          const subuseregoriesContainer = document.getElementById("subuseregories");
+      switch (res.status) {
+        case 404:
+          openErrorDialog("The user or that category doesn't exist.");
+          break;
+        case 403:
+          openErrorDialog("You can't grant categories on non-editors.");
+          break;
+        case 200:
+          await prefetchGrants();
+          openEditDialogOnly();
+          break;
+      }
+    }
 
-          // Show modal
-          adduseregoryBtn.addEventListener("click", () => {
-            modal.style.display = 'flex';
-          });
+    async function ungrantCategory(id) {
+      closeEditDialog();
+      openProcessingDialog();
+      const res = await fetch("/admin/users/grant", {
+        method: "DELETE",
+        body: JSON.stringify({ id }),
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
+      closeProcessingDialog();
 
-          // Hide modal
-          cancelBtn.addEventListener("click", () => {
-            modal.style.display = 'none';
-          });
+      switch (res.status) {
+        case 404:
+          openErrorDialog("The user or that category doesn't exist.");
+          break;
+        case 403:
+          openErrorDialog("You can't un-grant categories on non-editors.");
+          break;
+        case 200:
+          await prefetchGrants();
+          openEditDialogOnly();
+          break;
+      }
+    }
 
-          // Update subuseregories input fields based on count
-          subuseregoryCount.addEventListener("change", () => {
-            const count = parseInt(subuseregoryCount.value, 10);
-            subuseregoriesContainer.innerHTML = ""; // Clear existing inputs
-            for (let i = 1; i <= count; i++) {
-              const inputGroup = document.createElement("div");
-              inputGroup.className = "mb-4";
-              inputGroup.innerHTML = `
-            <label for="subuseregory-${i}" class="block text-sm font-medium text-gray-700">Subuseregory ${i}</label>
-            <input type="text" id="subuseregory-${i}" placeholder="Enter subuseregory ${i}" 
-                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-          `;
-              subuseregoriesContainer.appendChild(inputGroup);
-            }
-          });
+    async function editUser() {
+      closeEditDialog();
+      openProcessingDialog();
+      const res = await fetch("/admin/users", {
+        method: "PUT",
+        body: JSON.stringify({
+          id: editingId,
+          fullName: document.getElementById("edit-name-field").value,
+          email: document.getElementById("edit-email-field").value,
+          dob: document.getElementById("edit-dob-field").value,
+          clearance: document.getElementById("edit-clearance-field").value,
+        }),
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
+      closeProcessingDialog();
 
-          // Handle confirm
-          confirmBtn.addEventListener("click", () => {
-            const useregoryName = document.getElementById("useregoryName").value;
-            const subuseregories = [];
-            for (let i = 1; i <= subuseregoryCount.value; i++) {
-              const subuseregory = document.getElementById(`subuseregory-${i}`).value;
-              subuseregories.push(subuseregory);
-            }
-            console.log({ useregoryName, subuseregories });
-            alert("Data saved! Check the console for output.");
-            modal.classList.add("hidden"); // Hide modal
-          });
-          document.addEventListener("DOMContentLoaded", function () {
-            const adminUsersData = document.getElementById("adminUsersData").textContent;
-            const adminUsers = JSON.parse(adminUsersData);
+      switch (res.status) {
+        case 400:
+          setEditDialogError("Some fields are invalid");
+          openEditDialogOnly();
+          break;
+        case 404:
+          openErrorDialog("That user can't be found?");
+          break;
+        case 401:
+          openErrorDialog("You can't edit an administrator.");
+          break;
+        case 200:
+          window.location.reload();
+          break;
+      }
+    }
 
-            // Iterate through users and check expiration
-            adminUsers.forEach((user) => {
-              if (user.clearance === 1) {
-                const userSubscription = new Date(user.subscription).getTime();
-                const currentDate = Date.now();
+    async function extendUser(id) {
+      openProcessingDialog();
+      const res = await fetch("/admin/users/extend", {
+        method: "POST",
+        body: JSON.stringify({
+          id,
+        }),
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
+      closeProcessingDialog();
 
-                if (userSubscription < currentDate) {
-                  const userElement = document.querySelector(`details[user-id="${user._id}"]`);
-                  if (userElement) {
-                    const expiredDiv = document.createElement("div");
-                    expiredDiv.className =
-                      "absolute -right-96 top-2 rounded-md bg-orange-300 px-4 py-2 font-semibold";
-                    expiredDiv.textContent = "Expired";
-                    const form = document.createElement("form");
-                    form.action = `/admin/users/${user._id}`;
-                    form.method = 'POST';
-                    form.className = "mt-2"; // Optional styling for spacing
+      window.location.reload();
+    }
 
-                    // Add hidden input for action type
-                    const hiddenInput = document.createElement("input");
-                    hiddenInput.type = "hidden";
-                    hiddenInput.name = "userId"; // Key to identify the ID on the server-side
-                    hiddenInput.value = user._id; // Store the user's ID as the value
+    prefetchCategories();
+  </script>
 
-                    form.appendChild(hiddenInput);
+  <button
+    class="my-4 w-fit self-end rounded-md bg-green-600 px-4 py-2 font-semibold text-white"
+    onclick="openCreateDialog()"
+  >
+    Create User
+  </button>
 
-                    // Add the submit button
-                    const button = document.createElement("button");
-                    button.type = "submit";
-                    button.textContent = "Extend";
-                    button.className =
-                      "rounded-full border border-black bg-black px-4 py-2 text-sm font-semibold text-white";
-                    form.appendChild(button);
+  <% adminUsers.sort((a, b) => a.clearance - b.clearance).forEach(user => {%>
+  <div
+    class="relative flex flex-col gap-4 rounded-lg p-6 shadow-lg md:flex-row md:items-center"
+  >
+    <img
+      src="https://ui-avatars.com/api/?name=<%= user.fullName %>&background=random"
+      alt="Avatar of user <%= user.fullName %>"
+      class="size-8 rounded-full object-contain"
+    />
 
-                    // Append both expired message and form to the user details section
-                    const userInfoDiv = userElement.querySelector(".user-item");
-                    if (userInfoDiv) {
-                      userInfoDiv.style.position = "relative"; // Ensure the parent has a relative position
-                      userInfoDiv.appendChild(expiredDiv);
-                      userInfoDiv.appendChild(form); // Append the form right after the expired message
-                    }
-                  }
-                }
-              }
-            });
-          });
-        </script>
+    <div class="flex flex-col justify-center">
+      <p><strong><%= user.fullName %></strong> (<em><%= user.email %></em>)</p>
+      <p>Clearance Level: <%= user.clearance %></p>
+
+      <% if (user.clearance > 1) { %>
+      <p>Subscription: <strong>Infinite!</strong></p>
+      <% } else if (!user.subscription) { %>
+      <p>Subscription: <em>Not subscribed</em></p>
+      <% } else if(user.subscription > Date.now()) { %>
+      <p>
+        Subscription:
+        <em>Until <%= user.subscription.toLocaleString("vi-VN") %></em>
+      </p>
+      <% } else { %>
+      <p>Subscription: <em>Expired</em></p>
+      <% } %>
+    </div>
+
+    <% if (user.clearance < 4) { %>
+    <div
+      class="absolute right-0 top-0 flex h-fit w-fit flex-row gap-1 rounded-md px-2 py-1 shadow-lg"
+    >
+      <button
+        class="p-2 duration-200 hover:bg-zinc-200"
+        aria-label="Edit user"
+        onclick="openEditDialog({ id: '<%= user._id %>', fullName: '<%= user.fullName %>', dob: '<%= user.dob %>', email: '<%= user.email %>', clearance: parseInt('<%= user.clearance %>') })"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="24px"
+          viewBox="0 -960 960 960"
+          width="24px"
+          fill="#434343"
+        >
+          <path
+            d="M206.22-206.78h57.56l352.57-352.57-56.44-57-353.69 353.7v55.87Zm-52.44 106q-22.08 0-37.54-15.46t-15.46-37.54v-109.44q0-21.08 7.98-40.39 7.98-19.3 22.94-34.26l495.95-495.52q13.13-12.7 29.33-19.26 16.19-6.57 33.89-6.57 17.13 0 33.83 6.57 16.69 6.56 29.95 19.69l79.31 78.61q13.13 12.7 19.48 29.68 6.34 16.97 6.34 34.24 0 17.69-6.34 34.17-6.35 16.48-19.48 29.61L339-131.7q-14.96 14.96-34.26 22.94-19.3 7.98-40.39 7.98H153.78Zm593.78-589.65L691-747.56l56.56 57.13ZM587.91-587.91l-28-28.44 56.44 57-28.44-28.56Z"
+          />
+        </svg>
+      </button>
+
+      <% if (user.clearance == 1) { %>
+      <button
+        class="p-2 duration-200 hover:bg-zinc-200"
+        aria-label="Extend Subscription"
+        onclick="extendUser('<%= user._id %>')"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="24px"
+          viewBox="0 -960 960 960"
+          width="24px"
+          fill="#434343"
+        >
+          <path
+            d="M253-479.13q0 14.87 1.72 28.67 1.72 13.81 5.58 27.68 6.14 22.08-.43 42.95-6.57 20.87-26.09 31.83-19.95 11.39-40.82 4.04-20.87-7.34-28.13-28.3-9.13-25.83-13.48-52.65-4.35-26.83-4.35-54.22 0-137.39 95.83-235.63Q338.65-813 474.35-813h7.56l-24.69-24.7q-12.7-12.69-12.42-30.82.29-18.13 12.98-30.83 12.7-12.69 30.83-12.69t30.83 12.69l101.73 101.74q15.96 15.96 15.96 37.61t-15.96 37.61L519.44-620.65q-12.7 12.69-30.83 12.69t-30.83-12.69q-12.69-12.7-12.69-31.11t12.69-31.11L481.91-707h-5.87q-92.65 0-157.84 66.54Q253-573.91 253-479.13Zm454-1.74q0-14.87-1.72-28.67-1.72-13.81-5.58-27.68-6.14-22.08.43-42.95 6.57-20.87 26.09-31.83 19.95-11.39 40.54-4.33 20.59 7.07 27.85 27.46 9.69 26.39 14.04 53.22 4.35 26.82 4.35 54.78 0 137.39-95.83 235.91-95.82 98.53-231.52 98.53h-7.56l24.13 24.13q12.69 12.69 12.69 30.82 0 18.13-12.69 30.83-12.7 12.69-31.11 12.69T440-60.65L338.26-162.39q-15.96-15.96-15.67-37.33.28-21.37 15.67-37.32l102.3-101.74q12.7-12.7 31.11-12.98 18.42-.28 31.11 12.41 12.7 12.7 12.7 31.11t-12.7 31.11l-24.69 24.69h5.87q92.65 0 157.84-66.82Q707-386.09 707-480.87Z"
+          />
+        </svg>
+      </button>
+      <% } %>
+
+      <button
+        class="p-2 duration-200 hover:bg-zinc-200"
+        aria-label="Delete user"
+        onclick="openDeleteDialog('<%= user._id %>')"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="24px"
+          viewBox="0 -960 960 960"
+          width="24px"
+          fill="#434343"
+        >
+          <path
+            d="M273.78-100.78q-44.3 0-75.15-30.85-30.85-30.85-30.85-75.15v-507q-22.09 0-37.54-15.46-15.46-15.46-15.46-37.54 0-22.09 15.46-37.55 15.45-15.45 37.54-15.45H347q0-22.09 15.46-37.55 15.45-15.45 37.54-15.45h158.87q22.09 0 37.54 15.45 15.46 15.46 15.46 37.55h180.35q22.09 0 37.54 15.45 15.46 15.46 15.46 37.55 0 22.08-15.46 37.54-15.45 15.46-37.54 15.46v507q0 44.3-30.85 75.15-30.85 30.85-75.15 30.85H273.78Zm412.44-613H273.78v507h412.44v-507ZM396.61-280.57q19.26 0 32.74-13.47 13.48-13.48 13.48-32.74v-267.57q0-19.26-13.48-32.74t-32.74-13.48q-19.26 0-33.02 13.48-13.76 13.48-13.76 32.74v267.57q0 19.26 13.76 32.74 13.76 13.47 33.02 13.47Zm167.35 0q19.26 0 32.74-13.47 13.47-13.48 13.47-32.74v-267.57q0-19.26-13.47-32.74-13.48-13.48-32.74-13.48t-33.03 13.48q-13.76 13.48-13.76 32.74v267.57q0 19.26 13.76 32.74 13.77 13.47 33.03 13.47ZM273.78-713.78v507-507Z"
+          />
+        </svg>
+      </button>
+    </div>
+    <% } %>
+  </div>
+  <% }) %>
+</div>

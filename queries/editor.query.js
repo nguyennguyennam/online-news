@@ -1,9 +1,40 @@
+import mongoose from "mongoose";
+import categoryModel from "../model/category.model.js";
 import editorModel from "../model/editor.model.js";
 import postModel from "../model/post.model.js";
-import userModel from "../model/user.model.js";
-import categoryModel from "../model/category.model.js";
-import mongoose from "mongoose";
 import tagModel from "../model/tag.model.js";
+import userModel from "../model/user.model.js";
+
+/**
+ * Retrieves the editor profile for a user.
+ *
+ * @param {string} userId
+ * @returns {Promise<any>}
+ */
+export async function getOrCreateEditorProfile(userId) {
+  let profile = await editorModel.findOne({ user: userId });
+  if (profile == null) profile = await editorModel.create({ user: userId });
+  return profile;
+}
+
+/**
+ * Gets authorized categories of a user.
+ *
+ * @param {string} user
+ * @returns
+ */
+export async function getAuthorizedCategories(user) {
+  return editorModel
+    .aggregate()
+    .match({ user: new mongoose.Types.ObjectId(user) })
+    .lookup({
+      from: "categories",
+      foreignField: "_id",
+      localField: "authorizedCategories",
+      as: "authorizedCategories",
+    });
+}
+
 /**
  * Handles the approval or denial of a post.
  *
@@ -162,21 +193,22 @@ export const posts_fetched = async (id_editor) => {
   return posts;
 };
 
-
 /**
  * Fetch all categories managed by the specified editor.
  */
 
 export const CategoriesEditorHandler = async (id_editor) => {
   console.log("Fetching categories for editor:", id_editor); // Deb
-  const categories_id = await editorModel.findOne({
-    user: id_editor,
-  }, { authorizedCategories: 1 });
+  const categories_id = await editorModel.findOne(
+    {
+      user: id_editor,
+    },
+    { authorizedCategories: 1 },
+  );
 
   const categories = await categoryModel.find({
     _id: { $in: categories_id.authorizedCategories },
   });
   console.log("Authorized Categories:", categories); // Debug authorized categories
-return categories;
-} 
-
+  return categories;
+};

@@ -1,4 +1,5 @@
 import User from "../model/user.model.js";
+import { deletePostsBy } from "./posts.query.js";
 
 /**
  * Checks if a user with the provided ID has a valid subscription.
@@ -29,7 +30,7 @@ export async function getUser(id) {
  * Finds users with the provided email.
  *
  * @param {string} email
- * @returns {Promise<boolean>}
+ * @returns {Promise<Array<any>>}
  */
 export async function getUserByEmail(email) {
   return await User.find({ email });
@@ -67,6 +68,32 @@ export async function getClearanceLevel(userId) {
 export async function getAllUsersAdmin() {
   return await User.find({});
 }
+
+/**
+ * Creates a new user.
+ *
+ * @param {any} param0
+ */
+export async function createUser({
+  fullName,
+  dob,
+  email,
+  password,
+  clearance,
+}) {
+  await User.create({ fullName, dob, email, password, clearance });
+}
+
+/**
+ * Deletes a user with the provided ID.
+ *
+ * @param {string} id
+ */
+export async function deleteUser(id) {
+  await deletePostsBy(id);
+  return await User.findOneAndDelete({ _id: id, clearance: { $lt: 4 } });
+}
+
 /**
  * Retrieves the clearance level of a user and group them by their clearance.
  *
