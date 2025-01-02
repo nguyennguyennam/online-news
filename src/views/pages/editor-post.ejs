@@ -31,10 +31,17 @@
                 <td class="px-6 py-4 text-sm text-gray-700"><%= post.writer.fullName %></td>
                 <td class="px-6 py-4 text-sm text-gray-700"><%= post.abstract %></td>
                 <td class="px-6 py-4 text-sm text-gray-700"><%= post.category.name %></td>
-                <td class="px-6 py-4 text-sm text-gray-700"><%= post.tags.tag %></td>
+                <td class="px-6 py-4 text-sm text-gray-700"><%= post.tags.map(tag => tag.tag).join(', ') %></td>
                 <td class="px-6 py-4 text-center">
-                  <div class="flex space-x-2"> <!-- Add flex and spacing -->
-                    <button class="bg-blue-500 hover:bg-blue-600 text-white w-32 px-4 py-2 rounded-lg" onclick="openDetailModal('<%= post._id %>')">Chi tiết</button>
+                  <div class="flex space-x-2">
+                    <button class="bg-blue-500 hover:bg-blue-600 text-white w-32 px-4 py-2 rounded-lg" 
+                      onclick="openDetailModal({
+                        name: '<%= post.name %>',
+                        writer: { fullName: '<%= post.writer.fullName %>' },
+                        publishedDate: '<%= post.publishedDate %>',
+                        thumbnail: { large: '<%= post.thumbnail.large %>' },
+                        content: '<%= post.content %>'
+                      })">Chi tiết</button>
                     <button class="bg-green-500 hover:bg-green-600 text-white w-32 px-4 py-2 rounded-lg" onclick="openApproveModal('<%= post._id %>')">Duyệt</button>
                     <button class="bg-red-500 hover:bg-red-600 text-white w-32 px-4 py-2 rounded-lg" onclick="openRejectModal('<%= post._id %>')">Từ chối</button>
                   </div>
@@ -49,14 +56,12 @@
 
   <!-- Modal Chi tiết -->
   <div id="detail-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 hidden z-50 flex items-center justify-center">
-    <div class="bg-white w-96 rounded-lg shadow-lg p-6">
-      <h2 class="text-lg font-semibold mb-4 text-gray-900">Thông tin chi tiết</h2>
-      <div id="detail-body" class="text-sm text-gray-700"></div>
-      <div class="mt-6 text-right">
-        <button class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition duration-150 ease-in-out" onclick="closeModal('detail-modal')">Đóng</button>
-      </div>
-    </div>
+  <div class="bg-white rounded-lg shadow-md p-4 w-3/4 sm:w-2/3 lg:w-2/3 max-h-[80vh] overflow-auto relative">
+    <h2 class="text-2xl font-bold mb-2 text-gray-900">Thông tin chi tiết</h2>
+    <div id="detail-body" class="prose prose-lg text-gray-800 mb-4"></div>
+    <button class="absolute top-2 right-2 text-gray-600 hover:text-gray-800 text-2xl" onclick="closeModal('detail-modal')">&times;</button>
   </div>
+</div>
 
   <!-- Modal Duyệt -->
   <div id="approve-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 hidden z-50 flex items-center justify-center">
@@ -89,27 +94,22 @@
   </div>
 
   <script>
-    function openDetailModal(postId) {
-      console.log(`Fetching post with ID: ${postId}`); // Debug
-      fetch(`/posts/${postId}`)
-        .then(response => {
-          if (!response.ok) throw new Error('Lỗi fetch dữ liệu');
-          return response.json();
-        })
-        .then(post => {
-          console.log('Fetched post:', post); // Debug
-          const modal = document.getElementById('detail-modal');
-          const body = document.getElementById('detail-body');
-          body.innerHTML = `
-            <p><strong>Tiêu đề:</strong> ${post.name}</p>
-            <p><strong>Tác giả:</strong> ${post.writer?.fullName || 'Không xác định'}</p>
-            <p><strong>Nội dung:</strong> ${post.content}</p>
-          `;
-          modal.classList.remove('hidden');
-        })
-        .catch(err => {
-          console.error('Lỗi khi mở modal chi tiết:', err);
-        });
+    function openDetailModal(post) {
+      const modal = document.getElementById('detail-modal');
+      const body = document.getElementById('detail-body');
+      body.innerHTML = `
+        <h1 class="mb-4 text-3xl font-bold">${post.name}</h1>
+        <div class="mb-6 flex items-center text-gray-600">
+          <img src="https://placehold.co/40x40/EEE/31343C" alt="Author's Avatar" class="mr-3 h-10 w-10 rounded-full" />
+          <div>
+            <p class="text-sm font-medium">${post.writer?.fullName || 'Không xác định'}</p>
+            <p class="text-xs">Ngày xuất bản: ${new Date(post.publishedDate).toLocaleString("vi-VN")}</p>
+          </div>
+        </div>
+        <img src="${post.thumbnail.large}" alt="Article Image" class="mx-auto mb-6 w-3/4 rounded object-cover" />
+        <div class="prose prose-lg text-gray-800">${post.content}</div>
+      `;
+      modal.classList.remove('hidden');
     }
 
     function openApproveModal(postId) {
@@ -124,30 +124,28 @@
 
     function closeModal(modalId) {
       document.getElementById(modalId).classList.add('hidden');
+      if (modalId === 'reject-modal') {
+        document.getElementById('reject-reason').value = ''; // Reset reject reason
+      }
+      if (modalId === 'approve-modal') {
+        document.getElementById('publish-date').value = ''; // Reset publish date
+      }
     }
 
     function approvePost() {
-      const modal = document.getElementById('approve-modal');
-      const postId = modal.dataset.postId;
+      const postId = document.getElementById('approve-modal').dataset.postId;
       const publishDate = document.getElementById('publish-date').value;
-
-      fetch(`/posts/${postId}/approve`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ publishDate }),
-      }).then(() => closeModal('approve-modal'));
+      // Thực hiện logic duyệt bài viết ở đây
+      console.log(`Approved Post ID: ${postId}, Publish Date: ${publishDate}`);
+      closeModal('approve-modal');
     }
 
     function rejectPost() {
-      const modal = document.getElementById('reject-modal');
-      const postId = modal.dataset.postId;
+      const postId = document.getElementById('reject-modal').dataset.postId;
       const reason = document.getElementById('reject-reason').value;
-
-      fetch(`/posts/${postId}/reject`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reason }),
-      }).then(() => closeModal('reject-modal'));
+      // Thực hiện logic từ chối bài viết ở đây
+      console.log(`Rejected Post ID: ${postId}, Reason: ${reason}`);
+      closeModal('reject-modal');
     }
   </script>
 </body>
