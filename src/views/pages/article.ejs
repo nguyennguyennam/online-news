@@ -56,7 +56,7 @@
     <% if (post.premium) { %>
       <!-- Download Button for Premium Content -->
       <div class="mt-6">
-        <button onclick="await downloadPDF(`<%= post._id %>`)"
+        <button onclick="downloadPDF(`<%= post._id %>`)"
           class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
           Download as PDF
         </button>
@@ -152,14 +152,15 @@
 </main>
 
 <script>
-  async function downloadPDF(postId) {
+  function downloadPDF(postId) {
     try {
-      const response = await fetch(`/generate-pdf/${postId}`);
+      const response = fetch(`/post/generate-pdf/${postId}`);
+      console.log(response);
       if (!response.ok) {
         throw new Error("Failed to download PDF.");
       }
 
-      const blob = await response.blob();
+      const blob = response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.style.display = "none";
