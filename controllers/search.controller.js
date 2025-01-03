@@ -50,5 +50,6 @@ export const searchGetHandler = expressAsyncHandler(async (req, res) => {
     currentPage: query.data.page,
     totalPosts: count,
     totalPages: Math.ceil(count / 5),
+    userInfo: req.session?.userInfo,
   });
 });
