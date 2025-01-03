@@ -97,7 +97,7 @@ export async function checkPost(
 /**
  * Fetch all posts in "Draft" state and their categories that are managed by the specified editor.
  */
-export const posts_fetched = async (id_editor) => {
+export const fetchPosts = async (id_editor) => {
   // Step 1: Fetch user clearance from userModel
   const user = await userModel.findOne({ _id: id_editor }, { clearance: 1 });
 
@@ -138,22 +138,9 @@ export const posts_fetched = async (id_editor) => {
       $unwind: "$writer", // Ensure `writer` is no longer an array
     },
     {
-      $match: { state: "draft" }, // Match draft posts
-    },
-    {
-      $project: {
-        _id: 1,
-        name: 1,
-        writtenDate: 1,
-        "category.name": 1,
-        "category._id": 1,
-        "tags.tag": 1,
-        "writer.fullName": 1,
-        abstract: 1,
-        thumbnail: 1,
-        premium: 1,
-        content_: "$content", // Rename content to content_
-      },
+      $match: {
+        state: { $ne: "published" },
+      }, // Match draft posts
     },
   ];
 
@@ -175,7 +162,14 @@ export const posts_fetched = async (id_editor) => {
       ...basePipeline,
       {
         $match: {
-          "category._id": { $in: editor.authorizedCategories },
+          $or: [
+            {
+              "category.parent": { $in: editor.authorizedCategories },
+            },
+            {
+              "category._id": { $in: editor.authorizedCategories },
+            },
+          ],
         },
       },
     ];

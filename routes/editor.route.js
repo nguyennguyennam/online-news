@@ -1,10 +1,14 @@
 import express from "express";
 import {
-  fetched_posts_handler,
   checkPosts,
+  fetched_posts_handler,
 } from "../controllers/editor.controller.js";
-const editorRouter = express.Router();
+import { clearanceCheck } from "../controllers/middlewares.js";
 
-editorRouter.post("/", checkPosts);
-editorRouter.get("/", fetched_posts_handler);
+const editorRouter = express.Router();
+editorRouter
+  .route("/")
+  .post(clearanceCheck(3), checkPosts)
+  .get(clearanceCheck(3), fetched_posts_handler);
+
 export default editorRouter;

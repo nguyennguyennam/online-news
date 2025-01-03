@@ -6,6 +6,7 @@
     <form
       action="/register"
       method="POST"
+      id="register-form"
       class="flex w-full flex-col gap-8 rounded-md md:w-2/3 lg:w-1/2 xl:w-1/3"
     >
       <!-- Full Name -->
@@ -100,29 +101,18 @@
 <!-- Include Google reCAPTCHA Script -->
 
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-<script>
+<script defer>
   // Function to check email
-  async function checkEmail(email) {
-    try {
-      const response = await fetch("/check-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
+  async function isEmailTaken(email) {
+    const response = await fetch("/check-email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (data.exists) return true;
-      else return false;
-    } catch (error) {
-      //console.error("Error checking email:", error);
-      return false; // Treat as invalid if there's an error
-    }
+    return response.status == 404; // If 404, it's taken.
   }
 
   // Add blur event listener to email input
@@ -133,7 +123,7 @@
       const email = emailInput.value.trim();
       const existingError = document.querySelector("#email-error");
 
-      if (checkEmail(email)) {
+      if (await isEmailTaken(email)) {
         if (!existingError) {
           const errorMessage = document.createElement("p");
           errorMessage.id = "email-error";
@@ -152,7 +142,7 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    const form = document.querySelector("form");
+    const form = document.getElementById("register-form");
 
     // Set up email validation on blur
     setupEmailValidation();
@@ -173,9 +163,8 @@
       }
 
       // Validate email during form submission
-      const emailExists = await checkEmail(email);
-      alert(`Email Exists: ${emailExists}`); // Log the result for debugging
-      if (emailExists) {
+      const emailTaken = await isEmailTaken(email);
+      if (emailTaken) {
         alert("Error: Email has been used. Please try again.");
         return;
       }
