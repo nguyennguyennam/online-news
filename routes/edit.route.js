@@ -10,7 +10,7 @@ const editRouter = express.Router();
 editRouter.route("/").get(clearanceCheck(3), getEditHandler);
 editRouter
   .route("/:id")
-  .post(clearanceCheck(3), update_post)
+  .post(clearanceCheck(2), update_post)
   .get(clearanceCheck(2), getEditIdHandler);
 
 export default editRouter;
