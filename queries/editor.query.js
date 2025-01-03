@@ -152,6 +152,7 @@ export const posts_fetched = async (id_editor) => {
         abstract: 1,
         thumbnail: 1,
         premium: 1,
+        content_: "$content", // Rename content to content_
       },
     },
   ];
@@ -165,7 +166,7 @@ export const posts_fetched = async (id_editor) => {
       { user: id_editor },
       { authorizedCategories: 1 },
     );
-
+    console.log("Editor:", editor); // Debug
     if (!editor) {
       throw new Error("Editor not found");
     }
@@ -198,17 +199,45 @@ export const posts_fetched = async (id_editor) => {
  */
 
 export const CategoriesEditorHandler = async (id_editor) => {
-  console.log("Fetching categories for editor:", id_editor); // Deb
-  const categories_id = await editorModel.findOne(
-    {
-      user: id_editor,
-    },
-    { authorizedCategories: 1 },
-  );
+  try {
+    console.log("Fetching categories for editor:", id_editor); // Debug
 
-  const categories = await categoryModel.find({
-    _id: { $in: categories_id.authorizedCategories },
-  });
-  console.log("Authorized Categories:", categories); // Debug authorized categories
-  return categories;
+    // Tìm user với clearance
+    const user = await userModel.findOne({ _id: id_editor }, { clearance: 1 });
+    if (!user) {
+      throw new Error("User not found.");
+    }
+
+    // Nếu user là admin (clearance === 4), fetch tất cả categories
+    if (user.clearance === 4) {
+      const categories = await categoryModel.find({ parent: { $ne: null } });
+      console.log("Authorized Categories (Admin):", categories); // Debug
+      return categories;
+    }
+
+    // Nếu user là editor (clearance === 3), fetch categories do editor quản lý
+    if (user.clearance === 3) {
+      const editor = await editorModel.findOne(
+        { user: id_editor },
+        { authorizedCategories: 1 },
+      );
+      if (!editor) {
+        throw new Error("Editor data not found.");
+      }
+      const categories = await categoryModel.find(
+        {
+          parent: { $in: editor.authorizedCategories },
+        },
+        { name: 1, _id: 1 },
+      );
+      console.log("Authorized Categories (Editor):", categories); // Debug
+      return categories;
+    }
+
+    // Nếu clearance không hợp lệ
+    throw new Error("Invalid clearance level.");
+  } catch (error) {
+    console.error("Error fetching categories:", error.message);
+    return [];
+  }
 };

@@ -69,11 +69,23 @@
     <!-- Article Body -->
     <div class="prose prose-lg text-gray-800"><%- post.content %></div>
 
+    <% if (post.premium) { %>
+    <!-- Download Button for Premium Content -->
+    <div class="mt-6">
+      <button
+        onclick="await downloadPDF(`<%= post._id %>`)"
+        class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+      >
+        Download as PDF
+      </button>
+    </div>
+    <% } %>
+
     <!-- Tags Section -->
     <div class="mt-6">
       <div class="flex flex-wrap items-center gap-3">
         <h3 class="text-xl font-semibold">Tags:</h3>
-        <% post.tags.forEach(tag => { %>
+        <% post.tags.forEach(tag=> { %>
         <a
           href="/tag/<%= tag.tag %>"
           class="rounded-full px-3 py-1 text-sm text-blue-800 transition-colors duration-300 hover:text-blue-600"
@@ -88,12 +100,12 @@
   <!-- Comments -->
   <section class="mt-12">
     <h2 class="mb-6 text-2xl font-bold">Comments</h2>
-    <% if (comments.length === 0) { %>
+    <% if (comments.length===0) { %>
     <p class="text-center text-lg">There are no comments on this post.</p>
-    <% } else { comments.forEach(comment => { %>
+    <% } else { comments.forEach(comment=> { %>
     <div class="mt-2">
       <div class="mb-0.5 flex justify-between">
-        <span class="username"><%= comment.user.fullName %></span>
+        <span class="username"> <%= comment.user.fullName %> </span>
         <span class="time">
           <%= comment.postedDate.toLocaleString("vi-VN") %>
         </span>
@@ -141,9 +153,9 @@
   <!-- Related Articles -->
   <section class="mt-12">
     <h2 class="mb-6 text-2xl font-bold">Related Articles</h2>
-    <% if (related && related.length > 0) { %>
+    <% if (related && related.length> 0) { %>
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-      <% related.forEach(article => { %>
+      <% related.forEach(article=> { %>
       <a href="/post/<%= article._id %>" class="block">
         <article
           class="rounded bg-white p-4 shadow-md transition-shadow duration-300 hover:shadow-lg"
@@ -165,3 +177,27 @@
     </div>
   </section>
 </main>
+
+<script>
+  async function downloadPDF(postId) {
+    try {
+      const response = await fetch(`/generate-pdf/${postId}`);
+      if (!response.ok) {
+        throw new Error("Failed to download PDF.");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.style.display = "none";
+      a.href = url;
+      a.download = "article.pdf"; // Name of the downloaded file
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      alert("An error occurred while downloading the PDF.");
+    }
+  }
+</script>
