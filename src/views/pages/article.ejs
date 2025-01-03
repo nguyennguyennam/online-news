@@ -34,7 +34,7 @@
   </nav>
 
   <!-- Article Content -->
-  <article class="rounded-lg bg-white p-6 shadow-md">
+  <article class="rounded-lg bg-white p-6 shadow-md" id="article-content">
     <!-- Article Title -->
     <h1 class="mb-4 text-3xl font-bold"><%= post.name %></h1>
 
@@ -69,18 +69,6 @@
     <!-- Article Body -->
     <div class="prose prose-lg text-gray-800"><%- post.content %></div>
 
-    <% if (post.premium) { %>
-    <!-- Download Button for Premium Content -->
-    <div class="mt-6">
-      <button
-        onclick="await downloadPDF(`<%= post._id %>`)"
-        class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-      >
-        Download as PDF
-      </button>
-    </div>
-    <% } %>
-
     <!-- Tags Section -->
     <div class="mt-6">
       <div class="flex flex-wrap items-center gap-3">
@@ -97,6 +85,16 @@
     </div>
   </article>
 
+  <!-- Download Button for Premium Content -->
+  <div class="mt-6">
+    <button
+      onclick="downloadPDF()"
+      class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+    >
+      Download as PDF
+    </button>
+  </div>
+
   <!-- Comments -->
   <section class="mt-12">
     <h2 class="mb-6 text-2xl font-bold">Comments</h2>
@@ -111,35 +109,18 @@
         </span>
       </div>
       <div class="comment-body"><%= comment.content %></div>
-
-      <!-- Comment Actions -->
-      <div class="comment-actions mt-2 flex space-x-4">
-        <button
-          class="flex items-center rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        >
-          <i class="fas fa-reply mr-2"></i> Reply
-        </button>
-        <button
-          class="flex items-center rounded-lg bg-green-500 px-4 py-2 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400"
-        >
-          <i class="fas fa-thumbs-up mr-2"></i> Like
-        </button>
-        <button
-          class="flex items-center rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
-        >
-          <i class="fas fa-thumbs-down mr-2"></i> Dislike
-        </button>
-      </div>
     </div>
     <% }) %> <% } %>
 
     <!-- Write a Comment Form -->
+    <% if (userInfo) { %>
     <h3 class="my-4 text-xl font-semibold">Write a comment</h3>
-    <form class="comment-form">
+    <form class="comment-form" action="/post/<%= post.slug %>" method="POST">
       <textarea
         class="w-full rounded border border-gray-300 p-2"
         placeholder="Enter your comment..."
         rows="4"
+        name="content"
       ></textarea>
       <button
         type="submit"
@@ -148,6 +129,9 @@
         Post Comment
       </button>
     </form>
+    <% } else { %>
+    <p class="my-4 text-center">Log in to comment</p>
+    <% } %>
   </section>
 
   <!-- Related Articles -->
@@ -178,26 +162,29 @@
   </section>
 </main>
 
-<script>
-  async function downloadPDF(postId) {
-    try {
-      const response = await fetch(`/generate-pdf/${postId}`);
-      if (!response.ok) {
-        throw new Error("Failed to download PDF.");
-      }
+<script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-html2canvas@latest/dist/jspdf-html2canvas.min.js"></script>
 
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.style.display = "none";
-      a.href = url;
-      a.download = "article.pdf"; // Name of the downloaded file
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error downloading PDF:", error);
-      alert("An error occurred while downloading the PDF.");
-    }
+<script defer>
+  async function downloadPDF() {
+    html2PDF(document.getElementById("article-content"), {
+      html2canvas: {
+        useCORS: true,
+      },
+      jsPDF: {
+        format: "letter",
+      },
+      autoResize: true,
+      imageType: "image/jpeg",
+      imageQuality: 1,
+      margin: {
+        top: 32,
+        right: 16,
+        bottom: 32,
+        left: 16,
+      },
+      output: "article-<%= post.slug %>.pdf",
+    });
   }
 </script>

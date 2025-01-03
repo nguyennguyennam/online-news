@@ -1,7 +1,7 @@
 import expressAsyncHandler from "express-async-handler";
 import { z } from "zod";
 import { getAllCategories } from "../queries/categories.query.js";
-import { getCommentsForPost } from "../queries/comments.query.js";
+import { getCommentsForPost, postComment } from "../queries/comments.query.js";
 import { postImage } from "../queries/image.query.js";
 import {
   createPost,
@@ -9,9 +9,9 @@ import {
   getRelatedPosts,
   increaseView,
 } from "../queries/posts.query.js";
+import { getTagsArray } from "../queries/tag.query.js";
 import { canViewPremium, getClearanceLevel } from "../queries/users.query.js";
 import { modified_post } from "../queries/writer.query.js";
-import { getTagsArray } from "../queries/tag.query.js";
 /**
  * GET /post: Displays the WYSIWYG editor. (?)
  *
@@ -274,3 +274,13 @@ export const update_post = async (req, res) => {
   );
   res.redirect("/posts");
 };
+
+export const postCommentHandler = expressAsyncHandler(async (req, res) => {
+  const { content } = req.body;
+  const user = req.session?.userInfo?.id;
+  const postSlug = req.params.id;
+  const post = await getPost(postSlug);
+
+  await postComment(post._id, user, content);
+  res.redirect(`/post/${postSlug}`);
+});

@@ -27,3 +27,12 @@ export async function getCommentsForPost(id) {
     .match({ "post._id": new mongoose.Types.ObjectId(id) })
     .sort({ postedDate: -1 });
 }
+
+export async function postComment(post, user, content) {
+  return await commentModel.create({
+    post,
+    user,
+    postedDate: Date.now(),
+    content,
+  });
+}

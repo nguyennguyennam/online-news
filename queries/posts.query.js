@@ -228,6 +228,8 @@ export async function getAllAdminPosts() {
  */
 export async function getPost(id) {
   const post = await Post.findOne({ slug: id });
+  if (post == null) return post;
+
   await post.populate("category");
   if (post.category?.parent) await post.populate("category.parent");
   await post.populate("tags");

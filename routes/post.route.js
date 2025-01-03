@@ -1,36 +1,16 @@
 import express from "express";
-import { PDFDocument } from "pdf-lib";
 import fileUpload from "express-fileupload";
 import { upload } from "../config/multer.js";
+import { clearanceCheck } from "../controllers/middlewares.js";
 import {
   getPostHandler,
   getPostIdHandler,
+  postCommentHandler,
   postImageHandler,
   postPostHandler,
 } from "../controllers/post.controller.js";
 
 const router = express.Router();
-
-router.get("/generate-pdf/:postId", async (req, res) => {
-  const postId = req.params.postId;
-  const post = await PostModel.findById(postId);
-
-  if (!post || post.state !== "premium") {
-    return res.status(404).send("Post not found or not premium.");
-  }
-
-  const pdfDoc = await PDFDocument.create();
-  const page = pdfDoc.addPage();
-  page.drawText(post.content, { x: 50, y: 700, size: 12 });
-
-  const pdfBytes = await pdfDoc.save();
-  res.setHeader("Content-Type", "application/pdf");
-  res.setHeader(
-    "Content-Disposition",
-    `attachment; filename=article-${postId}.pdf`,
-  );
-  res.send(pdfBytes);
-});
 
 router
   .route("/")
@@ -53,6 +33,10 @@ router.route("/image").post(
   }),
   postImageHandler,
 );
-router.route("/:id").get(getPostIdHandler);
+
+router
+  .route("/:id")
+  .get(getPostIdHandler)
+  .post(clearanceCheck(1), postCommentHandler);
 
 export default router;
