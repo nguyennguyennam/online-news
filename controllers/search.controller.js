@@ -2,7 +2,6 @@ import expressAsyncHandler from "express-async-handler";
 import { z } from "zod";
 import { getAllCategories } from "../queries/categories.query.js";
 import { getAllPosts } from "../queries/posts.query.js";
-import Post from "../model/post.model.js";
 
 /**
  * GET /search: Retrieves all posts.
@@ -18,8 +17,6 @@ export const searchGetHandler = expressAsyncHandler(async (req, res) => {
   const schema = z.object({
     query: z.string().optional(),
     page: z.coerce.number().positive().default(1),
-    cat: z.string().optional(),
-    tag: z.string().optional(),
   });
   const query = schema.safeParse(req.query);
 
@@ -33,37 +30,25 @@ export const searchGetHandler = expressAsyncHandler(async (req, res) => {
     return;
   }
 
-  const postsPerPage = 9; // Số bài viết mỗi trang
-
-  // Đếm tổng số bài viết thỏa mãn điều kiện
-  const totalPosts = await Post.countDocuments({
-    state: "published",
-    ...(query.data.cat ? { "category.name": query.data.cat } : {}),
-    ...(query.data.tag ? { tags: { $elemMatch: { tag: query.data.tag } } } : {}),
-    ...(query.data.query ? { $text: { $search: query.data.query } } : {}),
+  const queryResult = await getAllPosts({
+    userId: req.session.userInfo?.id,
+    query: query.data.query,
+    postsPerPage: 5,
+    page: query.data.page,
   });
-
-  const totalPages = Math.ceil(totalPosts / postsPerPage);
-
-  // How to get the UserId?
-  const page = query.data.page || 1; 
-  const result = await getAllPosts({ ...query.data, page: page, postsPerPage: postsPerPage });
   const categories = await getAllCategories();
-  // console.log({
-  //   query: query.data.query,
-  //   posts: result,
-  //   totalPosts: totalPosts,
-  // });
+  const count = queryResult[0].count[0].count;
+
   res.render("layouts/main-layout", {
     title: "All posts",
     description:
       "A curated list of all posts written by talented journalists of The Cipher.",
     content: "../pages/search",
     searchQuery: query.data.query,
-    posts: result,
+    posts: queryResult[0].results,
     categories,
-    currentPage: page,
-    totalPosts,
-    totalPages,
+    currentPage: query.data.page,
+    totalPosts: count,
+    totalPages: Math.ceil(count / 5),
   });
 });

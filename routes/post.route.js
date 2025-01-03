@@ -62,7 +62,10 @@ router.get("/generate-pdf/:postId", async (req, res) => {
 
   const pdfBytes = await pdfDoc.save();
   res.setHeader("Content-Type", "application/pdf");
-  res.setHeader("Content-Disposition", `attachment; filename=article-${postId}.pdf`);
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename=article-${postId}.pdf`,
+  );
   res.send(pdfBytes);
 } catch (error) {
   console.error("Error generating PDF:", error);

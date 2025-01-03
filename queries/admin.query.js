@@ -1,6 +1,6 @@
+import categoryModel from "../model/category.model.js";
 import editorModel from "../model/editor.model.js";
 import userModel from "../model/user.model.js";
-import categoryModel from "../model/category.model.js";
 // Manage users
 
 /**
@@ -93,20 +93,18 @@ export async function expire_subs() {
  * This function updates the 'subscription' field of the specified subscriber with the current date,
  * effectively extending their subscription.
  *
- * @param {string} id_subs - The ID of the subscriber whose subscription is being extended.
+ * @param {string} id - The ID of the subscriber whose subscription is being extended.
  * @returns {Object} The updated subscriber document.
  */
-export async function subscriber_extend(id_subs) {
-  const current_date = Date.now(); // Get current date in milliseconds
+export async function extendSubscription(id) {
+  const currentDate = Date.now(); // Get current date in milliseconds
 
-  // Update the subscription field to the current date
-  return await userModel.findByIdAndUpdate(
-    id_subs,
-    {
-      subscription: current_date + 7*24*60*60*1000, // Set the subscription date to current date
-    },
-    { new: true }, // Return the updated subscriber document
-  );
+  const user = await userModel.findById(id);
+  if (user) {
+    const current = user.subscription || currentDate;
+    user.subscription = new Date(current.getTime() + 7 * 24 * 60 * 60 * 1000);
+    await user.save();
+  }
 }
 
 /**

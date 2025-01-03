@@ -239,5 +239,3 @@ export async function saveNewPasswordController(req, res) {
     res.status(500).render("404", { message: "Failed to reset password." });
   }
 }
-
-

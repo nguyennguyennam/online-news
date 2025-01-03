@@ -1,9 +1,40 @@
+import mongoose from "mongoose";
+import categoryModel from "../model/category.model.js";
 import editorModel from "../model/editor.model.js";
 import postModel from "../model/post.model.js";
-import userModel from "../model/user.model.js";
-import categoryModel from "../model/category.model.js";
-import mongoose from "mongoose";
 import tagModel from "../model/tag.model.js";
+import userModel from "../model/user.model.js";
+
+/**
+ * Retrieves the editor profile for a user.
+ *
+ * @param {string} userId
+ * @returns {Promise<any>}
+ */
+export async function getOrCreateEditorProfile(userId) {
+  let profile = await editorModel.findOne({ user: userId });
+  if (profile == null) profile = await editorModel.create({ user: userId });
+  return profile;
+}
+
+/**
+ * Gets authorized categories of a user.
+ *
+ * @param {string} user
+ * @returns
+ */
+export async function getAuthorizedCategories(user) {
+  return editorModel
+    .aggregate()
+    .match({ user: new mongoose.Types.ObjectId(user) })
+    .lookup({
+      from: "categories",
+      foreignField: "_id",
+      localField: "authorizedCategories",
+      as: "authorizedCategories",
+    });
+}
+
 /**
  * Handles the approval or denial of a post.
  *
@@ -163,7 +194,6 @@ export const posts_fetched = async (id_editor) => {
   return posts;
 };
 
-
 /**
  * Fetch all categories managed by the specified editor.
  */
@@ -180,21 +210,26 @@ export const CategoriesEditorHandler = async (id_editor) => {
 
     // Nếu user là admin (clearance === 4), fetch tất cả categories
     if (user.clearance === 4) {
-      const categories = await categoryModel.find({parent:{$ne:null}});
+      const categories = await categoryModel.find({ parent: { $ne: null } });
       console.log("Authorized Categories (Admin):", categories); // Debug
       return categories;
     }
-    
+
     // Nếu user là editor (clearance === 3), fetch categories do editor quản lý
     if (user.clearance === 3) {
-      const editor = await editorModel.findOne({ user: id_editor }, { authorizedCategories: 1 });
+      const editor = await editorModel.findOne(
+        { user: id_editor },
+        { authorizedCategories: 1 },
+      );
       if (!editor) {
         throw new Error("Editor data not found.");
       }
-      const categories = await categoryModel.find({
-        parent: { $in: editor.authorizedCategories },
-      },
-      { name: 1, _id: 1 });
+      const categories = await categoryModel.find(
+        {
+          parent: { $in: editor.authorizedCategories },
+        },
+        { name: 1, _id: 1 },
+      );
       console.log("Authorized Categories (Editor):", categories); // Debug
       return categories;
     }
@@ -206,4 +241,3 @@ export const CategoriesEditorHandler = async (id_editor) => {
     return [];
   }
 };
-

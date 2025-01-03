@@ -12,7 +12,12 @@ export async function getOrCreate(tag) {
   return await tagModel.create({ tag: slug });
 }
 
-export async function get_all_tags() {
+/**
+ * Gets all tags.
+ *
+ * @returns {Promise<Array<any>>}
+ */
+export async function getAllTags() {
   return await tagModel.find();
 }
 
