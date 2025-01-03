@@ -32,7 +32,7 @@ mainRouter.get(
   clearanceCheck(1),
   expressAsyncHandler(async (req, res) => {
     await subscribe(req.session.userInfo.id);
-    req.session?.userInfo?.requestingSubscription = true;
+    req.session.userInfo.requestingSubscription = true;
     res.redirect("/profile");
   }),
 );
