@@ -49,7 +49,7 @@
                         writer: { fullName: '<%= post.writer.fullName %>' },
                         publishedDate: '<%= post.publishedDate %>',
                         thumbnail: { large: '<%= post.thumbnail.large %>' },
-                        content: '<%= post.content %>'
+                        content: `<%= post.content_ %>`
                       })">Chi tiết</button>
                     <button class="bg-green-500 hover:bg-green-600 text-white w-32 px-4 py-2 rounded-lg"
                       onclick="openApproveModal('<%= post._id %>', '<%= post.category.name %>', '<%= post.tags.map(tag => tag.tag).join(', ') %>', '<%= post.publishedDate %>')">Duyệt</button>
@@ -89,7 +89,7 @@
       <div>
         <label for="publish-category" class="block text-sm font-medium text-gray-700">Chuyên mục:</label>
         <select id="publish-category" name="category" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <% categories.forEach(category => { %>
+          <% categories_.forEach(category => { %>
             <option value="<%= category._id %>"><%= category.name %></option>
           <% }) %>
         </select>
@@ -146,7 +146,7 @@
           </div>
         </div>
         <img src="${post.thumbnail.large}" alt="Article Image" class="mx-auto mb-6 w-3/4 rounded object-cover" />
-        <div class="prose prose-lg text-gray-800">${post.content}</div>
+        <div class="prose prose-lg text-gray-800">${content}</div>
       `;
       modal.classList.remove('hidden');
     }

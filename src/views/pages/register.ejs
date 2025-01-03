@@ -34,9 +34,11 @@
       </div>
 
       <!-- CAPTCHA -->
+      <!-- CAPTCHA -->
       <div class="flex w-full flex-col items-center">
-        <div class="g-recaptcha" data-sitekey="6LfS-KsqAAAAAGqrIEG6qDj0bYhoq_9tgizRJXyR"></div>
+        <div class="g-recaptcha" data-sitekey="6LfKt6wqAAAAAPSP9Pm2x33Voc3da_xOaQhFHHbC"></div>
       </div>
+
 
       <!-- Submit Button -->
       <button type="submit"
@@ -54,78 +56,94 @@
 
 <!-- Include Google reCAPTCHA Script -->
 
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const form = document.querySelector("form");
+  // Function to check email
+  async function checkEmail(email) {
+    try {
+      const response = await fetch("/check-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.exists) 
+        return true;
+      else 
+        return false;
+    } catch (error) {
+      //console.error("Error checking email:", error);
+      return false; // Treat as invalid if there's an error
+    }
+  }
+
+  // Add blur event listener to email input
+  function setupEmailValidation() {
     const emailInput = document.querySelector("#email");
-    let canSubmit = true; // Biến kiểm soát submit
 
     emailInput.addEventListener("blur", async function () {
       const email = emailInput.value.trim();
-      try {
-        const response = await fetch("/check-email", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        });
+      const existingError = document.querySelector("#email-error");
 
-        const data = await response.json();
-        const existingError = document.querySelector("#email-error");
-
-        if (data.exists) {
-          canSubmit = false; // Không cho phép submit
-          if (!existingError) {
-            const errorMessage = document.createElement("p");
-            errorMessage.id = "email-error";
-            errorMessage.textContent = "Email has been used.";
-            errorMessage.classList.add("text-red-500", "text-sm", "mt-1");
-            emailInput.parentElement.appendChild(errorMessage);
-          }
-          emailInput.classList.add("border-red-500");
-        } else {
-          canSubmit = true; // Cho phép submit
-          if (existingError) {
-            existingError.remove(); // Xóa thông báo lỗi nếu tồn tại
-          }
-          emailInput.classList.remove("border-red-500");
+      if (checkEmail(email)) {
+        if (!existingError) {
+          const errorMessage = document.createElement("p");
+          errorMessage.id = "email-error";
+          errorMessage.textContent = "Email has been used.";
+          errorMessage.classList.add("text-red-500", "text-sm", "mt-1");
+          emailInput.parentElement.appendChild(errorMessage);
         }
-      } catch (error) {
-        console.error("Error checking email:", error);
-        canSubmit = false;
+        emailInput.classList.add("border-red-500");
+      } else {
+        if (existingError) {
+          existingError.remove();
+        }
+        emailInput.classList.remove("border-red-500");
       }
     });
+  }
 
-    // Xử lý submit form
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector("form");
 
-    form.addEventListener("submit", function () {
-      const confirmPassword = document
-        .querySelector("#confirmPassword")
-        .value.trim();
+    // Set up email validation on blur
+    setupEmailValidation();
+
+    form.onsubmit = async function (event) {
+      event.preventDefault();
+
+      const confirmPassword = document.querySelector("#confirmPassword").value.trim();
       const pass = document.querySelector("#password").value.trim();
-      if (!canSubmit || pass !== confirmPassword) {
-        event.preventDefault();
-        alert(
-          "Error: Passwords do not match or existing email.Please try again",
-        );
+      const email = document.querySelector("#email").value.trim();
+
+      // Check if passwords match
+      if (pass !== confirmPassword) {
+        alert("Error: Passwords do not match. Please try again.");
         return;
       }
 
-      // Check if email is valid
-      if (!canSubmit) {
-        alert('Error: Email has been used.');
+      // Validate email during form submission
+      const emailExists = await checkEmail(email);
+      alert(`Email Exists: ${emailExists}`); // Log the result for debugging
+      if (emailExists) {
+        alert("Error: Email has been used. Please try again.");
         return;
       }
 
-      // Execute reCAPTCHA and verify
       const recaptchaResponse = grecaptcha.getResponse();
       if (!recaptchaResponse) {
-        event.preventDefault();
-        alert("Vui lòng xác nhận reCAPTCHA.");
+        alert("Please verify the reCAPTCHA.");
         return;
       }
 
+      // Validate reCAPTCHA server-side
       try {
         const captchaValidation = await fetch("/validate-captcha", {
           method: "POST",
@@ -135,16 +153,21 @@
           body: JSON.stringify({ recaptchaResponse }),
         });
 
+        if (!captchaValidation.ok) {
+          throw new Error(`HTTP error! Status: ${captchaValidation.status}`);
+        }
+
         const captchaResult = await captchaValidation.json();
         if (!captchaResult.success) {
-          event.preventDefault();
-          alert("Xác thực reCAPTCHA thất bại. Vui lòng thử lại.");
+          alert("Failed to verify reCAPTCHA. Please try again.");
+        } else {
+          form.submit(); // Submit the form
         }
       } catch (error) {
-        event.preventDefault();
-        console.error("Lỗi khi xác thực reCAPTCHA:", error);
-        alert("Đã xảy ra lỗi trong quá trình xác thực reCAPTCHA. Vui lòng thử lại.");
+        console.error("Error validating reCAPTCHA:", error);
+        alert("Error occurred while validating reCAPTCHA. Please try again.");
       }
-    });
+    };
   });
 </script>
+

@@ -17,23 +17,23 @@ import {
 
 const router = express.Router();
 router.post("/validate-captcha", async (req, res) => {
+  const secretKey = "6LfKt6wqAAAAAGP5tZZbFMrMSFHLNnchW4GbJQct";
   const { recaptchaResponse } = req.body;
-  console.log(recaptchaResponse);
-  const secretKey = "6LfS-KsqAAAAAKyZ_edYvKKQpS5iv83-iv1ToqZz";
 
   try {
-    const response = await fetch(`https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${recaptchaResponse}`, {
+    const response = await fetch("https://www.google.com/recaptcha/api/siteverify", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: `secret=${secretKey}&response=${recaptchaResponse}`,
     });
+
     const data = await response.json();
-    if (!data.success) {
-      console.error("Xác thực reCAPTCHA thất bại:", data["error-codes"]);
-      return res.json({ success: false, error: "Xác thực reCAPTCHA thất bại. Vui lòng thử lại." });
-    }
-    res.json({ success: true });
+    res.json(data);
   } catch (error) {
-    console.error("Lỗi khi xác thực reCAPTCHA:", error);
-    res.status(500).json({ success: false, error: "Đã xảy ra lỗi trong quá trình xác thực reCAPTCHA." });
+    console.error("Error validating reCAPTCHA:", error);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 });
 

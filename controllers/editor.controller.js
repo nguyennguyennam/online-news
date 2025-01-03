@@ -1,4 +1,5 @@
 import { posts_fetched, CategoriesEditorHandler, checkPost } from "../queries/editor.query.js";
+//import { getUser } from "../queries/users.query.js";
 
 export const fetched_posts_handler = async (req, res) => {
   const id_editor = req.session.userInfo.id;
@@ -6,14 +7,15 @@ export const fetched_posts_handler = async (req, res) => {
     posts_fetched(id_editor),
     CategoriesEditorHandler(id_editor),
   ])
-  console.log(category_list);
+  console.log("posts:", posts);
   res.render("layouts/main-layout", {
     title: "Posts fetched",
     description: "Posts fetched by the editor",
     content: "../pages/editor-post",
     userInfo: req.session?.userInfo,
     posts: posts,
-    categories: category_list,
+    categories_: category_list,
+    categories: []
   });
 };
 
