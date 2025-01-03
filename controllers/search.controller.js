@@ -37,7 +37,7 @@ export const searchGetHandler = expressAsyncHandler(async (req, res) => {
     page: query.data.page,
   });
   const categories = await getAllCategories();
-  const count = queryResult[0].count[0].count;
+  const count = queryResult[0]?.count?.[0]?.count;
 
   res.render("layouts/main-layout", {
     title: "All posts",

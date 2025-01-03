@@ -97,7 +97,7 @@ export async function expire_subs() {
  * @returns {Object} The updated subscriber document.
  */
 export async function extendSubscription(id) {
-  const currentDate = Date.now(); // Get current date in milliseconds
+  const currentDate = new Date(); // Get current date in milliseconds
 
   const user = await userModel.findById(id);
   if (user) {
