@@ -39,7 +39,7 @@
     <h1 class="mb-4 text-3xl font-bold"><%= post.name %></h1>
 
     <p class="my-2 text-sm">
-      <%= post.views %> view<%= post.views == 1 ? "" : "s" %>
+      <%= post.views + 1 %> view<%= post.views + 1 == 1 ? "" : "s" %>
     </p>
 
     <!-- Author Information and Publish Date -->

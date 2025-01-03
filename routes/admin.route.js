@@ -6,6 +6,7 @@ import {
   createUserHandler,
   deleteCategoryHandler,
   deleteEditorGrantHandler,
+  deletePostHandler,
   deleteTagHandler,
   deleteUserHandler,
   editTagHandler,
@@ -18,6 +19,7 @@ import {
   getAdminUsersHandler,
   getEditorGrantsHandler,
   grantEditorHandler,
+  stateChangeHandler,
   updateCategoryHandler,
 } from "../controllers/admin.controller.js";
 import { clearanceCheck } from "../controllers/middlewares.js";
@@ -57,7 +59,12 @@ adminRouter
   .route("/users/extend")
   .post(clearanceCheck(4), extendSubscriberHandler);
 
-adminRouter.route("/posts").get(clearanceCheck(4), getAdminPostsHandler);
+adminRouter
+  .route("/posts")
+  .get(clearanceCheck(4), getAdminPostsHandler)
+  .put(clearanceCheck(4), stateChangeHandler)
+  .delete(clearanceCheck(4), deletePostHandler);
+
 adminRouter.route("/").get(clearanceCheck(4), getAdminHandler);
 
 export default adminRouter;

@@ -331,7 +331,7 @@
         authDiv.innerHTML += `
         <div class="flex flex-row px-2 py-1 gap-2 items-center rounded-full bg-sky-400">
           <span class="font-semibold">${authCat.name}</span>
-          <button onclick="ungrantCategory(${authCat._id})" aria-label="Un-grant category">
+          <button onclick="ungrantCategory('${authCat._id}')" aria-label="Un-grant category">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="size-3"><path d="M480-405.91 293.04-218.96Q278.09-204 256-204t-37.04-14.96Q204-233.91 204-256t14.96-37.04L405.91-480 218.96-666.96Q204-681.91 204-704t14.96-37.04Q233.91-756 256-756t37.04 14.96L480-554.09l186.96-186.95Q681.91-756 704-756t37.04 14.96Q756-726.09 756-704t-14.96 37.04L554.09-480l186.95 186.96Q756-278.09 756-256t-14.96 37.04Q726.09-204 704-204t-37.04-14.96L480-405.91Z"/></svg>
           </button>
         </div>
@@ -412,7 +412,6 @@
     async function grantCategory() {
       closeEditDialog();
       const el = document.getElementById("edit-auth-select");
-      console.log(el.value);
       if (!el.value) return;
 
       openProcessingDialog();
@@ -446,7 +445,7 @@
       openProcessingDialog();
       const res = await fetch("/admin/users/grant", {
         method: "DELETE",
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id: editingId, category: id }),
         credentials: "include",
         headers: { "Content-Type": "application/json" },
       });

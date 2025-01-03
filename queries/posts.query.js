@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import slugify from "slugify";
-import Comment from "../model/comment.model.js";
 import Post from "../model/post.model.js";
 import { hasSubscription } from "./users.query.js";
 
@@ -12,34 +11,29 @@ import { getOrCreate } from "./tag.query.js";
 
 /**
  * Retrieves a list of 4 posts that are "featured". Featured posts
- * are considered posts that have the most comments in the past week.
+ * are considered posts that have the most views posted within the last week.
  */
 export async function getFeaturedPosts() {
-  const lastWeek = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000);
-  return await Comment.aggregate()
-    .match({ postedDate: { $gte: lastWeek } })
-    .group({
-      _id: "$post",
-      count: { $count: {} },
+  const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  return await Post.aggregate()
+    .match({
+      $expr: {
+        $and: [
+          { $gte: ["$publishedDate", lastWeek] },
+          { $lte: ["$publishedDate", new Date()] },
+        ],
+      },
+      state: "published",
     })
-    .lookup({
-      from: "posts",
-      localField: "_id",
-      foreignField: "_id",
-      as: "post",
-    })
-    .unwind("$post")
-    .match({ "post.state": "published" })
-    .sort({ count: -1 })
+    .sort({ views: -1 })
     .limit(4)
     .lookup({
       from: "categories",
-      localField: "post.category",
+      localField: "category",
       foreignField: "_id",
-      as: "post.category",
+      as: "category",
     })
-    .unwind("$post.category")
-    .replaceRoot("$post");
+    .unwind("$category");
 }
 
 /**
@@ -47,7 +41,12 @@ export async function getFeaturedPosts() {
  */
 export async function getMostViewedPosts() {
   return await Post.aggregate()
-    .match({ state: "published" })
+    .match({
+      $expr: {
+        $lte: ["$publishedDate", new Date()],
+      },
+      state: "published",
+    })
     .sort({ views: -1 })
     .lookup({
       from: "categories",
@@ -70,7 +69,12 @@ export async function getMostViewedPosts() {
  */
 export async function getNewestPosts() {
   return await Post.aggregate()
-    .match({ state: "published" })
+    .match({
+      $expr: {
+        $lte: ["$publishedDate", new Date()],
+      },
+      state: "published",
+    })
     .sort({ publishedDate: -1 })
     .lookup({
       from: "categories",
@@ -93,7 +97,12 @@ export async function getNewestPosts() {
  */
 export async function getNewestPostsFromEachCategory() {
   return Post.aggregate()
-    .match({ state: "published" })
+    .match({
+      $expr: {
+        $lte: ["$publishedDate", new Date()],
+      },
+      state: "published",
+    })
     .sort({ publishedDate: -1 })
     .lookup({
       from: "categories",
@@ -169,7 +178,12 @@ export async function getAllPosts({ userId, page, query, postsPerPage }) {
       foreignField: "_id",
       as: "tags",
     })
-    .match({ state: "published" })
+    .match({
+      state: "published",
+      $expr: {
+        $lte: ["$publishedDate", new Date()],
+      },
+    })
     .facet({
       count: [{ $count: "count" }],
       results: [
@@ -187,10 +201,24 @@ export async function getAllPosts({ userId, page, query, postsPerPage }) {
 /**
  * Retrieves all posts in database for admin.
  *
- * @returns {Post} // all post in database
+ * @returns {Promise<any>} // all post in database
  */
 export async function getAllAdminPosts() {
-  return await Post.find({});
+  return await Post.aggregate()
+    .lookup({
+      from: "categories",
+      foreignField: "_id",
+      localField: "category",
+      as: "category",
+    })
+    .unwind("$category")
+    .lookup({
+      from: "tags",
+      foreignField: "_id",
+      localField: "tags",
+      as: "tags",
+    })
+    .sort({ premium: -1 });
 }
 
 /**
@@ -225,6 +253,9 @@ export async function getRelatedPosts(id) {
     .match({
       _id: { $nin: [new mongoose.Types.ObjectId(id)] },
       state: "published",
+      $expr: {
+        $lte: ["$publishedDate", new Date()],
+      },
     })
     .match({
       $or: [
@@ -264,7 +295,12 @@ export async function deletePostsUnderCategory(catId) {
  */
 export async function getPostsUnderCategory(catId, recurse = false) {
   return Post.aggregate()
-    .match({ state: "published" })
+    .match({
+      $expr: {
+        $lte: ["$publishedDate", new Date()],
+      },
+      state: "published",
+    })
     .lookup({
       from: "categories",
       foreignField: "_id",
@@ -305,7 +341,12 @@ export async function getPostsUnderCategory(catId, recurse = false) {
 export async function getPostsTagged(tag) {
   tag = slugify(tag, { lower: true, strict: true, trim: true });
   return await Post.aggregate()
-    .match({ state: "published" })
+    .match({
+      state: "published",
+      $expr: {
+        $lte: ["$publishedDate", new Date()],
+      },
+    })
     .lookup({
       from: "tags",
       foreignField: "_id",
@@ -339,6 +380,15 @@ export async function getPostsBy(writerId) {
       as: "tags",
     })
     .sort({ writtenDate: -1 });
+}
+
+/**
+ * Deletes a post with the ID.
+ *
+ * @param {string} id
+ */
+export async function deletePost(id) {
+  return await Post.findOneAndDelete({ _id: id });
 }
 
 /**

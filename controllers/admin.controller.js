@@ -14,7 +14,11 @@ import {
   getAuthorizedCategories,
   getOrCreateEditorProfile,
 } from "../queries/editor.query.js";
-import { getAllAdminPosts } from "../queries/posts.query.js";
+import {
+  deletePost,
+  getAllAdminPosts,
+  getPostById,
+} from "../queries/posts.query.js";
 import {
   addTag,
   deleteTag,
@@ -25,7 +29,6 @@ import {
 import {
   createUser,
   deleteUser,
-  getAllUsers,
   getAllUsersAdmin,
   getUser,
   getUserByEmail,
@@ -93,19 +96,12 @@ export const getAdminUsersHandler = expressAsyncHandler(async (req, res) => {
   });
 });
 
-export const getAdminUsersEditHandler = expressAsyncHandler(
-  async (req, res) => {
-    const users = await getAllUsers();
-    res.render("layouts/main-layout", {
-      title: "All Users",
-      description: "Administrative tools for editing users",
-      content: "../pages/admin-edit-user",
-      AdminEditUsers: users,
-      userInfo: req.session?.userInfo,
-    });
-  },
-);
-
+/**
+ * GET /admin/posts: View all posts.
+ *
+ * - Clearance Level: 4
+ * - Object Class: Safe
+ */
 export const getAdminPostsHandler = expressAsyncHandler(async (req, res) => {
   const posts = await getAllAdminPosts();
   res.render("layouts/main-layout", {
@@ -524,10 +520,11 @@ export const deleteEditorGrantHandler = expressAsyncHandler(
     }
 
     const editorProfile = await getOrCreateEditorProfile(id);
-    const current = new Set(editorProfile.authorizedCategories);
-    current.delete(cat._id);
-    editorProfile.authorizedCategories = [...current];
+    editorProfile.authorizedCategories = [
+      ...editorProfile.authorizedCategories.filter((n) => n && n != cat.id),
+    ];
     await editorProfile.save();
+
     res.status(200).json({});
   },
 );
@@ -540,7 +537,7 @@ export const deleteEditorGrantHandler = expressAsyncHandler(
  */
 export const deleteUserHandler = expressAsyncHandler(async (req, res) => {
   const { id } = req.body;
-  const user = await deleteUser(id);
+  await deleteUser(id);
   res.status(200).json({});
 });
 
@@ -554,4 +551,50 @@ export const extendSubscriberHandler = expressAsyncHandler(async (req, res) => {
   const { id } = req.body;
   await extendSubscription(id);
   res.status(200).json({});
+});
+
+/**
+ * PUT /admin/posts: Change a post's state
+ *
+ * - Object Class: Euclid
+ * - Clearance Level: 4
+ */
+export const stateChangeHandler = expressAsyncHandler(async (req, res) => {
+  const { id, state, deniedReason, publishedDate } = req.body;
+  const post = await getPostById(id);
+  if (post == null) {
+    res.status(404).json({});
+    return;
+  }
+
+  try {
+    post.state = state;
+    if (post.state == "denied") {
+      post.deniedReason = deniedReason;
+    } else if (post.state == "published") {
+      post.publishedDate = publishedDate;
+    }
+
+    await post.save();
+    res.status(200).json({});
+  } catch {
+    res.status(400).json({});
+  }
+});
+
+/**
+ * DELETE /admin/posts: Delete a post.
+ *
+ * - Object Class: Euclid
+ * - Clearance Level: 4
+ */
+export const deletePostHandler = expressAsyncHandler(async (req, res) => {
+  const { id } = req.body;
+  const post = await deletePost(id);
+
+  if (!post) {
+    res.status(404).json({});
+  } else {
+    res.status(200).json({});
+  }
 });
