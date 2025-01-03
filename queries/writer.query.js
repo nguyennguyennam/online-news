@@ -1,7 +1,4 @@
 import postModel from "../model/post.model.js";
-import mongoose from "mongoose";
-import tagModel from "../model/tag.model.js";
-import categoryModel from "../model/category.model.js";
 
 export async function savePost(
   writerId,
@@ -109,6 +106,7 @@ export async function modified_post(
       category: category,
       tags: tags,
       premium: premium,
+      state: "draft",
     },
     { new: true },
   );
