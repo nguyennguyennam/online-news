@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema({
     min: 1,
     max: 4,
   },
+  requestingSubscription: Boolean,
   subscription: Date,
   penName: String, // This does nothing if they have clearance = 1.
 });

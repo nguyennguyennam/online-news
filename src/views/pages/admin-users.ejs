@@ -549,6 +549,8 @@
       </p>
       <% } else { %>
       <p>Subscription: <em>Expired</em></p>
+      <% } %> <% if (user.requestingSubscription) { %>
+      <p class="text-emerald-600">User is awaiting subscription approval</p>
       <% } %>
     </div>
 

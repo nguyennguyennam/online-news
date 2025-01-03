@@ -116,3 +116,7 @@ export async function getAllUsers() {
     },
   ]);
 }
+
+export async function subscribe(id) {
+  await User.updateOne({ _id: id }, { requestingSubscription: true });
+}

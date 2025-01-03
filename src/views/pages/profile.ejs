@@ -273,13 +273,22 @@
               Your subscription has expired or is inactive.
             </p>
           </div>
+
+          <% if (userInfo.requestingSubscription) { %>
+          <button
+            disabled
+            class="inline-block rounded-md bg-blue-500 px-6 py-2 text-white opacity-50 transition"
+          >
+            Already requesting
+          </button>
+          <% } else { %>
           <a
-            href="/subscription/plans"
+            href="/subscribe"
             class="inline-block rounded-md bg-blue-500 px-6 py-2 text-white transition hover:bg-blue-600"
           >
-            View Subscription Plans
+            Subscribe
           </a>
-          <% } %>
+          <% } %> <% } %>
         </div>
       </div>
       <% } %>

@@ -114,6 +114,7 @@ export async function loginUserController(req, res) {
       birth_date: user.dob,
       fullName: user.fullName,
       role: user.clearance,
+      requestingSubscription: user.requestingSubscription,
     };
 
     return res.redirect("/");
@@ -151,6 +152,7 @@ export function GoogleCallbackController(req, res, next) {
           id: user._id,
           name: user.fullName,
           role: user.clearance,
+          requestingSubscription: user.requestingSubscription,
         }; // Store user info in session
         res.redirect("/");
       });
