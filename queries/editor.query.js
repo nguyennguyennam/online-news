@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 import categoryModel from "../model/category.model.js";
 import editorModel from "../model/editor.model.js";
 import postModel from "../model/post.model.js";
-import tagModel from "../model/tag.model.js";
 import userModel from "../model/user.model.js";
+import { getOrCreate } from "./tag.query.js";
 
 /**
  * Retrieves the editor profile for a user.
@@ -79,7 +79,7 @@ export async function checkPost(
     if (new Date(datePublish) < now) {
       throw new Error("Publish date must be in the future.");
     }
-    const tagId = await tagModel.find({ tag: { $in: tags } }, { _id: 1 });
+    const tagId = await Promise.all(tags.map((tag) => getOrCreate(tag)));
     return await postModel.findByIdAndUpdate(
       post_id,
       {
