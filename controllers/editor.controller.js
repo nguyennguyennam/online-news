@@ -31,7 +31,7 @@ export const checkPosts = async (req, res) => {
     post_id,
     reason,
     category,
-    tags.split(","),
+    tags?.split(",") || [],
     datepublished,
   );
   res.redirect("/editorial");
