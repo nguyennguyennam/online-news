@@ -29,6 +29,10 @@ export async function getAllCategories() {
   ).map((cat) => ({
     ...cat,
     slug: slugify(cat.name, { lower: true, strict: true, trim: true }),
+    children: cat.children.map((sub) => ({
+      ...sub,
+      slug: slugify(sub.name, { lower: true, strict: true, trim: true }),
+    })),
   }));
 }
 
