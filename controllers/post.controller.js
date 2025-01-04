@@ -252,8 +252,8 @@ export const getPostIdHandler = expressAsyncHandler(async (req, res) => {
  * @returns {void} Redirects to the "/posts" page upon successful update.
  */
 export const update_post = async (req, res) => {
-  const { post_id, title, abstract, content, category, tags, postType } =
-    req.body;
+  const { title, abstract, content, category, tags, postType } = req.body;
+  const postId = req.params.id;
   let premium = false;
   if (postType === "premium") {
     premium = true;
@@ -264,7 +264,7 @@ export const update_post = async (req, res) => {
   const tagDocuments = await getTagsArray(tagsArray);
   const tag_id = tagDocuments.map((doc) => doc._id);
   await modified_post(
-    post_id,
+    postId,
     title,
     abstract,
     content,
