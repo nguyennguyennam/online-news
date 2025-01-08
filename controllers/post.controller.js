@@ -1,4 +1,5 @@
 import expressAsyncHandler from "express-async-handler";
+import slugify from "slugify";
 import { z } from "zod";
 import { getAllCategories } from "../queries/categories.query.js";
 import { getCommentsForPost, postComment } from "../queries/comments.query.js";
@@ -231,6 +232,16 @@ export const getPostIdHandler = expressAsyncHandler(async (req, res) => {
     comments,
     related,
     post,
+    categorySlug: slugify(post.category.name, {
+      lower: true,
+      trim: true,
+      strict: true,
+    }),
+    parentCategorySlug: slugify(post.category.parent.name, {
+      lower: true,
+      trim: true,
+      strict: true,
+    }),
     userInfo: req.session?.userInfo,
   });
 });

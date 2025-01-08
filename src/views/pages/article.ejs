@@ -7,7 +7,7 @@
     <ol class="flex space-x-2">
       <li>
         <a
-          href="/category/<%= post.category.parent.slug %>"
+          href="/category/<%= parentCategorySlug %>"
           class="text-blue-600 hover:text-blue-800"
         >
           <%= post.category.parent.name %>
@@ -16,7 +16,7 @@
       <li>
         <span class="mx-2">&nbsp;&gt; </span>
         <a
-          href="/category/<%= post.category.slug %>"
+          href="/category/<%= categorySlug %>"
           class="text-blue-600 hover:text-blue-800"
         >
           <%= post.category.name %>
@@ -86,6 +86,7 @@
   </article>
 
   <!-- Download Button for Premium Content -->
+  <% if (post.premium) { %>
   <div class="mt-6">
     <button
       onclick="downloadPDF()"
@@ -94,21 +95,37 @@
       Download as PDF
     </button>
   </div>
+  <% } %>
 
   <!-- Comments -->
-  <section class="mt-12">
+  <section class="mt-12 flex flex-col gap-8">
     <h2 class="mb-6 text-2xl font-bold">Comments</h2>
     <% if (comments.length===0) { %>
     <p class="text-center text-lg">There are no comments on this post.</p>
     <% } else { comments.forEach(comment=> { %>
-    <div class="mt-2">
-      <div class="mb-0.5 flex justify-between">
-        <span class="username"> <%= comment.user.fullName %> </span>
-        <span class="time">
-          <%= comment.postedDate.toLocaleString("vi-VN") %>
-        </span>
+    <div
+      class="flex w-full flex-row items-center justify-between px-6 py-4 shadow-lg"
+    >
+      <div class="flex flex-row items-center gap-4">
+        <img
+          src="https://ui-avatars.com/api/?name=<%= comment.user.fullName %>&background=random"
+          class="size-8 rounded-full"
+        />
+
+        <div class="flex flex-col gap-2">
+          <p>
+            <span class="font-bold"><%= comment.user.fullName %></span> (<span
+              class="font-normal italic"
+              ><%= comment.user.email %></span
+            >)
+          </p>
+          <p><%= comment.content %></p>
+        </div>
       </div>
-      <div class="comment-body"><%= comment.content %></div>
+
+      <div class="text-sm">
+        <%= comment.postedDate.toLocaleString("vi-VN") %>
+      </div>
     </div>
     <% }) %> <% } %>
 

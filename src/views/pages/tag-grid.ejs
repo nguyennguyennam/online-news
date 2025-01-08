@@ -20,7 +20,7 @@
     >
       <!-- Featured Image with Article Type Tag -->
       <div class="relative mb-4">
-        <a href="/<%= article.slug %>">
+        <a href="/post/<%= article.slug %>">
           <img
             alt="<%= article.name %>"
             class="h-48 w-full object-cover"
@@ -50,7 +50,7 @@
       <div class="space-y-2">
         <h2 class="text-xl font-semibold">
           <a
-            href="/<%= article.slug %>"
+            href="/post/<%= article.slug %>"
             class="transition-colors duration-200 hover:text-blue-500"
           >
             <%= article.name %>
